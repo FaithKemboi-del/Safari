@@ -1,0 +1,38 @@
+{
+  "name": "kenya-safari-travel",
+  "version": "1.0.0",
+  "description": "Premium safari travel website for Kenyan destinations, itineraries, and routes.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FaithKemboi-del/Safari.git"
+  },
+  "keywords": [
+    "safari",
+    "travel",
+    "kenya",
+    "itineraries"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FaithKemboi-del/Safari/issues"
+  },
+  "homepage": "https://github.com/FaithKemboi-del/Safari#readme",
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16"
+  }
+}
