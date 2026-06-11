@@ -149,7 +149,7 @@ function HomePage() {
         </div>
         <div className="hero-card glass-panel">
           <span>Featured route</span>
-          <strong>Nairobi -> Amboseli -> Tsavo -> Diani</strong>
+          <strong>Nairobi &rarr; Amboseli &rarr; Tsavo &rarr; Diani</strong>
           <p>8 days of elephants, volcanic wilderness, and Indian Ocean calm.</p>
         </div>
       </section>
