@@ -1,4 +1,12 @@
-import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+  type MouseEvent,
+  type ReactNode,
+} from 'react';
 import {
   categories,
   testimonials,
@@ -46,8 +54,8 @@ const adminTables = {
   ],
 };
 
-function parseHash(): Route {
-  const hash = window.location.hash.replace('#', '') || 'home';
+function parseHashFromPath(path?: string): Route {
+  const hash = (path ?? window.location.hash.replace(/^#/, '')) || 'home';
   const [page, slug] = hash.split('/');
 
   if (page === 'destination' && slug) {
@@ -72,11 +80,44 @@ function parseHash(): Route {
   return { page: 'home' };
 }
 
+function parseHash(): Route {
+  return parseHashFromPath();
+}
+
+function routeKey(route: Route): string {
+  if (route.page === 'destination') {
+    return `destination/${route.slug}`;
+  }
+
+  if (route.page === 'category') {
+    return `category/${route.id}`;
+  }
+
+  return route.page;
+}
+
 function App() {
   const [route, setRoute] = useState<Route>(parseHash);
 
+  const navigate = useCallback((hash: string) => {
+    const target = hash.replace(/^#/, '') || 'home';
+    const nextRoute = parseHashFromPath(target);
+
+    setRoute(nextRoute);
+
+    if (window.location.hash.replace(/^#/, '') !== target) {
+      window.location.hash = target;
+    }
+
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, []);
+
   useEffect(() => {
-    const onHashChange = () => setRoute(parseHash());
+    const onHashChange = () => {
+      setRoute(parseHash());
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    };
+
     window.addEventListener('hashchange', onHashChange);
 
     if (!window.location.hash) {
@@ -86,6 +127,10 @@ function App() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [routeKey(route)]);
+
   const activePage =
     route.page === 'destination' ? 'destinations' : route.page === 'category' ? 'home' : route.page;
 
@@ -93,7 +138,7 @@ function App() {
     <div className="site-shell">
       <Header activePage={activePage} />
       <main>
-        {route.page === 'home' && <HomePage />}
+        {route.page === 'home' && <HomePage onNavigate={navigate} />}
         {route.page === 'destinations' && <DestinationsPage />}
         {route.page === 'destination' && <DestinationDetailPage slug={route.slug} />}
         {route.page === 'category' && <CategoryPage categoryId={route.id} />}
@@ -143,8 +188,13 @@ function Header({ activePage }: { activePage: string }) {
   );
 }
 
-function HomePage() {
+function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
   const { destinations, itineraries } = useData();
+
+  const goToCategory = (categoryId: string) => (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    onNavigate(`category/${categoryId}`);
+  };
 
   return (
     <>
@@ -177,6 +227,7 @@ function HomePage() {
                 key={category.id}
                 className={`category-chip category-chip--${category.theme}`}
                 href={`#category/${category.id}`}
+                onClick={goToCategory(category.id)}
                 role="listitem"
               >
                 <CategoryIcon icon={category.icon} />
