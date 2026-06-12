@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "vercel-build": "npm run build",
     "preview": "vite preview"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "repository": {
     "type": "git",

@@ -114,6 +114,41 @@ FRONTEND_URL=http://localhost:5173 npm run dev
 
 ## Notes
 
-- **Hash routing** (`#home`, `#category/hiking`) works on Vercel without extra config; `vercel.json` also supports direct paths.
+- **Hash routing** (`#home`, `#category/hiking`) works on Vercel without extra config.
 - **No paid AllTrails** — trail maps use OpenStreetMap (free).
 - If Supabase env vars are missing on Vercel, the site still loads with local demo data.
+
+---
+
+## Troubleshooting: blank page on Vercel
+
+A blank page almost always means the **production build did not run** and Vercel is serving the dev `index.html` (which points at `/src/main.tsx` — that only works with `npm run dev`).
+
+### Quick check
+
+1. Open your live site → **View Page Source** (not Inspect).
+2. If you see `<script type="module" src="/src/main.tsx">`, the build was skipped.
+3. You should instead see `<script type="module" src="/assets/index-….js">`.
+
+### Fix in Vercel dashboard
+
+Go to **Project → Settings → Build & Development Settings** and confirm:
+
+| Setting | Value |
+|---------|--------|
+| Framework Preset | **Vite** |
+| Root Directory | `.` (repo root, not `server/`) |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| Install Command | `npm install` |
+
+Then open **Deployments → … → Redeploy** (use “Redeploy with existing Build Cache” **unchecked**).
+
+### Check deploy logs
+
+In the deployment log you should see `vite v… building` and `dist/index.html` created. If the build step is missing or failed, fix that before debugging anything else.
+
+### Browser DevTools
+
+- **Console**: errors like “Failed to load module script” or 404 on `/assets/*.js`
+- **Network**: `/assets/index-*.js` should return JavaScript (200), not HTML
