@@ -5,16 +5,16 @@ import {
   categoryMeta,
   categorySpots,
   eventChatKey,
-  ALLTRAILS_KENYA_URL,
   HIKE_RECORDS_KEY,
-  hikingTrails,
   kenyaEvents,
   seedEventChat,
   type EventChatMessage,
   type EventStatus,
   type HikeRecord,
 } from '../categoryContent';
+import { savannaTrails } from '../data/savannaTrails';
 import { useAuth } from '../context/AuthContext';
+import { TrailExplorer } from './TrailExplorer';
 
 function CategoryIcon({ icon }: { icon: Category['icon'] }) {
   const paths: Record<Category['icon'], string> = {
@@ -170,31 +170,31 @@ function HikingCategoryPage({
 
       <section className="section">
         <div className="section-intro">
-          <h2>Featured hiking trails</h2>
+          <h2>Savanna Trails — built in, free</h2>
           <p>
-            Preview the route below, open turn-by-turn directions in Google Maps, or jump to AllTrails
-            for elevation profiles, reviews, and GPX downloads.
+            Interactive maps, elevation profiles, GPX downloads, GPS recording, and hiker reviews —
+            no subscription required. Powered by OpenStreetMap.
           </p>
         </div>
 
-        <div className="trail-map-guide glass-panel">
+        <div className="trail-map-guide glass-panel savanna-trails-banner">
           <div>
-            <span className="eyebrow">Maps &amp; trails</span>
-            <h3>Two ways to follow every route</h3>
+            <span className="eyebrow">Your AllTrails alternative</span>
+            <h3>Follow every route on our platform</h3>
             <p>
-              <strong>Google Maps</strong> is best for getting to the trailhead and navigating on the
-              road. <strong>AllTrails</strong> adds the full hiking path, distance, elevation, and
-              hiker reviews — ideal once you&apos;re on the trail.
+              <strong>Savanna Trails</strong> gives you trail maps, waypoint markers, elevation
+              charts, and live GPS tracking — all integrated here. Download GPX files or record your
+              hike directly from your phone.
             </p>
           </div>
-          <a className="secondary-button" href={ALLTRAILS_KENYA_URL} rel="noreferrer" target="_blank">
-            Browse all Kenya trails on AllTrails
+          <a className="primary-button" href="#trail/longonot-trail">
+            Try Mount Longonot trail
           </a>
         </div>
 
         <div className="trail-list">
-          {hikingTrails.map((trail) => (
-            <article key={trail.id} className="trail-card">
+          {savannaTrails.map((trail) => (
+            <article key={trail.id} className="trail-card trail-card--explorer">
               <img src={trail.image} alt="" />
               <div className="trail-content">
                 <span className="spot-budget">{trail.budget}</span>
@@ -202,37 +202,11 @@ function HikingCategoryPage({
                 <p className="spot-location">{trail.location}</p>
                 <p>{trail.description}</p>
                 <div className="trail-meta">
-                  <span>{trail.difficulty}</span>
+                  <span>{trail.difficultyLabel}</span>
                   <span>{trail.duration}</span>
+                  <span>{trail.distanceKm} km</span>
                 </div>
-                <div className="trail-actions">
-                  <a
-                    className="primary-button"
-                    href={trail.googleMapsUrl}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    Open in Google Maps
-                  </a>
-                  {trail.allTrailsUrl && (
-                    <a
-                      className="alltrails-button"
-                      href={trail.allTrailsUrl}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      View on AllTrails
-                    </a>
-                  )}
-                  {trail.slug && <a href={`#destination/${trail.slug}`}>Destination page</a>}
-                </div>
-                <div className="map-frame trail-map">
-                  <iframe
-                    title={`${trail.title} map`}
-                    src={`https://www.google.com/maps?q=${encodeURIComponent(trail.mapQuery)}&output=embed`}
-                    loading="lazy"
-                  />
-                </div>
+                <TrailExplorer compact trail={trail} />
               </div>
             </article>
           ))}
@@ -278,7 +252,7 @@ function HikingCategoryPage({
             <label>
               Trail name
               <select value={trailName} onChange={(event) => setTrailName(event.target.value)}>
-                {hikingTrails.map((trail) => (
+                {savannaTrails.map((trail) => (
                   <option key={trail.id}>{trail.title}</option>
                 ))}
                 <option>Other trail</option>

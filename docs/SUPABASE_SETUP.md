@@ -35,7 +35,8 @@ npm run dev
 In Supabase Dashboard → **SQL Editor**, run these files **in order**:
 
 1. `supabase/migrations/001_initial_schema.sql` — tables, RLS, auth profile trigger  
-2. `supabase/seed.sql` — starter destinations, itineraries, community posts  
+2. `supabase/migrations/002_savanna_trails.sql` — Savanna Trails maps, reviews, GPS tracks  
+3. `supabase/seed.sql` — starter destinations, itineraries, community posts  
 
 ---
 

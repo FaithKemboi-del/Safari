@@ -17,12 +17,14 @@ import { useAuth } from './context/AuthContext';
 import { useData } from './context/DataContext';
 import { fetchCommunityUpdates, postCommunityUpdate } from './services/safariApi';
 import { CategoryIcon, CategoryPage } from './components/CategoryPage';
+import { TrailPage } from './components/TrailPage';
 
 type Route =
   | { page: 'home' }
   | { page: 'destinations' }
   | { page: 'destination'; slug: string }
   | { page: 'category'; id: string }
+  | { page: 'trail'; id: string }
   | { page: 'itineraries' }
   | { page: 'plan-ai' }
   | { page: 'signin' }
@@ -66,6 +68,10 @@ function parseHashFromPath(path?: string): Route {
     return { page: 'category', id: slug };
   }
 
+  if (page === 'trail' && slug) {
+    return { page: 'trail', id: slug };
+  }
+
   if (
     page === 'destinations' ||
     page === 'itineraries' ||
@@ -91,6 +97,10 @@ function routeKey(route: Route): string {
 
   if (route.page === 'category') {
     return `category/${route.id}`;
+  }
+
+  if (route.page === 'trail') {
+    return `trail/${route.id}`;
   }
 
   return route.page;
@@ -132,7 +142,11 @@ function App() {
   }, [routeKey(route)]);
 
   const activePage =
-    route.page === 'destination' ? 'destinations' : route.page === 'category' ? 'home' : route.page;
+    route.page === 'destination'
+      ? 'destinations'
+      : route.page === 'category' || route.page === 'trail'
+        ? 'home'
+        : route.page;
 
   return (
     <div className="site-shell">
@@ -142,6 +156,7 @@ function App() {
         {route.page === 'destinations' && <DestinationsPage />}
         {route.page === 'destination' && <DestinationDetailPage slug={route.slug} />}
         {route.page === 'category' && <CategoryPage categoryId={route.id} />}
+        {route.page === 'trail' && <TrailPage trailId={route.id} />}
         {route.page === 'itineraries' && <ItinerariesPage />}
         {route.page === 'plan-ai' && <PlanWithAIPage />}
         {route.page === 'signin' && <AuthPage mode="signin" />}

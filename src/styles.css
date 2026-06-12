@@ -2497,3 +2497,216 @@ td button:last-child {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* Savanna Trails */
+.savanna-trails-banner {
+  border-color: rgba(46, 125, 50, 0.22);
+  background: linear-gradient(135deg, rgba(232, 245, 233, 0.95), rgba(255, 249, 242, 0.98));
+}
+
+.trail-card--explorer .trail-content {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.trail-explorer {
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.trail-explorer--compact .trail-reviews,
+.trail-explorer--compact .trail-tips {
+  display: none;
+}
+
+.trail-explorer-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.trail-explorer-stats div {
+  padding: 0.75rem;
+  border-radius: 1rem;
+  background: rgba(46, 125, 50, 0.08);
+}
+
+.trail-explorer-stats small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.trail-explorer-stats strong {
+  font-size: 1rem;
+}
+
+.trail-difficulty--easy {
+  color: #2e7d32;
+}
+
+.trail-difficulty--moderate {
+  color: #ef6c00;
+}
+
+.trail-difficulty--hard,
+.trail-difficulty--expert {
+  color: #c62828;
+}
+
+.trail-map-container {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+  z-index: 0;
+}
+
+.elevation-chart {
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+  background: #fff;
+}
+
+.elevation-chart-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.elevation-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.trail-waypoints ul,
+.trail-tips ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  line-height: 1.6;
+}
+
+.trail-waypoints li,
+.trail-tips li {
+  margin-bottom: 0.45rem;
+}
+
+.waypoint-kind {
+  display: inline-flex;
+  margin-right: 0.45rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.waypoint-kind--start {
+  background: rgba(46, 125, 50, 0.15);
+  color: #2e7d32;
+}
+
+.waypoint-kind--summit {
+  background: rgba(198, 40, 40, 0.12);
+  color: #c62828;
+}
+
+.waypoint-kind--camp,
+.waypoint-kind--checkpoint {
+  background: rgba(240, 138, 42, 0.15);
+  color: var(--gold-dark);
+}
+
+.trail-reviews-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.trail-rating {
+  color: var(--gold-dark);
+}
+
+.gps-recorder {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(46, 125, 50, 0.2);
+  border-radius: 1.2rem;
+  background: rgba(232, 245, 233, 0.45);
+}
+
+.gps-recorder-header {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.gps-live-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.gps-live-stats div {
+  padding: 0.65rem;
+  border-radius: 0.85rem;
+  background: #fff;
+  text-align: center;
+}
+
+.gps-live-stats small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.gps-recorder-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.gps-saved-tracks h4 {
+  margin: 0 0 0.65rem;
+}
+
+.trail-page-layout {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.trail-page-cover {
+  width: 100%;
+  max-height: 18rem;
+  object-fit: cover;
+  border-radius: 1.4rem;
+}
+
+@media (min-width: 768px) {
+  .trail-explorer-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .gps-recorder-header {
+    grid-template-columns: 1.2fr 0.8fr;
+    align-items: start;
+  }
+
+  .trail-page-layout {
+    grid-template-columns: 0.9fr 1.1fr;
+    align-items: start;
+  }
+}

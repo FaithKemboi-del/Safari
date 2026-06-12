@@ -26,10 +26,12 @@
   "homepage": "https://github.com/FaithKemboi-del/Safari#readme",
   "dependencies": {
     "@supabase/supabase-js": "^2.108.1",
+    "leaflet": "^1.9.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.9.21",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
