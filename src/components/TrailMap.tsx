@@ -19,6 +19,42 @@ type TrailMapProps = {
   className?: string;
 };
 
+function isValidCoordinate(point: LatLng): boolean {
+  return (
+    Number.isFinite(point.lat) &&
+    Number.isFinite(point.lng) &&
+    Math.abs(point.lat) <= 90 &&
+    Math.abs(point.lng) <= 180
+  );
+}
+
+function safeFitBounds(map: L.Map, points: LatLng[]) {
+  const validPoints = points.filter(isValidCoordinate);
+
+  if (validPoints.length === 0) {
+    map.setView([-0.9142, 36.4561], 10);
+    return;
+  }
+
+  if (validPoints.length === 1) {
+    map.setView([validPoints[0].lat, validPoints[0].lng], 13);
+    return;
+  }
+
+  try {
+    const bounds = L.latLngBounds(validPoints.map((point) => [point.lat, point.lng] as [number, number]));
+
+    if (!bounds.isValid()) {
+      map.setView([validPoints[0].lat, validPoints[0].lng], 12);
+      return;
+    }
+
+    map.fitBounds(bounds, { padding: [28, 28] });
+  } catch {
+    map.setView([validPoints[0].lat, validPoints[0].lng], 12);
+  }
+}
+
 export function TrailMap({
   route,
   waypoints = [],
@@ -35,13 +71,20 @@ export function TrailMap({
   } | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) {
+    const container = containerRef.current;
+
+    if (!container || mapRef.current) {
       return;
     }
 
-    const map = L.map(containerRef.current, {
+    if ((container as HTMLElement & { _leaflet_id?: number })._leaflet_id) {
+      return;
+    }
+
+    const map = L.map(container, {
       zoomControl: true,
       scrollWheelZoom: false,
+      preferCanvas: true,
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -53,7 +96,10 @@ export function TrailMap({
     mapRef.current = map;
     layersRef.current = { markers };
 
+    const resizeTimer = window.setTimeout(() => map.invalidateSize(), 50);
+
     return () => {
+      window.clearTimeout(resizeTimer);
       map.remove();
       mapRef.current = null;
       layersRef.current = null;
@@ -72,16 +118,25 @@ export function TrailMap({
       layers.route.remove();
     }
 
-    const latLngs = route.map((point) => [point.lat, point.lng] as [number, number]);
-    layers.route = L.polyline(latLngs, {
-      color: '#2e7d32',
-      weight: 5,
-      opacity: 0.9,
-    }).addTo(map);
+    const latLngs = route
+      .filter(isValidCoordinate)
+      .map((point) => [point.lat, point.lng] as [number, number]);
+
+    if (latLngs.length > 1) {
+      layers.route = L.polyline(latLngs, {
+        color: '#2e7d32',
+        weight: 5,
+        opacity: 0.9,
+      }).addTo(map);
+    }
 
     layers.markers.clearLayers();
 
     waypoints.forEach((waypoint) => {
+      if (!isValidCoordinate(waypoint)) {
+        return;
+      }
+
       const color = waypointColors[waypoint.kind];
       const marker = L.circleMarker([waypoint.lat, waypoint.lng], {
         radius: 8,
@@ -97,14 +152,13 @@ export function TrailMap({
       layers.markers.addLayer(marker);
     });
 
-    const boundsPoints = [...route, ...liveTrack.map((point) => ({ lat: point.lat, lng: point.lng }))];
-    if (boundsPoints.length > 0) {
-      map.fitBounds(
-        L.latLngBounds(boundsPoints.map((point) => [point.lat, point.lng] as [number, number])),
-        { padding: [28, 28] },
-      );
-      window.setTimeout(() => map.invalidateSize(), 0);
-    }
+    const boundsPoints = [
+      ...route,
+      ...liveTrack.map((point) => ({ lat: point.lat, lng: point.lng })),
+    ].filter(isValidCoordinate);
+
+    safeFitBounds(map, boundsPoints);
+    window.setTimeout(() => map.invalidateSize(), 0);
   }, [route, waypoints, liveTrack]);
 
   useEffect(() => {
@@ -124,7 +178,14 @@ export function TrailMap({
       return;
     }
 
-    const latLngs = liveTrack.map((point) => [point.lat, point.lng] as [number, number]);
+    const latLngs = liveTrack
+      .filter(isValidCoordinate)
+      .map((point) => [point.lat, point.lng] as [number, number]);
+
+    if (latLngs.length < 2) {
+      return;
+    }
+
     layers.live = L.polyline(latLngs, {
       color: '#f08a2a',
       weight: 4,
@@ -133,14 +194,16 @@ export function TrailMap({
     }).addTo(map);
 
     const last = liveTrack[liveTrack.length - 1];
-    const liveMarker = L.circleMarker([last.lat, last.lng], {
-      radius: 7,
-      color: '#fff',
-      weight: 2,
-      fillColor: '#f08a2a',
-      fillOpacity: 1,
-    });
-    layers.markers.addLayer(liveMarker);
+    if (isValidCoordinate(last)) {
+      const liveMarker = L.circleMarker([last.lat, last.lng], {
+        radius: 7,
+        color: '#fff',
+        weight: 2,
+        fillColor: '#f08a2a',
+        fillOpacity: 1,
+      });
+      layers.markers.addLayer(liveMarker);
+    }
   }, [liveTrack]);
 
   return (

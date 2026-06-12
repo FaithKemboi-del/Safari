@@ -14,7 +14,6 @@ import {
 } from '../categoryContent';
 import { savannaTrails } from '../data/savannaTrails';
 import { useAuth } from '../context/AuthContext';
-import { TrailExplorer } from './TrailExplorer';
 
 function CategoryIcon({ icon }: { icon: Category['icon'] }) {
   const paths: Record<Category['icon'], string> = {
@@ -205,8 +204,22 @@ function HikingCategoryPage({
                   <span>{trail.difficultyLabel}</span>
                   <span>{trail.duration}</span>
                   <span>{trail.distanceKm} km</span>
+                  <span>{trail.elevationGainM} m gain</span>
                 </div>
-                <TrailExplorer compact trail={trail} />
+                <div className="trail-actions">
+                  <a className="primary-button" href={`#trail/${trail.id}`}>
+                    Open interactive trail map
+                  </a>
+                  <a
+                    className="secondary-button compact-button"
+                    href={trail.googleMapsUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Directions to trailhead
+                  </a>
+                  {trail.slug && <a href={`#destination/${trail.slug}`}>Destination page</a>}
+                </div>
               </div>
             </article>
           ))}
