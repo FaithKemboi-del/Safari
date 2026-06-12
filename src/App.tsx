@@ -4,15 +4,17 @@ import {
   testimonials,
   trendingThisWeek,
 } from './data';
-import type { Category, CommunityUpdate, Destination } from './data';
+import type { CommunityUpdate, Destination } from './data';
 import { useAuth } from './context/AuthContext';
 import { useData } from './context/DataContext';
 import { fetchCommunityUpdates, postCommunityUpdate } from './services/safariApi';
+import { CategoryIcon, CategoryPage } from './components/CategoryPage';
 
 type Route =
   | { page: 'home' }
   | { page: 'destinations' }
   | { page: 'destination'; slug: string }
+  | { page: 'category'; id: string }
   | { page: 'itineraries' }
   | { page: 'plan-ai' }
   | { page: 'signin' }
@@ -52,6 +54,10 @@ function parseHash(): Route {
     return { page: 'destination', slug };
   }
 
+  if (page === 'category' && slug) {
+    return { page: 'category', id: slug };
+  }
+
   if (
     page === 'destinations' ||
     page === 'itineraries' ||
@@ -80,7 +86,8 @@ function App() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  const activePage = route.page === 'destination' ? 'destinations' : route.page;
+  const activePage =
+    route.page === 'destination' ? 'destinations' : route.page === 'category' ? 'home' : route.page;
 
   return (
     <div className="site-shell">
@@ -89,6 +96,7 @@ function App() {
         {route.page === 'home' && <HomePage />}
         {route.page === 'destinations' && <DestinationsPage />}
         {route.page === 'destination' && <DestinationDetailPage slug={route.slug} />}
+        {route.page === 'category' && <CategoryPage categoryId={route.id} />}
         {route.page === 'itineraries' && <ItinerariesPage />}
         {route.page === 'plan-ai' && <PlanWithAIPage />}
         {route.page === 'signin' && <AuthPage mode="signin" />}
@@ -137,7 +145,6 @@ function Header({ activePage }: { activePage: string }) {
 
 function HomePage() {
   const { destinations, itineraries } = useData();
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   return (
     <>
@@ -166,18 +173,15 @@ function HomePage() {
           </div>
           <div className="category-strip" role="list" aria-label="Travel categories">
             {categories.map((category) => (
-              <button
+              <a
                 key={category.id}
-                className={`category-chip category-chip--${category.theme} ${activeCategory === category.id ? 'active' : ''}`}
-                onClick={() =>
-                  setActiveCategory(activeCategory === category.id ? null : category.id)
-                }
-                type="button"
+                className={`category-chip category-chip--${category.theme}`}
+                href={`#category/${category.id}`}
                 role="listitem"
               >
                 <CategoryIcon icon={category.icon} />
                 {category.label}
-              </button>
+              </a>
             ))}
           </div>
         </div>
@@ -1309,53 +1313,6 @@ function PlanWithAIPage() {
   );
 }
 
-function CategoryIcon({ icon }: { icon: Category['icon'] }) {
-  const paths: Record<Category['icon'], React.ReactElement> = {
-    hiking: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M13.5 5.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 20l3.5-7 2.5 2 3-6 3.5 11H7Z" />
-      </svg>
-    ),
-    waterfall: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M8 4v8l-2 3v5h4v-5l-2-3V4Zm8 0v6l2 3v6h-4v-6l2-3V4ZM12 2v4" />
-      </svg>
-    ),
-    camping: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 20 12 4l8 16H4Zm8-10 4 8H8l4-8Z" />
-      </svg>
-    ),
-    roadtrip: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M5 11h14l-1.5-4.5H6.5L5 11Zm-1 2v5h2v-2h12v2h2v-5H4Zm4 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
-      </svg>
-    ),
-    gem: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="m12 3 7 7-7 11L5 10l7-7Zm0 4.2L8.3 10 12 16.3 15.7 10 12 7.2Z" />
-      </svg>
-    ),
-    wildlife: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M6 8c0-2 1.5-3 3-3s3 1 3 3-1.5 3-3 3-3-1-3-3Zm6 0c0-2 1.5-3 3-3s3 1 3 3-1.5 3-3 3-3-1-3-3ZM4 14c2 2 5 3 8 3s6-1 8-3c-1 3-4 5-8 5s-7-2-8-5Z" />
-      </svg>
-    ),
-    coast: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M3 14c2 1 4 1 6 0s4-1 6 0 4 1 6 0v3H3v-3Zm0-3c2 1 4 1 6 0s4-1 6 0 4 1 6 0v2H3v-2Z" />
-      </svg>
-    ),
-    events: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M7 3v2H5v16h14V5h-2V3h-2v2H9V3H7Zm12 8H5v8h14v-8ZM7 13h2v2H7v-2Zm4 0h2v2h-2v-2Zm4 0h2v2h-2v-2Z" />
-      </svg>
-    ),
-  };
-
-  return <span className="category-icon">{paths[icon]}</span>;
-}
-
 function Footer() {
   return (
     <footer className="footer section-dark">
@@ -1364,7 +1321,7 @@ function Footer() {
           <span className="brand-mark">SL</span>
           <span>
             <strong>Savanna Luxe</strong>
-            <small>Kenya Safari Studio</small>
+            <small>Budget Kenya Travel</small>
           </span>
         </a>
         <p>Affordable Kenya travel discovery, route planning, and community tips for budget explorers.</p>

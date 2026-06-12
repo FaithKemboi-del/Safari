@@ -385,6 +385,8 @@ h2 {
   color: rgba(255, 245, 233, 0.9);
   font-size: 0.78rem;
   font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
   transition:
     transform var(--transition-fast),
     border-color var(--transition-fast),
@@ -2086,5 +2088,338 @@ td button:last-child {
   .destination-grid .destination-card:nth-child(1),
   .destination-grid .destination-card:nth-child(6) {
     grid-column: span 2;
+  }
+
+  .trail-card {
+    grid-template-columns: 0.9fr 1.1fr;
+  }
+
+  .hike-record-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Category pages */
+.category-page {
+  min-height: 100vh;
+}
+
+.category-hero {
+  padding: 8rem 1rem 3rem;
+  color: #fff;
+}
+
+.category-hero-inner {
+  width: min(1060px, 100%);
+  margin: 0 auto;
+}
+
+.category-back {
+  display: inline-flex;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.category-back:hover {
+  color: #fff;
+}
+
+.category-hero h1 {
+  margin: 0.5rem 0;
+  font-size: clamp(2.2rem, 8vw, 4.2rem);
+  line-height: 1.05;
+}
+
+.category-hero p {
+  max-width: 40rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.65;
+}
+
+.category-page--hiking .category-hero {
+  background: linear-gradient(135deg, #1b5e20, #2e7d32 55%, #43a047);
+}
+
+.category-page--waterfalls .category-hero {
+  background: linear-gradient(135deg, #01579b, #0277bd 55%, #039be5);
+}
+
+.category-page--camping .category-hero {
+  background: linear-gradient(135deg, #4e342e, #6d4c28 55%, #8d6e31);
+}
+
+.category-page--roadtrips .category-hero {
+  background: linear-gradient(135deg, #424242, #616161 55%, #ff8f00);
+}
+
+.category-page--hidden-gems .category-hero {
+  background: linear-gradient(135deg, #4a148c, #6a1b9a 55%, #ab47bc);
+}
+
+.category-page--wildlife .category-hero {
+  background: linear-gradient(135deg, #5d4037, #827717 55%, #f9a825);
+}
+
+.category-page--coast .category-hero {
+  background: linear-gradient(135deg, #006064, #00838f 55%, #26c6da);
+}
+
+.category-page--events .category-hero {
+  background: linear-gradient(135deg, #b71c1c, #c62828 55%, #ff7043);
+}
+
+.category-spot-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.category-spot-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 1.4rem;
+  background: var(--white-soft);
+  box-shadow: 0 12px 36px rgba(58, 38, 26, 0.08);
+}
+
+.category-spot-card img {
+  width: 100%;
+  height: 12rem;
+  object-fit: cover;
+}
+
+.category-spot-card > div {
+  padding: 1rem;
+}
+
+.spot-budget {
+  display: inline-flex;
+  margin-bottom: 0.45rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 179, 71, 0.18);
+  color: var(--gold-dark);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.category-spot-card h3 {
+  margin: 0.35rem 0;
+  font-size: 1.35rem;
+}
+
+.spot-location {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.category-spot-card p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.category-spot-card a {
+  display: inline-flex;
+  margin-top: 0.65rem;
+  color: var(--gold-dark);
+  font-weight: 800;
+}
+
+.category-muted-band {
+  background: var(--dune);
+  max-width: none;
+  width: 100%;
+  padding-inline: max(1rem, calc((100vw - 1160px) / 2));
+}
+
+.trail-list {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.trail-card {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 1.5rem;
+  background: var(--white-soft);
+  box-shadow: var(--shadow);
+}
+
+.trail-card img {
+  width: 100%;
+  height: 100%;
+  min-height: 14rem;
+  object-fit: cover;
+}
+
+.trail-content {
+  padding: 1.2rem;
+}
+
+.trail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.trail-meta span {
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(46, 125, 50, 0.12);
+  color: #2e7d32;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.trail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  margin: 0.85rem 0;
+}
+
+.trail-actions a:not(.primary-button) {
+  color: var(--gold-dark);
+  font-weight: 800;
+}
+
+.trail-map iframe {
+  height: 16rem;
+}
+
+.hike-record-layout {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.hike-record-form,
+.hike-record-list {
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 1.4rem;
+  background: var(--white-soft);
+}
+
+.hike-record-list h3 {
+  margin: 0 0 1rem;
+}
+
+.hike-record-card {
+  display: grid;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+  padding: 0.85rem;
+  border-radius: 1rem;
+  background: rgba(46, 125, 50, 0.08);
+}
+
+.hike-record-card span,
+.hike-record-card small {
+  color: var(--muted);
+}
+
+.hike-record-card p {
+  margin: 0.35rem 0 0;
+  line-height: 1.55;
+}
+
+.event-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 1.2rem;
+}
+
+.event-filters button {
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--charcoal);
+  font-weight: 800;
+  transition:
+    transform var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.event-filters button.active,
+.event-filters button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(198, 40, 40, 0.45);
+  background: rgba(198, 40, 40, 0.12);
+  color: #b71c1c;
+}
+
+.event-status {
+  display: inline-flex;
+  margin-right: 0.45rem;
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.event-status--happening-now {
+  background: rgba(232, 93, 58, 0.16);
+  color: #c62828;
+}
+
+.event-status--upcoming {
+  background: rgba(2, 119, 189, 0.14);
+  color: #0277bd;
+}
+
+.event-status--past {
+  background: rgba(97, 97, 97, 0.14);
+  color: #616161;
+}
+
+.event-card.selected {
+  outline: 2px solid rgba(198, 40, 40, 0.45);
+}
+
+.compact-button {
+  min-height: 2.4rem !important;
+  padding: 0.45rem 0.9rem !important;
+  font-size: 0.82rem;
+}
+
+.event-chat-panel {
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 1.5rem;
+  background: var(--white-soft);
+  box-shadow: var(--shadow);
+}
+
+.event-chat-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.event-chat-header h2 {
+  margin: 0.35rem 0;
+  font-size: 1.8rem;
+}
+
+@media (min-width: 600px) {
+  .category-spot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .category-spot-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
