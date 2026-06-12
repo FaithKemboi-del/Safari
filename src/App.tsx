@@ -28,14 +28,14 @@ const navItems = [
 
 const adminTables = {
   Destinations: [
-    ['Maasai Mara', 'Narok', 'Premium', 'Published'],
-    ['Amboseli', 'Kajiado', 'Classic', 'Published'],
-    ['Laikipia', 'Nanyuki', 'Exclusive', 'Draft'],
+    ['Maasai Mara', 'Narok', 'From $45/day', 'Published'],
+    ['Amboseli', 'Kajiado', 'From $55/day trip', 'Published'],
+    ["Hell's Gate", 'Naivasha', 'From $15 entry', 'Published'],
   ],
   Itineraries: [
-    ['Great Migration Luxe Escape', '5 days', '$3,850 pp', 'Live'],
-    ['Big Five to Barefoot Coast', '8 days', '$4,940 pp', 'Live'],
-    ['Rift Valley Signature Circuit', '6 days', '$4,250 pp', 'Review'],
+    ['Budget Mara Weekend', '3 days', 'From $180 pp', 'Live'],
+    ['Coast on a Shoestring', '5 days', 'From $220 pp', 'Live'],
+    ['Rift Valley Circuit', '4 days', 'From $150 pp', 'Review'],
   ],
   Routes: [
     ['Nairobi -> Maasai Mara', 'Fly-in', '290 km', 'Active'],
@@ -107,7 +107,7 @@ function Header({ activePage }: { activePage: string }) {
         <span className="brand-mark">SL</span>
         <span>
           <strong>Savanna Luxe</strong>
-          <small>Kenya Safari Studio</small>
+          <small>Budget Kenya Travel</small>
         </span>
       </a>
 
@@ -142,18 +142,22 @@ function HomePage() {
   return (
     <>
       <section className="hero section-dark">
-        <div className="hero-media parallax-layer" />
+        <img
+          className="hero-background-image"
+          src="https://images.unsplash.com/photo-1489392197799-37adffc731ad?auto=format&fit=crop&w=2200&q=90"
+          alt=""
+        />
         <div className="hero-overlay" />
         <div className="hero-content">
-          <span className="eyebrow">Premium Kenya Safari Experiences</span>
+          <span className="eyebrow">Affordable Kenya travel</span>
           <h1 className="hero-title-horizontal">
-            <span>Wild routes,</span>
-            <span className="title-accent"> refined stays,</span>
-            <span> unforgettable Kenyan horizons.</span>
+            <span>Explore Kenya</span>
+            <span className="title-accent"> on a budget,</span>
+            <span> without missing the adventure.</span>
           </h1>
           <p>
-            Discover cinematic safari destinations, custom itineraries, and overland routes crafted
-            for travelers who want adventure with impeccable detail.
+            Find cheap routes, local transport tips, camps, hikes, coast escapes, and events — built
+            for travelers who want to see Kenya affordably and confidently.
           </p>
           <div className="hero-actions">
             <a className="primary-button" href="#destinations">
@@ -164,7 +168,7 @@ function HomePage() {
             {categories.map((category) => (
               <button
                 key={category.id}
-                className={`category-chip ${activeCategory === category.id ? 'active' : ''}`}
+                className={`category-chip category-chip--${category.theme} ${activeCategory === category.id ? 'active' : ''}`}
                 onClick={() =>
                   setActiveCategory(activeCategory === category.id ? null : category.id)
                 }
@@ -177,18 +181,13 @@ function HomePage() {
             ))}
           </div>
         </div>
-        <div className="hero-card glass-panel">
-          <span>Featured route</span>
-          <strong>Nairobi &rarr; Amboseli &rarr; Tsavo &rarr; Diani</strong>
-          <p>8 days of elephants, volcanic wilderness, and Indian Ocean calm.</p>
-        </div>
       </section>
 
       <section className="section trending-section">
         <SectionIntro
           eyebrow="Trending this week"
           title="What travelers are searching right now"
-          body="Live momentum across wildlife crossings, coastal escapes, and hidden northern circuits."
+          body="What budget travelers are booking this week — shared vans, SGR hops, and low-cost stays."
         />
         <div className="trending-grid">
           {trendingThisWeek.map((item, index) => (
@@ -226,7 +225,7 @@ function HomePage() {
         </div>
         <div className="plan-ai-teaser-preview glass-panel">
           <span className="preview-label">Preview</span>
-          <p>“5-day wildlife and coast trip with luxury camps, easy hikes, and a hidden gem stop.”</p>
+          <p>“5-day wildlife and coast trip under $250 — matatu, SGR, hostel, and one splurge night.”</p>
           <ul>
             <li>Day 1-2: Amboseli elephant drives</li>
             <li>Day 3: Tsavo red-earth safari</li>
@@ -238,8 +237,8 @@ function HomePage() {
       <section className="section">
         <SectionIntro
           eyebrow="Featured destinations"
-          title="The safari icons travelers dream about"
-          body="From migration plains to private conservancies, these Kenyan destinations combine big wildlife moments with premium lodge experiences."
+          title="Top spots that won't break the bank"
+          body="Wildlife, hikes, coast, and hidden gems with honest pricing, transport options, and safety notes."
         />
         <div className="destination-row">
           {destinations.slice(0, 3).map((destination) => (
@@ -251,8 +250,8 @@ function HomePage() {
       <section className="section muted-section">
         <SectionIntro
           eyebrow="Popular itineraries"
-          title="Curated journeys with rhythm and drama"
-          body="Each route balances peak wildlife windows, smooth transfers, distinctive camps, and downtime that keeps the experience elevated."
+          title="Affordable routes that still feel epic"
+          body="Day-by-day plans with public transport, shared vans, camps, and hostels where possible."
         />
         <div className="itinerary-showcase">
           {itineraries.map((itinerary) => (
@@ -273,7 +272,7 @@ function HomePage() {
         <SectionIntro
           eyebrow="Traveler stories"
           title="Designed to capture attention and trust"
-          body="A polished, visual experience gives travelers confidence before they ever speak with a safari planner."
+          body="Real tips from travelers on the ground — so you know what to expect before you go."
         />
         <div className="testimonial-grid">
           {testimonials.map((testimonial) => (
@@ -308,8 +307,8 @@ function DestinationsPage() {
   return (
     <PageFrame
       eyebrow="Safari destinations"
-      title="Find your next Kenya safari setting"
-      body="Search by name, region, or experience style. Data loads from Supabase when connected."
+      title="Find affordable places to explore"
+      body="Search by name, region, or vibe. Filter by budget-friendly routes and local transport options."
     >
       <div className="filter-panel">
         <label>
@@ -362,7 +361,7 @@ function DestinationDetailPage({ slug }: { slug: string }) {
           <p>{destination.description}</p>
           <div className="detail-badges">
             <span>{destination.region}</span>
-            <span>{isHike ? 'Hiking' : 'Safari & travel'}</span>
+            <span>{isHike ? 'Hiking' : 'Budget travel'}</span>
             {isHike && destination.hikeDifficulty && (
               <span>{destination.hikeDifficulty.split('—')[0].trim()}</span>
             )}
@@ -436,8 +435,8 @@ function DestinationDetailPage({ slug }: { slug: string }) {
 
         <aside className="booking-panel glass-panel">
           <span className="eyebrow">Private planning</span>
-          <h2>Design this safari</h2>
-          <p>Pair {destination.title} with flights, conservation-led camps, and seamless transfers.</p>
+          <h2>Plan this trip</h2>
+          <p>Pair {destination.title} with matatu routes, SGR legs, camps, and low-cost stays.</p>
           <a className="primary-button full-width" href="#signup">
             Start a request
           </a>
@@ -473,7 +472,7 @@ function ItinerariesPage() {
   return (
     <PageFrame
       eyebrow="Travel itineraries"
-      title="Timeline routes built for safari momentum"
+      title="Budget routes you can follow day by day"
       body="Each itinerary uses expandable day-by-day details so travelers can scan the journey, then dive deeper into the moments that matter."
     >
       <div className="timeline-list">
@@ -563,10 +562,10 @@ function AuthPage({ mode }: { mode: 'signin' | 'signup' }) {
         <div className="hero-overlay" />
         <div>
           <span className="eyebrow">Member access</span>
-          <h1>{isSignUp ? 'Start planning a remarkable safari.' : 'Welcome back to your safari plans.'}</h1>
+          <h1>{isSignUp ? 'Plan your next adventure.' : 'Welcome back, explorer.'}</h1>
           <p>
-            Save destinations, compare routes, and coordinate premium itineraries with a modern
-            travel workspace.
+            Save destinations, compare affordable routes, and get live updates from travelers on the
+            ground across Kenya.
           </p>
         </div>
       </div>
@@ -612,19 +611,6 @@ function AuthPage({ mode }: { mode: 'signin' | 'signup' }) {
               minLength={6}
             />
           </label>
-          {isSignUp && (
-            <label>
-              Travel style
-              <select defaultValue="">
-                <option value="" disabled>
-                  Choose a preference
-                </option>
-                <option>Luxury fly-in safari</option>
-                <option>Family adventure</option>
-                <option>Photography expedition</option>
-              </select>
-            </label>
-          )}
           {message && <p className="auth-message">{message}</p>}
           <button className="primary-button full-width" disabled={submitting} type="submit">
             {submitting ? 'Please wait...' : isSignUp ? 'Create account' : 'Sign in'}
@@ -639,6 +625,140 @@ function AuthPage({ mode }: { mode: 'signin' | 'signup' }) {
   );
 }
 
+function DestinationAdminModal({ onClose }: { onClose: () => void }) {
+  const [experienceType, setExperienceType] = useState<'standard' | 'hike'>('standard');
+
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <div className="modal-card modal-card--wide" role="dialog" aria-modal="true" aria-labelledby="destination-modal-title">
+        <button className="modal-close" onClick={onClose} type="button">
+          x
+        </button>
+        <span className="eyebrow">Add a place</span>
+        <h2 id="destination-modal-title">Destination details</h2>
+        <p className="modal-lead">
+          Match the public destination page — pricing, safety, transport, and hike fields where
+          relevant.
+        </p>
+        <form className="form-stack">
+          <div className="form-grid">
+            <label>
+              Title
+              <input placeholder="e.g. Hell's Gate National Park" />
+            </label>
+            <label>
+              Slug
+              <input placeholder="hells-gate" />
+            </label>
+            <label>
+              Location
+              <input placeholder="Naivasha, Nakuru County" />
+            </label>
+            <label>
+              Region
+              <input placeholder="Rift Valley" />
+            </label>
+          </div>
+
+          <label>
+            Description
+            <textarea placeholder="What makes this place worth visiting on a budget?" rows={4} />
+          </label>
+
+          <div className="form-grid">
+            <label>
+              Experience type
+              <select
+                value={experienceType}
+                onChange={(event) => setExperienceType(event.target.value as 'standard' | 'hike')}
+              >
+                <option value="standard">Safari & travel</option>
+                <option value="hike">Hiking</option>
+              </select>
+            </label>
+            <label>
+              Status
+              <select defaultValue="published">
+                <option value="published">Published</option>
+                <option>Draft</option>
+                <option>Review</option>
+              </select>
+            </label>
+            <label>
+              Cover image URL
+              <input placeholder="https://images.unsplash.com/..." />
+            </label>
+            <label>
+              Map query
+              <input placeholder="Hell's Gate National Park Kenya" />
+            </label>
+          </div>
+
+          {experienceType === 'hike' ? (
+            <>
+              <label>
+                Hike difficulty
+                <textarea
+                  placeholder="Moderate — 3–4 hour loop, rocky sections, sun exposure..."
+                  rows={3}
+                />
+              </label>
+              <label>
+                Transport & logistics
+                <textarea
+                  placeholder="Matatu from Nairobi, bike rental at gate, best arrival time..."
+                  rows={3}
+                />
+              </label>
+              <label>
+                Additional info
+                <textarea placeholder="Park fees, what to pack, safety notes..." rows={3} />
+              </label>
+            </>
+          ) : (
+            <>
+              <label>
+                Pricing
+                <textarea
+                  placeholder="Budget day trip from $55 pp, camping from $20/night, park fees..."
+                  rows={3}
+                />
+              </label>
+              <label>
+                Safety & conditions
+                <textarea
+                  placeholder="Road conditions, weather, wildlife precautions..."
+                  rows={3}
+                />
+              </label>
+              <label>
+                Transport & logistics
+                <textarea
+                  placeholder="Matatu route, SGR station, shared van pick-up points..."
+                  rows={3}
+                />
+              </label>
+              <label>
+                Additional info
+                <textarea placeholder="Best season, local tips, free activities..." rows={3} />
+              </label>
+            </>
+          )}
+
+          <label>
+            Highlights (comma separated)
+            <input placeholder="Canyon hikes, Cycling trails, Geothermal vents" />
+          </label>
+
+          <button className="primary-button full-width" type="button">
+            Save destination
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function AdminDashboard() {
   const [activeTable, setActiveTable] = useState<keyof typeof adminTables>('Destinations');
   const [modalOpen, setModalOpen] = useState(false);
@@ -650,7 +770,7 @@ function AdminDashboard() {
         <a className="brand admin-brand" href="#home">
           <span className="brand-mark">SL</span>
           <span>
-            <strong>Safari Admin</strong>
+            <strong>Travel Admin</strong>
             <small>Operations</small>
           </span>
         </a>
@@ -680,7 +800,7 @@ function AdminDashboard() {
         <div className="metric-grid">
           <MetricCard label="Published destinations" value="12" trend="+3 this month" />
           <MetricCard label="Active itineraries" value="08" trend="92% booking fit" />
-          <MetricCard label="Route coverage" value="24" trend="6 premium corridors" />
+          <MetricCard label="Route coverage" value="24" trend="12 budget corridors" />
         </div>
 
         <div className="table-card">
@@ -726,7 +846,11 @@ function AdminDashboard() {
         </div>
       </div>
 
-      {modalOpen && (
+      {modalOpen && activeTable === 'Destinations' && (
+        <DestinationAdminModal onClose={() => setModalOpen(false)} />
+      )}
+
+      {modalOpen && activeTable !== 'Destinations' && (
         <div className="modal-backdrop" role="presentation">
           <div className="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
             <button className="modal-close" onClick={() => setModalOpen(false)} type="button">
@@ -741,7 +865,7 @@ function AdminDashboard() {
               </label>
               <label>
                 Description
-                <textarea placeholder="Add a short premium travel description" />
+                <textarea placeholder="Add a short budget travel description" />
               </label>
               <div className="form-grid">
                 <label>
@@ -754,7 +878,7 @@ function AdminDashboard() {
                 </label>
                 <label>
                   Price or distance
-                  <input placeholder="$4,250 pp or 510 km" />
+                  <input placeholder="From $45/day or 290 km" />
                 </label>
               </div>
               <button className="primary-button full-width" type="button">
@@ -1072,8 +1196,8 @@ function PlanWithAIPage() {
   return (
     <PageFrame
       eyebrow="Plan with AI"
-      title="Tailor your Kenya itinerary in minutes"
-      body="Describe what you want, set your preferences, and preview a custom route. This is a frontend prototype ready for AI integration."
+      title="Build a budget-friendly Kenya route in minutes"
+      body="Describe what you want, set your budget, and preview an affordable adventure. Frontend prototype ready for AI integration."
     >
       <div className="plan-ai-layout">
         <form
@@ -1222,6 +1346,11 @@ function CategoryIcon({ icon }: { icon: Category['icon'] }) {
         <path d="M3 14c2 1 4 1 6 0s4-1 6 0 4 1 6 0v3H3v-3Zm0-3c2 1 4 1 6 0s4-1 6 0 4 1 6 0v2H3v-2Z" />
       </svg>
     ),
+    events: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7 3v2H5v16h14V5h-2V3h-2v2H9V3H7Zm12 8H5v8h14v-8ZM7 13h2v2H7v-2Zm4 0h2v2h-2v-2Zm4 0h2v2h-2v-2Z" />
+      </svg>
+    ),
   };
 
   return <span className="category-icon">{paths[icon]}</span>;
@@ -1238,7 +1367,7 @@ function Footer() {
             <small>Kenya Safari Studio</small>
           </span>
         </a>
-        <p>Premium safari discovery, itinerary planning, and route showcases for Kenya.</p>
+        <p>Affordable Kenya travel discovery, route planning, and community tips for budget explorers.</p>
       </div>
       <div className="footer-links">
         <a href="#destinations">Destinations</a>

@@ -54,7 +54,7 @@ export const destinations: Destination[] = [
     description:
       'Kenya’s most iconic safari landscape with rolling golden plains, big cats, dramatic river crossings, and luxury tented camps that bring guests close to the action.',
     pricing:
-      'From $620 per person per day for premium conservancy stays. Balloon safaris from $450 pp extra.',
+      'Budget: matatu + camping from ~$45/day. Mid-range lodge packages from ~$120/day. Park fees ~$70/day for non-residents.',
     safetyAndConditions:
       'Dry-season tracks are well maintained. Early mornings are cool; pack layers. Follow guide instructions near river crossings and predator sightings.',
     transportAndLogistics:
@@ -80,7 +80,7 @@ export const destinations: Destination[] = [
     description:
       'A cinematic safari setting known for immense elephant herds, open wetlands, and unforgettable views of Mount Kilimanjaro rising beyond the plains.',
     pricing:
-      'From $480 per person per day including lodge, meals, and shared game drives. Private vehicle from $180 per day.',
+      'Budget day trip from Nairobi from ~$55 pp (shared van). Budget camps from ~$90/night. Public transport via Namanga road + taxi.',
     safetyAndConditions:
       'Open plains mean strong sun — bring SPF and a hat. Wetlands can be dusty in dry season. Wildlife always has right of way on tracks.',
     transportAndLogistics:
@@ -440,7 +440,8 @@ export const itineraries: Itinerary[] = [
 export type Category = {
   id: string;
   label: string;
-  icon: 'hiking' | 'waterfall' | 'camping' | 'roadtrip' | 'gem' | 'wildlife' | 'coast';
+  icon: 'hiking' | 'waterfall' | 'camping' | 'roadtrip' | 'gem' | 'wildlife' | 'coast' | 'events';
+  theme: string;
 };
 
 export type TrendingItem = {
@@ -454,13 +455,14 @@ export type TrendingItem = {
 };
 
 export const categories: Category[] = [
-  { id: 'hiking', label: 'Hiking', icon: 'hiking' },
-  { id: 'waterfalls', label: 'Waterfalls', icon: 'waterfall' },
-  { id: 'camping', label: 'Camping', icon: 'camping' },
-  { id: 'roadtrips', label: 'Road trips', icon: 'roadtrip' },
-  { id: 'hidden-gems', label: 'Hidden gems', icon: 'gem' },
-  { id: 'wildlife', label: 'Wildlife', icon: 'wildlife' },
-  { id: 'coast', label: 'Coast', icon: 'coast' },
+  { id: 'hiking', label: 'Hiking', icon: 'hiking', theme: 'hiking' },
+  { id: 'waterfalls', label: 'Waterfalls', icon: 'waterfall', theme: 'waterfalls' },
+  { id: 'camping', label: 'Camping', icon: 'camping', theme: 'camping' },
+  { id: 'roadtrips', label: 'Road trips', icon: 'roadtrip', theme: 'roadtrips' },
+  { id: 'hidden-gems', label: 'Hidden gems', icon: 'gem', theme: 'hidden-gems' },
+  { id: 'wildlife', label: 'Wildlife', icon: 'wildlife', theme: 'wildlife' },
+  { id: 'coast', label: 'Coast', icon: 'coast', theme: 'coast' },
+  { id: 'events', label: 'Events', icon: 'events', theme: 'events' },
 ];
 
 export const trendingThisWeek: TrendingItem[] = [
@@ -509,9 +511,9 @@ export const trendingThisWeek: TrendingItem[] = [
 export const testimonials = [
   {
     quote:
-      'Every detail felt curated, from the camp arrival to the sunrise balloon flight. Kenya felt cinematic and deeply personal.',
+      'We crossed Kenya on a tight budget using SGR, matatus, and community camps — this site made it feel doable and safe.',
     name: 'Amara L.',
-    role: 'Luxury honeymoon traveler',
+    role: 'Backpacker on a shoestring',
   },
   {
     quote:
