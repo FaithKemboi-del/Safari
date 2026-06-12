@@ -403,108 +403,72 @@ h2 {
   transform: translateY(-2px);
 }
 
-.category-chip--hiking {
-  border-color: rgba(212, 160, 90, 0.55);
-  background: rgba(74, 47, 30, 0.58);
-  color: #fff5e9;
+.category-chip--hiking,
+.category-chip--waterfalls,
+.category-chip--camping,
+.category-chip--roadtrips,
+.category-chip--hidden-gems,
+.category-chip--wildlife,
+.category-chip--coast,
+.category-chip--events {
+  border-color: rgba(212, 160, 90, 0.45);
+  background: rgba(58, 38, 26, 0.62);
+  color: var(--text-on-dark);
+  box-shadow: inset 0 1px 0 rgba(255, 249, 242, 0.08);
 }
 
 .category-chip--hiking:hover,
-.category-chip--hiking.active {
-  background: rgba(122, 78, 50, 0.82);
-  border-color: var(--savanna);
+.category-chip--hiking.active,
+.category-chip--waterfalls:hover,
+.category-chip--waterfalls.active,
+.category-chip--camping:hover,
+.category-chip--camping.active,
+.category-chip--roadtrips:hover,
+.category-chip--roadtrips.active,
+.category-chip--hidden-gems:hover,
+.category-chip--hidden-gems.active,
+.category-chip--wildlife:hover,
+.category-chip--wildlife.active,
+.category-chip--coast:hover,
+.category-chip--coast.active,
+.category-chip--events:hover,
+.category-chip--events.active {
+  background: rgba(122, 78, 50, 0.88);
+  border-color: var(--gold-bright);
   color: #fff;
+}
+
+/* Subtle per-category accent on the left edge */
+.category-chip--hiking {
+  border-left: 3px solid var(--savanna);
 }
 
 .category-chip--waterfalls {
-  border-color: rgba(129, 199, 132, 0.5);
-  background: rgba(30, 61, 36, 0.55);
-  color: #e8f5e9;
-}
-
-.category-chip--waterfalls:hover,
-.category-chip--waterfalls.active {
-  background: rgba(45, 90, 53, 0.78);
-  border-color: #81c784;
-  color: #fff;
+  border-left: 3px solid var(--olive);
 }
 
 .category-chip--camping {
-  border-color: rgba(255, 183, 77, 0.55);
-  background: rgba(109, 76, 40, 0.48);
-  color: #fff3e0;
-}
-
-.category-chip--camping:hover,
-.category-chip--camping.active {
-  background: rgba(141, 94, 49, 0.68);
-  border-color: #ffcc80;
-  color: #fff;
+  border-left: 3px solid var(--gold-dark);
 }
 
 .category-chip--roadtrips {
-  border-color: rgba(189, 189, 189, 0.55);
-  background: rgba(66, 66, 66, 0.48);
-  color: #f5f5f5;
-}
-
-.category-chip--roadtrips:hover,
-.category-chip--roadtrips.active {
-  background: rgba(97, 97, 97, 0.72);
-  border-color: #ffb74d;
-  color: #fff;
+  border-left: 3px solid var(--sunset);
 }
 
 .category-chip--hidden-gems {
-  border-color: rgba(212, 160, 90, 0.55);
-  background: rgba(74, 47, 30, 0.55);
-  color: #fff3e0;
-}
-
-.category-chip--hidden-gems:hover,
-.category-chip--hidden-gems.active {
-  background: rgba(122, 78, 50, 0.78);
-  border-color: #d4a05a;
-  color: #fff;
+  border-left: 3px solid var(--gold-bright);
 }
 
 .category-chip--wildlife {
-  border-color: rgba(212, 175, 55, 0.55);
-  background: rgba(85, 70, 24, 0.48);
-  color: #fff8e1;
-}
-
-.category-chip--wildlife:hover,
-.category-chip--wildlife.active {
-  background: rgba(130, 99, 12, 0.65);
-  border-color: #ffd54f;
-  color: #fff;
+  border-left: 3px solid var(--olive);
 }
 
 .category-chip--coast {
-  border-color: rgba(77, 208, 225, 0.55);
-  background: rgba(0, 96, 100, 0.45);
-  color: #e0f7fa;
-}
-
-.category-chip--coast:hover,
-.category-chip--coast.active {
-  background: rgba(0, 131, 143, 0.62);
-  border-color: #4dd0e1;
-  color: #fff;
+  border-left: 3px solid var(--terra);
 }
 
 .category-chip--events {
-  border-color: rgba(255, 179, 71, 0.55);
-  background: rgba(74, 47, 30, 0.55);
-  color: #fff5e9;
-}
-
-.category-chip--events:hover,
-.category-chip--events.active {
-  background: rgba(192, 110, 24, 0.72);
-  border-color: #ffcb6b;
-  color: #fff;
+  border-left: 3px solid var(--ember);
 }
 
 .category-icon {
@@ -2148,60 +2112,53 @@ td button:last-child {
   line-height: 1.65;
 }
 
-.category-page--hiking .category-hero {
-  background: linear-gradient(
-    135deg,
-    var(--earth-deep) 0%,
-    var(--sienna) 42%,
-    var(--gold-dark) 72%,
-    var(--savanna) 100%
-  );
-}
-
-.category-page--waterfalls .category-hero {
-  background: linear-gradient(
-    135deg,
-    var(--jungle-deep) 0%,
-    var(--jungle-mid) 42%,
-    var(--jungle-light) 72%,
-    var(--olive) 100%
-  );
-}
-
-.category-page--camping .category-hero {
-  background: linear-gradient(135deg, #4e342e, #6d4c28 55%, #8d6e31);
-}
-
-.category-page--roadtrips .category-hero {
-  background: linear-gradient(135deg, #424242, #616161 55%, #ff8f00);
-}
-
-.category-page--hidden-gems .category-hero {
-  background: linear-gradient(
-    135deg,
-    var(--earth-deep) 0%,
-    var(--earth) 45%,
-    var(--sienna) 72%,
-    var(--savanna) 100%
-  );
-}
-
-.category-page--wildlife .category-hero {
-  background: linear-gradient(135deg, #5d4037, #827717 55%, #f9a825);
-}
-
-.category-page--coast .category-hero {
-  background: linear-gradient(135deg, #006064, #00838f 55%, #26c6da);
-}
-
+.category-page--hiking .category-hero,
+.category-page--waterfalls .category-hero,
+.category-page--camping .category-hero,
+.category-page--roadtrips .category-hero,
+.category-page--hidden-gems .category-hero,
+.category-page--wildlife .category-hero,
+.category-page--coast .category-hero,
 .category-page--events .category-hero {
   background: linear-gradient(
     135deg,
     var(--earth-deep) 0%,
-    var(--sienna) 48%,
-    var(--gold-dark) 78%,
-    var(--sunset) 100%
+    var(--earth) 38%,
+    var(--sienna) 68%,
+    var(--gold-dark) 100%
   );
+}
+
+.category-page--hiking .category-hero {
+  background: linear-gradient(135deg, var(--earth-deep), var(--sienna) 50%, var(--savanna));
+}
+
+.category-page--waterfalls .category-hero {
+  background: linear-gradient(135deg, var(--night), var(--earth) 45%, var(--olive));
+}
+
+.category-page--camping .category-hero {
+  background: linear-gradient(135deg, var(--earth-deep), var(--sienna) 55%, var(--gold-dark));
+}
+
+.category-page--roadtrips .category-hero {
+  background: linear-gradient(135deg, var(--earth), var(--sienna) 50%, var(--sunset));
+}
+
+.category-page--hidden-gems .category-hero {
+  background: linear-gradient(135deg, var(--earth-deep), var(--gold-dark) 55%, var(--savanna));
+}
+
+.category-page--wildlife .category-hero {
+  background: linear-gradient(135deg, var(--night), var(--olive) 50%, var(--gold));
+}
+
+.category-page--coast .category-hero {
+  background: linear-gradient(135deg, var(--earth-deep), var(--terra) 55%, var(--sunset));
+}
+
+.category-page--events .category-hero {
+  background: linear-gradient(135deg, var(--earth-deep), var(--gold-dark) 50%, var(--ember));
 }
 
 .category-spot-grid {
@@ -2392,10 +2349,10 @@ td button:last-child {
   align-items: center;
   min-height: 2.75rem;
   padding: 0.65rem 1rem;
-  border: 1px solid rgba(45, 90, 53, 0.35);
+  border: 1px solid rgba(192, 110, 24, 0.35);
   border-radius: 999px;
-  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-  color: var(--jungle-deep);
+  background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+  color: var(--earth-deep);
   font-size: 0.88rem;
   font-weight: 800;
   text-decoration: none;
@@ -2406,7 +2363,7 @@ td button:last-child {
 
 .alltrails-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(30, 61, 36, 0.14);
+  box-shadow: 0 10px 24px rgba(58, 38, 26, 0.14);
 }
 
 .trail-map iframe {
@@ -2473,9 +2430,9 @@ td button:last-child {
 .event-filters button.active,
 .event-filters button:hover {
   transform: translateY(-2px);
-  border-color: rgba(198, 40, 40, 0.45);
-  background: rgba(198, 40, 40, 0.12);
-  color: #b71c1c;
+  border-color: rgba(192, 110, 24, 0.45);
+  background: rgba(255, 179, 71, 0.2);
+  color: var(--gold-dark);
 }
 
 .event-status {
@@ -2490,22 +2447,22 @@ td button:last-child {
 }
 
 .event-status--happening-now {
-  background: rgba(232, 93, 58, 0.16);
-  color: #c62828;
+  background: rgba(232, 118, 58, 0.18);
+  color: var(--ember);
 }
 
 .event-status--upcoming {
-  background: rgba(2, 119, 189, 0.14);
-  color: #0277bd;
+  background: rgba(255, 179, 71, 0.2);
+  color: var(--gold-dark);
 }
 
 .event-status--past {
-  background: rgba(97, 97, 97, 0.14);
-  color: #616161;
+  background: rgba(92, 61, 40, 0.12);
+  color: var(--muted);
 }
 
 .event-card.selected {
-  outline: 2px solid rgba(198, 40, 40, 0.45);
+  outline: 2px solid rgba(192, 110, 24, 0.45);
 }
 
 .compact-button {
