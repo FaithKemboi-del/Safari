@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/FaithKemboi-del/Safari#readme",
   "dependencies": {
+    "@supabase/supabase-js": "^2.108.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },

@@ -1590,6 +1590,16 @@ textarea:focus {
   font-weight: 800;
 }
 
+.auth-message {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 179, 71, 0.16);
+  color: var(--gold-dark);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
 .admin-shell {
   display: grid;
   min-height: 100vh;

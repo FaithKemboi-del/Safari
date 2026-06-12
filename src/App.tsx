@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import {
   categories,
-  communityUpdates,
-  destinations,
-  itineraries,
   testimonials,
   trendingThisWeek,
 } from './data';
 import type { Category, CommunityUpdate, Destination } from './data';
+import { useAuth } from './context/AuthContext';
+import { useData } from './context/DataContext';
+import { fetchCommunityUpdates, postCommunityUpdate } from './services/safariApi';
 
 type Route =
   | { page: 'home' }
@@ -136,6 +136,7 @@ function Header({ activePage }: { activePage: string }) {
 }
 
 function HomePage() {
+  const { destinations, itineraries } = useData();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   return (
@@ -291,6 +292,7 @@ function HomePage() {
 }
 
 function DestinationsPage() {
+  const { destinations } = useData();
   const [search, setSearch] = useState('');
   const [region, setRegion] = useState('All');
   const regions = ['All', ...Array.from(new Set(destinations.map((destination) => destination.region)))];
@@ -301,13 +303,13 @@ function DestinationsPage() {
       const searchable = `${destination.title} ${destination.location} ${destination.description}`.toLowerCase();
       return matchesRegion && searchable.includes(search.toLowerCase());
     });
-  }, [region, search]);
+  }, [destinations, region, search]);
 
   return (
     <PageFrame
       eyebrow="Safari destinations"
       title="Find your next Kenya safari setting"
-      body="Search by name, region, or experience style. Filters are UI-ready for backend integration."
+      body="Search by name, region, or experience style. Data loads from Supabase when connected."
     >
       <div className="filter-panel">
         <label>
@@ -337,6 +339,7 @@ function DestinationsPage() {
 }
 
 function DestinationDetailPage({ slug }: { slug: string }) {
+  const { destinations } = useData();
   const destination = destinations.find((item) => item.slug === slug) ?? destinations[0];
   const related = destinations
     .filter((item) => item.slug !== destination.slug)
@@ -458,7 +461,14 @@ function DestinationDetailPage({ slug }: { slug: string }) {
 }
 
 function ItinerariesPage() {
-  const [openItem, setOpenItem] = useState(`${itineraries[0].id}-${itineraries[0].days[0].day}`);
+  const { itineraries } = useData();
+  const [openItem, setOpenItem] = useState('');
+
+  useEffect(() => {
+    if (itineraries[0]) {
+      setOpenItem(`${itineraries[0].id}-${itineraries[0].days[0]?.day ?? 'Day 1'}`);
+    }
+  }, [itineraries]);
 
   return (
     <PageFrame
@@ -515,6 +525,36 @@ function ItinerariesPage() {
 
 function AuthPage({ mode }: { mode: 'signin' | 'signup' }) {
   const isSignUp = mode === 'signup';
+  const { signIn, signUp, isConfigured } = useAuth();
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setMessage('');
+
+    const result = isSignUp
+      ? await signUp(email, password, fullName)
+      : await signIn(email, password);
+
+    setSubmitting(false);
+
+    if (result.error) {
+      setMessage(result.error);
+      return;
+    }
+
+    if (isSignUp && isConfigured) {
+      setMessage('Account created. Check your email to confirm, then sign in.');
+      return;
+    }
+
+    window.location.hash = 'home';
+  };
 
   return (
     <section className="auth-page">
@@ -539,20 +579,38 @@ function AuthPage({ mode }: { mode: 'signin' | 'signup' }) {
           <button type="button">Continue with Apple</button>
         </div>
         <div className="divider">or use email</div>
-        <form className="form-stack">
+        <form className="form-stack" onSubmit={handleSubmit}>
           {isSignUp && (
             <label>
               Full name
-              <input placeholder="Amina Safari" />
+              <input
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
+                placeholder="Amina Safari"
+                required
+              />
             </label>
           )}
           <label>
             Email address
-            <input type="email" placeholder="you@example.com" />
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="you@example.com"
+              required
+            />
           </label>
           <label>
             Password
-            <input type="password" placeholder="••••••••" />
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="••••••••"
+              required
+              minLength={6}
+            />
           </label>
           {isSignUp && (
             <label>
@@ -567,12 +625,9 @@ function AuthPage({ mode }: { mode: 'signin' | 'signup' }) {
               </select>
             </label>
           )}
-          <button
-            className="primary-button full-width"
-            onClick={() => sessionStorage.setItem('safari-signed-in', 'true')}
-            type="button"
-          >
-            {isSignUp ? 'Create account' : 'Sign in'}
+          {message && <p className="auth-message">{message}</p>}
+          <button className="primary-button full-width" disabled={submitting} type="submit">
+            {submitting ? 'Please wait...' : isSignUp ? 'Create account' : 'Sign in'}
           </button>
         </form>
         <p className="auth-switch">
@@ -784,39 +839,66 @@ function CommunityFeed({
   destinationSlug: string;
   destinationTitle: string;
 }) {
+  const { user, displayName, avatarInitials, isConfigured } = useAuth();
+  const signedIn = isConfigured ? Boolean(user) : sessionStorage.getItem('safari-signed-in') === 'true';
   const [comment, setComment] = useState('');
   const [onGround, setOnGround] = useState(true);
-  const [signedIn, setSignedIn] = useState(
-    () => sessionStorage.getItem('safari-signed-in') === 'true',
-  );
-  const [updates, setUpdates] = useState<CommunityUpdate[]>(() =>
-    communityUpdates.filter((update) => update.destinationSlug === destinationSlug),
-  );
+  const [updates, setUpdates] = useState<CommunityUpdate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [posting, setPosting] = useState(false);
 
   useEffect(() => {
-    setSignedIn(sessionStorage.getItem('safari-signed-in') === 'true');
+    let active = true;
+    setLoading(true);
+    void fetchCommunityUpdates(destinationSlug).then((data) => {
+      if (active) {
+        setUpdates(data);
+        setLoading(false);
+      }
+    });
+    return () => {
+      active = false;
+    };
   }, [destinationSlug]);
 
   const liveCount = updates.filter((update) => update.isLive && update.isOnGround).length;
 
-  const postUpdate = () => {
+  const postUpdate = async () => {
     if (!comment.trim()) {
       return;
     }
 
-    const newUpdate: CommunityUpdate = {
-      id: `local-${Date.now()}`,
-      destinationSlug,
-      author: 'You',
-      avatar: 'YO',
-      postedAgo: 'Just now',
-      isOnGround: onGround,
-      isLive: onGround,
-      comment: comment.trim(),
-    };
+    setPosting(true);
 
-    setUpdates((current) => [newUpdate, ...current]);
-    setComment('');
+    if (isConfigured && user) {
+      const saved = await postCommunityUpdate({
+        destinationSlug,
+        userId: user.id,
+        authorName: displayName || 'Traveler',
+        comment: comment.trim(),
+        isOnGround: onGround,
+      });
+
+      if (saved) {
+        setUpdates((current) => [saved, ...current]);
+        setComment('');
+      }
+    } else {
+      const localUpdate: CommunityUpdate = {
+        id: `local-${Date.now()}`,
+        destinationSlug,
+        author: 'You',
+        avatar: avatarInitials || 'YO',
+        postedAgo: 'Just now',
+        isOnGround: onGround,
+        isLive: onGround,
+        comment: comment.trim(),
+      };
+      setUpdates((current) => [localUpdate, ...current]);
+      setComment('');
+    }
+
+    setPosting(false);
   };
 
   return (
@@ -837,7 +919,8 @@ function CommunityFeed({
       </div>
 
       <div className="community-list">
-        {updates.length === 0 && (
+        {loading && <p className="community-empty">Loading community updates...</p>}
+        {!loading && updates.length === 0 && (
           <p className="community-empty">
             No updates yet. Be the first to share your experience at this destination.
           </p>
@@ -883,18 +966,14 @@ function CommunityFeed({
               />
               I&apos;m on the ground at this destination right now
             </label>
-            <button className="primary-button" onClick={postUpdate} type="button">
-              Post update
+            <button className="primary-button" disabled={posting} onClick={() => void postUpdate()} type="button">
+              {posting ? 'Posting...' : 'Post update'}
             </button>
           </>
         ) : (
           <div className="community-signin-prompt">
             <p>Sign in to post live updates and help other travelers plan with confidence.</p>
-            <a
-              className="primary-button"
-              href="#signin"
-              onClick={() => sessionStorage.setItem('safari-signed-in', 'true')}
-            >
+            <a className="primary-button" href="#signin">
               Sign in to comment
             </a>
           </div>
