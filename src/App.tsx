@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
-import { destinations, itineraries, testimonials } from './data';
-import type { Destination } from './data';
+import { categories, destinations, itineraries, testimonials, trendingThisWeek } from './data';
+import type { Category, Destination } from './data';
 
 type Route =
   | { page: 'home' }
   | { page: 'destinations' }
   | { page: 'destination'; slug: string }
   | { page: 'itineraries' }
+  | { page: 'plan-ai' }
   | { page: 'signin' }
   | { page: 'signup' }
   | { page: 'admin' };
@@ -15,7 +16,7 @@ const navItems = [
   { label: 'Home', hash: '#home' },
   { label: 'Destinations', hash: '#destinations' },
   { label: 'Itineraries', hash: '#itineraries' },
-  { label: 'Admin', hash: '#admin' },
+  { label: 'Plan with AI', hash: '#plan-ai' },
 ];
 
 const adminTables = {
@@ -47,6 +48,7 @@ function parseHash(): Route {
   if (
     page === 'destinations' ||
     page === 'itineraries' ||
+    page === 'plan-ai' ||
     page === 'signin' ||
     page === 'signup' ||
     page === 'admin'
@@ -81,6 +83,7 @@ function App() {
         {route.page === 'destinations' && <DestinationsPage />}
         {route.page === 'destination' && <DestinationDetailPage slug={route.slug} />}
         {route.page === 'itineraries' && <ItinerariesPage />}
+        {route.page === 'plan-ai' && <PlanWithAIPage />}
         {route.page === 'signin' && <AuthPage mode="signin" />}
         {route.page === 'signup' && <AuthPage mode="signup" />}
         {route.page === 'admin' && <AdminDashboard />}
@@ -118,7 +121,7 @@ function Header({ activePage }: { activePage: string }) {
           Sign in
         </a>
         <a className="pill-link" href="#signup">
-          Plan trip
+          Sign up
         </a>
       </div>
     </header>
@@ -126,14 +129,36 @@ function Header({ activePage }: { activePage: string }) {
 }
 
 function HomePage() {
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
   return (
     <>
       <section className="hero section-dark">
-        <div className="hero-media" />
+        <div className="hero-media parallax-layer" />
         <div className="hero-overlay" />
         <div className="hero-content">
           <span className="eyebrow">Premium Kenya Safari Experiences</span>
-          <h1>Wild routes, refined stays, unforgettable Kenyan horizons.</h1>
+          <h1 className="hero-title-horizontal">
+            <span>Wild routes,</span>
+            <span className="title-accent"> refined stays,</span>
+            <span> unforgettable Kenyan horizons.</span>
+          </h1>
+          <div className="category-strip" role="list" aria-label="Travel categories">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                className={`category-chip ${activeCategory === category.id ? 'active' : ''}`}
+                onClick={() =>
+                  setActiveCategory(activeCategory === category.id ? null : category.id)
+                }
+                type="button"
+                role="listitem"
+              >
+                <CategoryIcon icon={category.icon} />
+                {category.label}
+              </button>
+            ))}
+          </div>
           <p>
             Discover cinematic safari destinations, custom itineraries, and overland routes crafted
             for travelers who want adventure with impeccable detail.
@@ -142,8 +167,8 @@ function HomePage() {
             <a className="primary-button" href="#destinations">
               Explore destinations
             </a>
-            <a className="secondary-button" href="#itineraries">
-              View itineraries
+            <a className="secondary-button" href="#plan-ai">
+              Plan with AI
             </a>
           </div>
         </div>
@@ -151,6 +176,57 @@ function HomePage() {
           <span>Featured route</span>
           <strong>Nairobi &rarr; Amboseli &rarr; Tsavo &rarr; Diani</strong>
           <p>8 days of elephants, volcanic wilderness, and Indian Ocean calm.</p>
+        </div>
+      </section>
+
+      <section className="section trending-section">
+        <SectionIntro
+          eyebrow="Trending this week"
+          title="What travelers are searching right now"
+          body="Live momentum across wildlife crossings, coastal escapes, and hidden northern circuits."
+        />
+        <div className="trending-grid">
+          {trendingThisWeek.map((item, index) => (
+            <article
+              key={item.id}
+              className={`trending-card ${index === 0 ? 'featured' : ''}`}
+            >
+              <img src={item.image} alt="" />
+              <div className="trending-overlay" />
+              <div className="trending-content">
+                <span className="trending-tag">{item.tag}</span>
+                <h3>{item.title}</h3>
+                <p>{item.location}</p>
+                <div className="trending-meta">
+                  <small>{item.searches}</small>
+                  <a href={`#destination/${item.slug}`}>Explore</a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section plan-ai-teaser parallax-band">
+        <div className="plan-ai-teaser-copy">
+          <span className="eyebrow">Plan itinerary with AI</span>
+          <h2>Tell us what you want. We tailor the route.</h2>
+          <p>
+            Describe your dream trip, pick your pace, and preview a custom Kenya itinerary in
+            seconds. Backend coming soon — the experience is ready to explore now.
+          </p>
+          <a className="primary-button" href="#plan-ai">
+            Start planning
+          </a>
+        </div>
+        <div className="plan-ai-teaser-preview glass-panel">
+          <span className="preview-label">Preview</span>
+          <p>“5-day wildlife and coast trip with luxury camps, easy hikes, and a hidden gem stop.”</p>
+          <ul>
+            <li>Day 1-2: Amboseli elephant drives</li>
+            <li>Day 3: Tsavo red-earth safari</li>
+            <li>Day 4-5: Diani coast reset</li>
+          </ul>
         </div>
       </section>
 
@@ -669,6 +745,240 @@ function MetricCard({ label, value, trend }: { label: string; value: string; tre
   );
 }
 
+function PlanWithAIPage() {
+  const [prompt, setPrompt] = useState('');
+  const [duration, setDuration] = useState('5 days');
+  const [budget, setBudget] = useState('Premium');
+  const [travelers, setTravelers] = useState('2 travelers');
+  const [selectedInterests, setSelectedInterests] = useState<string[]>(['Wildlife']);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [result, setResult] = useState<{
+    title: string;
+    summary: string;
+    days: string[];
+    estimate: string;
+  } | null>(null);
+
+  const interestOptions = ['Wildlife', 'Coast', 'Hiking', 'Camping', 'Road trips', 'Hidden gems'];
+
+  const toggleInterest = (interest: string) => {
+    setSelectedInterests((current) =>
+      current.includes(interest)
+        ? current.filter((item) => item !== interest)
+        : [...current, interest],
+    );
+  };
+
+  const generateItinerary = () => {
+    setIsGenerating(true);
+    setResult(null);
+
+    window.setTimeout(() => {
+      const wantsCoast = /coast|beach|diani|ocean/i.test(prompt) || selectedInterests.includes('Coast');
+      const wantsWildlife = /wildlife|safari|mara|elephant|lion/i.test(prompt) || selectedInterests.includes('Wildlife');
+      const wantsHike = /hike|trek|trail|waterfall/i.test(prompt) || selectedInterests.includes('Hiking');
+
+      const title = wantsCoast
+        ? 'Savanna to Shore Signature Route'
+        : wantsHike
+          ? 'Rift Valley Trails & Wildlife Circuit'
+          : 'Classic Kenya Wildlife Luxe Loop';
+
+      const days = wantsCoast
+        ? [
+            'Day 1: Nairobi arrival and boutique hotel briefing',
+            'Day 2-3: Amboseli elephant drives beneath Kilimanjaro',
+            'Day 4: Tsavo red-earth safari and volcanic landscapes',
+            'Day 5-6: Diani coast reset with oceanfront lodge time',
+          ]
+        : wantsWildlife
+          ? [
+              'Day 1: Fly Nairobi to Maasai Mara conservancy',
+              'Day 2: Sunrise predator drive and bush breakfast',
+              'Day 3: Migration corridor and sundowner plains',
+              wantsHike
+                ? 'Day 4: Hell\'s Gate cycling and Rift Valley viewpoints'
+                : 'Day 4: Private guide day in big cat territory',
+              'Day 5: Return flight and Nairobi connection',
+            ]
+          : [
+              'Day 1: Lake Nakuru rhino and flamingo circuit',
+              'Day 2: Laikipia conservancy immersion',
+              'Day 3: Walking safari and cultural visit',
+              'Day 4: Mount Kenya foothills scenic transfer',
+              'Day 5: Nairobi departure',
+            ];
+
+      setResult({
+        title,
+        summary:
+          prompt.trim() ||
+          `A ${duration.toLowerCase()} ${budget.toLowerCase()} journey for ${travelers.toLowerCase()} focused on ${selectedInterests.join(', ').toLowerCase()}.`,
+        days: days.slice(0, duration === '3 days' ? 3 : duration === '7+ days' ? 6 : 5),
+        estimate: budget === 'Premium' ? '$4,200 – $6,800 pp' : budget === 'Mid-range' ? '$2,400 – $3,900 pp' : '$1,200 – $2,100 pp',
+      });
+      setIsGenerating(false);
+    }, 1400);
+  };
+
+  return (
+    <PageFrame
+      eyebrow="Plan with AI"
+      title="Tailor your Kenya itinerary in minutes"
+      body="Describe what you want, set your preferences, and preview a custom route. This is a frontend prototype ready for AI integration."
+    >
+      <div className="plan-ai-layout">
+        <form
+          className="plan-ai-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            generateItinerary();
+          }}
+        >
+          <label>
+            What kind of trip do you want?
+            <textarea
+              value={prompt}
+              onChange={(event) => setPrompt(event.target.value)}
+              placeholder="Example: 6-day honeymoon with wildlife, a waterfall hike, and 2 nights on the coast..."
+              rows={5}
+            />
+          </label>
+
+          <div className="form-grid">
+            <label>
+              Duration
+              <select value={duration} onChange={(event) => setDuration(event.target.value)}>
+                <option>3 days</option>
+                <option>5 days</option>
+                <option>7+ days</option>
+              </select>
+            </label>
+            <label>
+              Budget
+              <select value={budget} onChange={(event) => setBudget(event.target.value)}>
+                <option>Essential</option>
+                <option>Mid-range</option>
+                <option>Premium</option>
+              </select>
+            </label>
+            <label>
+              Travelers
+              <select value={travelers} onChange={(event) => setTravelers(event.target.value)}>
+                <option>Solo traveler</option>
+                <option>2 travelers</option>
+                <option>Family of 4</option>
+                <option>Group of 6+</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="interest-picker">
+            <span>Interests</span>
+            <div className="interest-chips">
+              {interestOptions.map((interest) => (
+                <button
+                  key={interest}
+                  className={selectedInterests.includes(interest) ? 'active' : ''}
+                  onClick={() => toggleInterest(interest)}
+                  type="button"
+                >
+                  {interest}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button className="primary-button full-width" disabled={isGenerating} type="submit">
+            {isGenerating ? 'Tailoring your route...' : 'Generate tailored itinerary'}
+          </button>
+        </form>
+
+        <aside className="plan-ai-result">
+          {!result && !isGenerating && (
+            <div className="plan-ai-empty">
+              <span className="eyebrow">Your preview</span>
+              <h3>Your custom route will appear here</h3>
+              <p>
+                Share your travel style, must-see places, and pace. We will shape a Kenya itinerary
+                you can refine with a safari planner.
+              </p>
+            </div>
+          )}
+
+          {isGenerating && (
+            <div className="plan-ai-loading">
+              <div className="loading-pulse" />
+              <p>Mapping parks, lodges, and transfer windows...</p>
+            </div>
+          )}
+
+          {result && !isGenerating && (
+            <article className="plan-ai-card">
+              <span className="eyebrow">Tailored for you</span>
+              <h3>{result.title}</h3>
+              <p>{result.summary}</p>
+              <ul>
+                {result.days.map((day) => (
+                  <li key={day}>{day}</li>
+                ))}
+              </ul>
+              <div className="plan-ai-footer">
+                <strong>{result.estimate}</strong>
+                <a className="primary-button" href="#signup">
+                  Save &amp; request quote
+                </a>
+              </div>
+            </article>
+          )}
+        </aside>
+      </div>
+    </PageFrame>
+  );
+}
+
+function CategoryIcon({ icon }: { icon: Category['icon'] }) {
+  const paths: Record<Category['icon'], React.ReactElement> = {
+    hiking: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M13.5 5.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 20l3.5-7 2.5 2 3-6 3.5 11H7Z" />
+      </svg>
+    ),
+    waterfall: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8 4v8l-2 3v5h4v-5l-2-3V4Zm8 0v6l2 3v6h-4v-6l2-3V4ZM12 2v4" />
+      </svg>
+    ),
+    camping: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 20 12 4l8 16H4Zm8-10 4 8H8l4-8Z" />
+      </svg>
+    ),
+    roadtrip: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5 11h14l-1.5-4.5H6.5L5 11Zm-1 2v5h2v-2h12v2h2v-5H4Zm4 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
+      </svg>
+    ),
+    gem: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m12 3 7 7-7 11L5 10l7-7Zm0 4.2L8.3 10 12 16.3 15.7 10 12 7.2Z" />
+      </svg>
+    ),
+    wildlife: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 8c0-2 1.5-3 3-3s3 1 3 3-1.5 3-3 3-3-1-3-3Zm6 0c0-2 1.5-3 3-3s3 1 3 3-1.5 3-3 3-3-1-3-3ZM4 14c2 2 5 3 8 3s6-1 8-3c-1 3-4 5-8 5s-7-2-8-5Z" />
+      </svg>
+    ),
+    coast: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 14c2 1 4 1 6 0s4-1 6 0 4 1 6 0v3H3v-3Zm0-3c2 1 4 1 6 0s4-1 6 0 4 1 6 0v2H3v-2Z" />
+      </svg>
+    ),
+  };
+
+  return <span className="category-icon">{paths[icon]}</span>;
+}
+
 function Footer() {
   return (
     <footer className="footer section-dark">
@@ -685,6 +995,7 @@ function Footer() {
       <div className="footer-links">
         <a href="#destinations">Destinations</a>
         <a href="#itineraries">Itineraries</a>
+        <a href="#plan-ai">Plan with AI</a>
         <a href="#signin">Sign in</a>
         <a href="#admin">Admin</a>
       </div>

@@ -305,6 +305,75 @@ export const itineraries: Itinerary[] = [
   },
 ];
 
+export type Category = {
+  id: string;
+  label: string;
+  icon: 'hiking' | 'waterfall' | 'camping' | 'roadtrip' | 'gem' | 'wildlife' | 'coast';
+};
+
+export type TrendingItem = {
+  id: string;
+  title: string;
+  location: string;
+  tag: string;
+  searches: string;
+  image: string;
+  slug: string;
+};
+
+export const categories: Category[] = [
+  { id: 'hiking', label: 'Hiking', icon: 'hiking' },
+  { id: 'waterfalls', label: 'Waterfalls', icon: 'waterfall' },
+  { id: 'camping', label: 'Camping', icon: 'camping' },
+  { id: 'roadtrips', label: 'Road trips', icon: 'roadtrip' },
+  { id: 'hidden-gems', label: 'Hidden gems', icon: 'gem' },
+  { id: 'wildlife', label: 'Wildlife', icon: 'wildlife' },
+  { id: 'coast', label: 'Coast', icon: 'coast' },
+];
+
+export const trendingThisWeek: TrendingItem[] = [
+  {
+    id: 'mara-crossing',
+    title: 'Mara River crossings',
+    location: 'Maasai Mara',
+    tag: 'Wildlife',
+    searches: '+42% searches',
+    image:
+      'https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=900&q=80',
+    slug: 'maasai-mara',
+  },
+  {
+    id: 'diani-coast',
+    title: 'Diani barefoot escapes',
+    location: 'Kwale Coast',
+    tag: 'Coast',
+    searches: '+31% searches',
+    image:
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80',
+    slug: 'tsavo',
+  },
+  {
+    id: 'hells-gate',
+    title: 'Hell\'s Gate cycling trails',
+    location: 'Naivasha',
+    tag: 'Hiking',
+    searches: '+28% searches',
+    image:
+      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80',
+    slug: 'lake-nakuru',
+  },
+  {
+    id: 'samburu-north',
+    title: 'Samburu night drives',
+    location: 'Northern Kenya',
+    tag: 'Hidden gems',
+    searches: '+24% searches',
+    image:
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    slug: 'samburu',
+  },
+];
+
 export const testimonials = [
   {
     quote:
