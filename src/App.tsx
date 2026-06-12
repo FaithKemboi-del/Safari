@@ -143,6 +143,15 @@ function HomePage() {
             <span className="title-accent"> refined stays,</span>
             <span> unforgettable Kenyan horizons.</span>
           </h1>
+          <p>
+            Discover cinematic safari destinations, custom itineraries, and overland routes crafted
+            for travelers who want adventure with impeccable detail.
+          </p>
+          <div className="hero-actions">
+            <a className="primary-button" href="#destinations">
+              Explore destinations
+            </a>
+          </div>
           <div className="category-strip" role="list" aria-label="Travel categories">
             {categories.map((category) => (
               <button
@@ -158,18 +167,6 @@ function HomePage() {
                 {category.label}
               </button>
             ))}
-          </div>
-          <p>
-            Discover cinematic safari destinations, custom itineraries, and overland routes crafted
-            for travelers who want adventure with impeccable detail.
-          </p>
-          <div className="hero-actions">
-            <a className="primary-button" href="#destinations">
-              Explore destinations
-            </a>
-            <a className="secondary-button" href="#plan-ai">
-              Plan with AI
-            </a>
           </div>
         </div>
         <div className="hero-card glass-panel">
