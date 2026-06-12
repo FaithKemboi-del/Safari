@@ -1,17 +1,32 @@
+export type DestinationExperienceType = 'hike' | 'standard';
+
 export type Destination = {
   slug: string;
   title: string;
   location: string;
   region: string;
+  experienceType: DestinationExperienceType;
   description: string;
-  budget: string;
-  difficulty: 'Easy' | 'Moderate' | 'Adventurous';
-  bestTime: string;
-  transport: string;
+  pricing?: string;
+  safetyAndConditions?: string;
+  transportAndLogistics?: string;
+  additionalInfo?: string;
+  hikeDifficulty?: string;
   image: string;
   gallery: string[];
   highlights: string[];
   mapQuery: string;
+};
+
+export type CommunityUpdate = {
+  id: string;
+  destinationSlug: string;
+  author: string;
+  avatar: string;
+  postedAgo: string;
+  isOnGround: boolean;
+  isLive: boolean;
+  comment: string;
 };
 
 export type Itinerary = {
@@ -35,13 +50,17 @@ export const destinations: Destination[] = [
     title: 'Maasai Mara National Reserve',
     location: 'Narok County',
     region: 'Savanna',
+    experienceType: 'standard',
     description:
       'Kenya’s most iconic safari landscape with rolling golden plains, big cats, dramatic river crossings, and luxury tented camps that bring guests close to the action.',
-    budget: 'From $620 per person per day for premium conservancy stays',
-    difficulty: 'Easy',
-    bestTime: 'July to October for the migration, January to March for big cat sightings',
-    transport:
-      'Fly from Wilson Airport to Mara airstrips or travel by private 4x4 via Narok in about 5 to 6 hours.',
+    pricing:
+      'From $620 per person per day for premium conservancy stays. Balloon safaris from $450 pp extra.',
+    safetyAndConditions:
+      'Dry-season tracks are well maintained. Early mornings are cool; pack layers. Follow guide instructions near river crossings and predator sightings.',
+    transportAndLogistics:
+      'Fly from Wilson Airport to Mara airstrips (45 min) or drive via Narok in 5–6 hours. Most camps include airstrip transfers and twice-daily game drives.',
+    additionalInfo:
+      'Peak migration window is July–October. January–March is excellent for big cats with fewer crowds.',
     image:
       'https://images.unsplash.com/photo-1549366021-9f761d040a94?auto=format&fit=crop&w=1600&q=80',
     gallery: [
@@ -57,13 +76,17 @@ export const destinations: Destination[] = [
     title: 'Amboseli National Park',
     location: 'Kajiado County',
     region: 'Mountain views',
+    experienceType: 'standard',
     description:
       'A cinematic safari setting known for immense elephant herds, open wetlands, and unforgettable views of Mount Kilimanjaro rising beyond the plains.',
-    budget: 'From $480 per person per day with lodge and game drives',
-    difficulty: 'Easy',
-    bestTime: 'June to October and January to February for clear skies',
-    transport:
-      'Drive from Nairobi in about 4 hours or take a short charter flight to Amboseli airstrip.',
+    pricing:
+      'From $480 per person per day including lodge, meals, and shared game drives. Private vehicle from $180 per day.',
+    safetyAndConditions:
+      'Open plains mean strong sun — bring SPF and a hat. Wetlands can be dusty in dry season. Wildlife always has right of way on tracks.',
+    transportAndLogistics:
+      '4-hour drive from Nairobi or 30-minute charter to Amboseli airstrip. Road transfers from $120 pp one way.',
+    additionalInfo:
+      'Best Kilimanjaro views at dawn, June–October and January–February. Cultural visits to Maasai communities available nearby.',
     image:
       'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1600&q=80',
     gallery: [
@@ -79,13 +102,17 @@ export const destinations: Destination[] = [
     title: 'Samburu National Reserve',
     location: 'Samburu County',
     region: 'Arid wilderness',
+    experienceType: 'standard',
     description:
       'A rugged northern circuit destination along the Ewaso Ngiro River, home to rare species, dramatic kopjes, and refined desert-style camps.',
-    budget: 'From $540 per person per day for boutique camp experiences',
-    difficulty: 'Moderate',
-    bestTime: 'June to October and December to March when wildlife gathers near the river',
-    transport:
-      'Fly to Samburu airstrip or drive north from Nairobi through Isiolo in about 6 hours.',
+    pricing:
+      'From $540 per person per day for boutique camps. Night drives from $95 pp where permitted.',
+    safetyAndConditions:
+      'Arid heat midday — plan drives for early morning and late afternoon. River levels affect wildlife density seasonally.',
+    transportAndLogistics:
+      'Fly to Samburu airstrip (1 hr 15 min from Nairobi) or drive via Isiolo in ~6 hours. Remote roads favor 4x4 vehicles.',
+    additionalInfo:
+      'Look for the Samburu Special Five. Strong leopard activity near the river June–October and December–March.',
     image:
       'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80',
     gallery: [
@@ -101,13 +128,17 @@ export const destinations: Destination[] = [
     title: 'Lake Nakuru National Park',
     location: 'Nakuru County',
     region: 'Rift Valley',
+    experienceType: 'standard',
     description:
       'A compact Rift Valley jewel with flamingo-fringed shores, white rhino conservation areas, acacia woodland, and sweeping escarpment viewpoints.',
-    budget: 'From $350 per person per day for lodge-based safaris',
-    difficulty: 'Easy',
-    bestTime: 'Year-round, with excellent birding after seasonal rains',
-    transport:
-      'Drive from Nairobi through the Great Rift Valley viewpoint in about 3 hours.',
+    pricing:
+      'From $350 per person per day lodge-based. Park entry ~$70 for non-residents. Day trips from Nairobi from $180 pp.',
+    safetyAndConditions:
+      'Flamingo numbers vary with water levels. Baboons near picnic sites — secure food and bags. Rhino areas are well patrolled.',
+    transportAndLogistics:
+      '3-hour drive from Nairobi via Rift Valley viewpoints. Ideal as a first or last safari stop on a longer circuit.',
+    additionalInfo:
+      'Year-round rhino sightings. Best birding after rains. Short escarpment hikes available with a guide at select viewpoints.',
     image:
       'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1600&q=80',
     gallery: [
@@ -123,13 +154,17 @@ export const destinations: Destination[] = [
     title: 'Tsavo East & West',
     location: 'Taita-Taveta County',
     region: 'Wild frontier',
+    experienceType: 'standard',
     description:
       'A vast wilderness of red-earth elephants, lava flows, springs, baobab-studded horizons, and immersive routes between Nairobi and the coast.',
-    budget: 'From $420 per person per day for private 4x4 safaris',
-    difficulty: 'Adventurous',
-    bestTime: 'June to October and January to February for dry-season wildlife',
-    transport:
-      'Access by SGR train to Voi or Mtito Andei, private road transfer, or charter flight.',
+    pricing:
+      'From $420 per person per day for private 4x4 safaris. SGR + lodge packages from $310 pp per night.',
+    safetyAndConditions:
+      'Vast park — wildlife spreads out in wet season. Carry extra water. Lava rock areas can be sharp; wear closed shoes on walking stops.',
+    transportAndLogistics:
+      'SGR to Voi or Mtito Andei plus road transfer, private 4x4 from Nairobi (~5 hrs), or charter to Tsavo airstrips.',
+    additionalInfo:
+      'Classic Nairobi-to-coast corridor. Mzima Springs and red elephant photography are highlights. Dry season June–October is prime.',
     image:
       'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1600&q=80',
     gallery: [
@@ -145,13 +180,17 @@ export const destinations: Destination[] = [
     title: 'Laikipia Conservancies',
     location: 'Laikipia Plateau',
     region: 'Private conservancy',
+    experienceType: 'standard',
     description:
       'A premium conservation-led safari region with rhino tracking, horseback rides, walking safaris, and intimate owner-run lodges below Mount Kenya.',
-    budget: 'From $760 per person per day for exclusive-use conservancy lodges',
-    difficulty: 'Moderate',
-    bestTime: 'June to September and December to March for dry trails and strong wildlife viewing',
-    transport:
-      'Fly to Nanyuki or Loisaba airstrips, or drive from Nairobi in about 4 to 5 hours.',
+    pricing:
+      'From $760 per person per day for exclusive conservancy lodges. Rhino tracking and horseback from $120 pp per activity.',
+    safetyAndConditions:
+      'Walking safaris require fitness and closed shoes. Conservancy rules limit off-road driving. Night temperatures drop on the plateau.',
+    transportAndLogistics:
+      'Fly to Nanyuki or Loisaba airstrips, or drive from Nairobi in 4–5 hours. Many lodges include charter coordination.',
+    additionalInfo:
+      'Strong conservation impact stays. Combine with Mount Kenya hikes nearby. Best wildlife viewing June–September and December–March.',
     image:
       'https://images.unsplash.com/photo-1519885277449-12eee5564d68?auto=format&fit=crop&w=1600&q=80',
     gallery: [
@@ -161,6 +200,99 @@ export const destinations: Destination[] = [
     ],
     highlights: ['Rhino tracking', 'Walking safaris', 'Horseback riding', 'Conservation impact'],
     mapQuery: 'Laikipia Kenya conservancy',
+  },
+  {
+    slug: 'hells-gate',
+    title: "Hell's Gate National Park",
+    location: 'Naivasha, Nakuru County',
+    region: 'Rift Valley',
+    experienceType: 'hike',
+    description:
+      'A dramatic Rift Valley park of cliffs, geothermal steam vents, and cycling trails — one of Kenya’s best day-hike and adventure landscapes.',
+    hikeDifficulty:
+      'Moderate — 3–4 hour canyon loop with some rocky sections and sun exposure. Suitable for fit beginners with water and a guide.',
+    transportAndLogistics:
+      '2-hour drive from Nairobi. Bikes available at the gate (~$15). Most visitors combine with Lake Naivasha boat lunch.',
+    additionalInfo:
+      'Arrive before 9am to avoid heat. Buffalo and baboons present — keep distance. Fischer’s Tower and Central Tower are photo highlights.',
+    image:
+      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1600&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1521651201144-634f700b36ef?auto=format&fit=crop&w=1200&q=80',
+    ],
+    highlights: ['Canyon hikes', 'Cycling trails', 'Geothermal vents', 'Day-trip from Nairobi'],
+    mapQuery: "Hell's Gate National Park Kenya",
+  },
+];
+
+export const communityUpdates: CommunityUpdate[] = [
+  {
+    id: 'mara-1',
+    destinationSlug: 'maasai-mara',
+    author: 'Wanjiku M.',
+    avatar: 'WM',
+    postedAgo: '12 min ago',
+    isOnGround: true,
+    isLive: true,
+    comment:
+      'Just watched a crossing at Mara River — absolutely electric this morning. Conservancy roads are dry and guides are spacing vehicles well.',
+  },
+  {
+    id: 'mara-2',
+    destinationSlug: 'maasai-mara',
+    author: 'Daniel K.',
+    avatar: 'DK',
+    postedAgo: '2 hr ago',
+    isOnGround: false,
+    isLive: false,
+    comment:
+      'Visited last week. Worth the splurge for a private conservancy — we had a leopard sighting all to ourselves at dusk.',
+  },
+  {
+    id: 'amboseli-1',
+    destinationSlug: 'amboseli',
+    author: 'Priya S.',
+    avatar: 'PS',
+    postedAgo: '28 min ago',
+    isOnGround: true,
+    isLive: true,
+    comment:
+      'Kilimanjaro is fully visible at sunrise today. Elephant herds are gathering near the swamps — bring a zoom lens.',
+  },
+  {
+    id: 'hells-1',
+    destinationSlug: 'hells-gate',
+    author: 'Tom R.',
+    avatar: 'TR',
+    postedAgo: '45 min ago',
+    isOnGround: true,
+    isLive: true,
+    comment:
+      'Did the gorge hike this morning — moderate is accurate. Started at 7am and finished before the heat. Rocky in two spots, otherwise stunning.',
+  },
+  {
+    id: 'hells-2',
+    destinationSlug: 'hells-gate',
+    author: 'Amina H.',
+    avatar: 'AH',
+    postedAgo: 'Yesterday',
+    isOnGround: false,
+    isLive: false,
+    comment:
+      'Cycled the lower loop last month. Rent bikes at the gate and hire a guide for the canyon — worth it for safety and context.',
+  },
+  {
+    id: 'diani-1',
+    destinationSlug: 'tsavo',
+    author: 'Leo F.',
+    avatar: 'LF',
+    postedAgo: '1 hr ago',
+    isOnGround: true,
+    isLive: true,
+    comment:
+      'Red elephants near Mudanda Rock this afternoon. Roads from Voi are smooth after the rains — SGR connection was seamless.',
   },
 ];
 

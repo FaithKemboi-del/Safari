@@ -1,6 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
-import { categories, destinations, itineraries, testimonials, trendingThisWeek } from './data';
-import type { Category, Destination } from './data';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import {
+  categories,
+  communityUpdates,
+  destinations,
+  itineraries,
+  testimonials,
+  trendingThisWeek,
+} from './data';
+import type { Category, CommunityUpdate, Destination } from './data';
 
 type Route =
   | { page: 'home' }
@@ -333,9 +340,13 @@ function DestinationDetailPage({ slug }: { slug: string }) {
   const destination = destinations.find((item) => item.slug === slug) ?? destinations[0];
   const related = destinations
     .filter((item) => item.slug !== destination.slug)
-    .filter((item) => item.region === destination.region || item.difficulty === destination.difficulty)
+    .filter(
+      (item) =>
+        item.region === destination.region || item.experienceType === destination.experienceType,
+    )
     .slice(0, 3);
   const fallbackRelated = related.length ? related : destinations.filter((item) => item.slug !== destination.slug).slice(0, 3);
+  const isHike = destination.experienceType === 'hike';
 
   return (
     <article className="detail-page">
@@ -348,8 +359,10 @@ function DestinationDetailPage({ slug }: { slug: string }) {
           <p>{destination.description}</p>
           <div className="detail-badges">
             <span>{destination.region}</span>
-            <span>{destination.difficulty}</span>
-            <span>{destination.bestTime.split(' ')[0]} season</span>
+            <span>{isHike ? 'Hiking' : 'Safari & travel'}</span>
+            {isHike && destination.hikeDifficulty && (
+              <span>{destination.hikeDifficulty.split('—')[0].trim()}</span>
+            )}
           </div>
         </div>
       </section>
@@ -365,10 +378,36 @@ function DestinationDetailPage({ slug }: { slug: string }) {
           <InfoBlock title="Description">{destination.description}</InfoBlock>
 
           <div className="info-grid">
-            <InfoBlock title="Budget">{destination.budget}</InfoBlock>
-            <InfoBlock title="Difficulty level">{destination.difficulty}</InfoBlock>
-            <InfoBlock title="Best time to visit">{destination.bestTime}</InfoBlock>
-            <InfoBlock title="Transport info">{destination.transport}</InfoBlock>
+            {isHike ? (
+              <>
+                <InfoBlock title="Hike difficulty">{destination.hikeDifficulty}</InfoBlock>
+                {destination.transportAndLogistics && (
+                  <InfoBlock title="Transport & logistics">
+                    {destination.transportAndLogistics}
+                  </InfoBlock>
+                )}
+                {destination.additionalInfo && (
+                  <InfoBlock title="Additional info">{destination.additionalInfo}</InfoBlock>
+                )}
+              </>
+            ) : (
+              <>
+                {destination.pricing && (
+                  <InfoBlock title="Pricing">{destination.pricing}</InfoBlock>
+                )}
+                {destination.safetyAndConditions && (
+                  <InfoBlock title="Safety & conditions">{destination.safetyAndConditions}</InfoBlock>
+                )}
+                {destination.transportAndLogistics && (
+                  <InfoBlock title="Transport & logistics">
+                    {destination.transportAndLogistics}
+                  </InfoBlock>
+                )}
+                {destination.additionalInfo && (
+                  <InfoBlock title="Additional info">{destination.additionalInfo}</InfoBlock>
+                )}
+              </>
+            )}
           </div>
 
           <InfoBlock title="Experience highlights">
@@ -378,6 +417,8 @@ function DestinationDetailPage({ slug }: { slug: string }) {
               ))}
             </div>
           </InfoBlock>
+
+          <CommunityFeed destinationSlug={destination.slug} destinationTitle={destination.title} />
 
           <InfoBlock title="Map to the destination">
             <div className="map-frame">
@@ -526,7 +567,11 @@ function AuthPage({ mode }: { mode: 'signin' | 'signup' }) {
               </select>
             </label>
           )}
-          <button className="primary-button full-width" type="button">
+          <button
+            className="primary-button full-width"
+            onClick={() => sessionStorage.setItem('safari-signed-in', 'true')}
+            type="button"
+          >
             {isSignUp ? 'Create account' : 'Sign in'}
           </button>
         </form>
@@ -709,7 +754,7 @@ function PageFrame({
   eyebrow: string;
   title: string;
   body: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <>
@@ -723,11 +768,138 @@ function PageFrame({
   );
 }
 
-function InfoBlock({ title, children }: { title: string; children: React.ReactNode }) {
+function InfoBlock({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="info-block">
       <h2>{title}</h2>
       {typeof children === 'string' ? <p>{children}</p> : children}
+    </section>
+  );
+}
+
+function CommunityFeed({
+  destinationSlug,
+  destinationTitle,
+}: {
+  destinationSlug: string;
+  destinationTitle: string;
+}) {
+  const [comment, setComment] = useState('');
+  const [onGround, setOnGround] = useState(true);
+  const [signedIn, setSignedIn] = useState(
+    () => sessionStorage.getItem('safari-signed-in') === 'true',
+  );
+  const [updates, setUpdates] = useState<CommunityUpdate[]>(() =>
+    communityUpdates.filter((update) => update.destinationSlug === destinationSlug),
+  );
+
+  useEffect(() => {
+    setSignedIn(sessionStorage.getItem('safari-signed-in') === 'true');
+  }, [destinationSlug]);
+
+  const liveCount = updates.filter((update) => update.isLive && update.isOnGround).length;
+
+  const postUpdate = () => {
+    if (!comment.trim()) {
+      return;
+    }
+
+    const newUpdate: CommunityUpdate = {
+      id: `local-${Date.now()}`,
+      destinationSlug,
+      author: 'You',
+      avatar: 'YO',
+      postedAgo: 'Just now',
+      isOnGround: onGround,
+      isLive: onGround,
+      comment: comment.trim(),
+    };
+
+    setUpdates((current) => [newUpdate, ...current]);
+    setComment('');
+  };
+
+  return (
+    <section className="community-feed">
+      <div className="community-header">
+        <div>
+          <span className="eyebrow">Live community</span>
+          <h2>Traveler updates from the ground</h2>
+          <p>
+            Signed-in travelers share real-time notes from {destinationTitle}. On-the-ground posts
+            appear with a live badge.
+          </p>
+        </div>
+        <div className="community-live-pill">
+          <span className="live-dot" />
+          {liveCount > 0 ? `${liveCount} live on site` : 'No live posts yet'}
+        </div>
+      </div>
+
+      <div className="community-list">
+        {updates.length === 0 && (
+          <p className="community-empty">
+            No updates yet. Be the first to share your experience at this destination.
+          </p>
+        )}
+        {updates.map((update) => (
+          <article key={update.id} className="community-card">
+            <div className="community-avatar">{update.avatar}</div>
+            <div className="community-body">
+              <div className="community-meta">
+                <strong>{update.author}</strong>
+                <span>{update.postedAgo}</span>
+                {update.isOnGround && <span className="ground-badge">On the ground</span>}
+                {update.isLive && (
+                  <span className="live-badge">
+                    <span className="live-dot" />
+                    Live
+                  </span>
+                )}
+              </div>
+              <p>{update.comment}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div className="community-compose">
+        {signedIn ? (
+          <>
+            <label>
+              Share your experience
+              <textarea
+                value={comment}
+                onChange={(event) => setComment(event.target.value)}
+                placeholder={`How was ${destinationTitle}? Trails, wildlife, lodges, tips...`}
+                rows={4}
+              />
+            </label>
+            <label className="ground-toggle">
+              <input
+                checked={onGround}
+                onChange={(event) => setOnGround(event.target.checked)}
+                type="checkbox"
+              />
+              I&apos;m on the ground at this destination right now
+            </label>
+            <button className="primary-button" onClick={postUpdate} type="button">
+              Post update
+            </button>
+          </>
+        ) : (
+          <div className="community-signin-prompt">
+            <p>Sign in to post live updates and help other travelers plan with confidence.</p>
+            <a
+              className="primary-button"
+              href="#signin"
+              onClick={() => sessionStorage.setItem('safari-signed-in', 'true')}
+            >
+              Sign in to comment
+            </a>
+          </div>
+        )}
+      </div>
     </section>
   );
 }
