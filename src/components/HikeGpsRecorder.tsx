@@ -7,33 +7,65 @@ import {
   polylineDistanceKm,
   type GpsPoint,
 } from '../lib/trailUtils';
-import {
-  SAVANNA_GPS_TRACKS_KEY,
-  type RecordedHikeTrack,
-  type SavannaTrail,
-} from '../data/savannaTrails';
+import type { RecordedHikeTrack, SavannaTrail } from '../data/savannaTrails';
+import { fetchUserHikeTracks, saveHikeTrack, syncLocalTracksToCloud } from '../services/trailsApi';
+import { useAuth } from '../context/AuthContext';
 import { TrailMap } from './TrailMap';
 
 type HikeGpsRecorderProps = {
-  trail: SavannaTrail;
+  trail?: SavannaTrail;
+  trailOptions?: SavannaTrail[];
+  showTrailPicker?: boolean;
+  filterTrailId?: string;
 };
 
-export function HikeGpsRecorder({ trail }: HikeGpsRecorderProps) {
+export function HikeGpsRecorder({
+  trail,
+  trailOptions = [],
+  showTrailPicker = false,
+  filterTrailId,
+}: HikeGpsRecorderProps) {
+  const { user, isConfigured } = useAuth();
+  const signedIn = isConfigured ? Boolean(user) : sessionStorage.getItem('safari-signed-in') === 'true';
+
+  const [selectedTrailId, setSelectedTrailId] = useState(trail?.id ?? trailOptions[0]?.id ?? '');
+  const activeTrail =
+    trail ?? trailOptions.find((item) => item.id === selectedTrailId) ?? trailOptions[0];
+
   const [isRecording, setIsRecording] = useState(false);
   const [points, setPoints] = useState<GpsPoint[]>([]);
   const [startedAt, setStartedAt] = useState<string | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [error, setError] = useState('');
+  const [syncMessage, setSyncMessage] = useState('');
   const [savedTracks, setSavedTracks] = useState<RecordedHikeTrack[]>([]);
+  const [loadingTracks, setLoadingTracks] = useState(true);
   const watchIdRef = useRef<number | null>(null);
   const timerRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    const stored = localStorage.getItem(SAVANNA_GPS_TRACKS_KEY);
-    if (stored) {
-      setSavedTracks(JSON.parse(stored) as RecordedHikeTrack[]);
+  const loadTracks = async () => {
+    setLoadingTracks(true);
+
+    if (user?.id) {
+      const tracks = await fetchUserHikeTracks(user.id);
+      setSavedTracks(tracks);
+    } else {
+      const tracks = await fetchUserHikeTracks('');
+      setSavedTracks(tracks);
     }
-  }, []);
+
+    setLoadingTracks(false);
+  };
+
+  useEffect(() => {
+    void loadTracks();
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (trail?.id) {
+      setSelectedTrailId(trail.id);
+    }
+  }, [trail?.id]);
 
   useEffect(() => {
     return () => {
@@ -53,6 +85,7 @@ export function HikeGpsRecorder({ trail }: HikeGpsRecorderProps) {
     }
 
     setError('');
+    setSyncMessage('');
     setPoints([]);
     setElapsedSeconds(0);
     const startTime = new Date().toISOString();
@@ -99,30 +132,51 @@ export function HikeGpsRecorder({ trail }: HikeGpsRecorderProps) {
     setIsRecording(false);
   };
 
-  const saveTrack = () => {
+  const saveTrack = async () => {
     if (!startedAt || points.length < 2) {
       return;
     }
 
-    const track: RecordedHikeTrack = {
-      id: `track-${Date.now()}`,
-      trailId: trail.id,
-      trailName: trail.title,
-      startedAt,
-      endedAt: new Date().toISOString(),
-      points,
-      distanceKm: polylineDistanceKm(points),
-    };
+    const trailName = activeTrail?.title ?? 'Free hike';
+    const endedAt = new Date().toISOString();
 
-    const next = [track, ...savedTracks];
-    setSavedTracks(next);
-    localStorage.setItem(SAVANNA_GPS_TRACKS_KEY, JSON.stringify(next));
+    const saved = await saveHikeTrack({
+      userId: user?.id,
+      trailId: activeTrail?.id,
+      trailName,
+      points,
+      startedAt,
+      endedAt,
+    });
+
+    setSavedTracks((current) => [saved, ...current.filter((track) => track.id !== saved.id)]);
     setPoints([]);
     setStartedAt(null);
     setElapsedSeconds(0);
+    setSyncMessage(
+      saved.synced
+        ? 'Track saved to your account — available on any signed-in device.'
+        : 'Track saved on this device. Sign in to sync across devices.',
+    );
   };
 
+  const syncTracks = async () => {
+    if (!user?.id) {
+      setSyncMessage('Sign in to sync your recordings to the cloud.');
+      return;
+    }
+
+    const count = await syncLocalTracksToCloud(user.id);
+    await loadTracks();
+    setSyncMessage(count > 0 ? `Synced ${count} local recording(s) to your account.` : 'All recordings are already synced.');
+  };
+
+  const visibleTracks = savedTracks.filter((track) =>
+    filterTrailId ? track.trailId === filterTrailId : true,
+  );
+
   const liveDistance = polylineDistanceKm(points);
+  const mapRoute = activeTrail?.coordinates ?? (points.length > 1 ? points : []);
 
   return (
     <div className="gps-recorder">
@@ -131,8 +185,8 @@ export function HikeGpsRecorder({ trail }: HikeGpsRecorderProps) {
           <span className="eyebrow">Live GPS tracking</span>
           <h3>Record your hike on the trail</h3>
           <p>
-            Free built-in tracking — no subscription. Your route saves on this device and can be
-            exported as GPX.
+            Free built-in tracking — no subscription. Saves to your account when signed in, or on
+            this device when offline.
           </p>
         </div>
         <div className="gps-live-stats">
@@ -151,9 +205,29 @@ export function HikeGpsRecorder({ trail }: HikeGpsRecorderProps) {
         </div>
       </div>
 
-      {error && <p className="auth-message">{error}</p>}
+      {showTrailPicker && trailOptions.length > 0 && (
+        <label>
+          Trail you are hiking
+          <select value={selectedTrailId} onChange={(event) => setSelectedTrailId(event.target.value)}>
+            {trailOptions.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.title}
+              </option>
+            ))}
+            <option value="">Free recording (no preset trail)</option>
+          </select>
+        </label>
+      )}
 
-      <TrailMap route={trail.coordinates} waypoints={trail.waypoints} liveTrack={points} height="16rem" />
+      {error && <p className="auth-message">{error}</p>}
+      {syncMessage && <p className="auth-message">{syncMessage}</p>}
+
+      <TrailMap
+        route={mapRoute}
+        waypoints={activeTrail?.waypoints ?? []}
+        liveTrack={points}
+        height="16rem"
+      />
 
       <div className="gps-recorder-actions">
         {!isRecording ? (
@@ -168,7 +242,7 @@ export function HikeGpsRecorder({ trail }: HikeGpsRecorderProps) {
             <button
               className="primary-button"
               disabled={points.length < 2}
-              onClick={saveTrack}
+              onClick={() => void saveTrack()}
               type="button"
             >
               Save track
@@ -180,8 +254,8 @@ export function HikeGpsRecorder({ trail }: HikeGpsRecorderProps) {
             className="ghost-link"
             onClick={() =>
               downloadTextFile(
-                `${trail.id}-live.gpx`,
-                buildGpx({ name: trail.title, points }),
+                `${activeTrail?.id ?? 'hike'}-live.gpx`,
+                buildGpx({ name: activeTrail?.title ?? 'Savanna hike', points }),
                 'application/gpx+xml',
               )
             }
@@ -190,35 +264,43 @@ export function HikeGpsRecorder({ trail }: HikeGpsRecorderProps) {
             Export live track (GPX)
           </button>
         )}
+        {signedIn && user?.id && (
+          <button className="secondary-button compact-button" onClick={() => void syncTracks()} type="button">
+            Sync local recordings
+          </button>
+        )}
       </div>
 
-      {savedTracks.filter((track) => track.trailId === trail.id).length > 0 && (
-        <div className="gps-saved-tracks">
-          <h4>Your saved tracks on this trail</h4>
-          {savedTracks
-            .filter((track) => track.trailId === trail.id)
-            .slice(0, 3)
-            .map((track) => (
-              <article key={track.id} className="hike-record-card">
-                <strong>{new Date(track.startedAt).toLocaleString()}</strong>
-                <span>{formatDistance(track.distanceKm)}</span>
-                <button
-                  className="ghost-link"
-                  onClick={() =>
-                    downloadTextFile(
-                      `${track.id}.gpx`,
-                      buildGpx({ name: track.trailName, points: track.points }),
-                      'application/gpx+xml',
-                    )
-                  }
-                  type="button"
-                >
-                  Download GPX
-                </button>
-              </article>
-            ))}
-        </div>
-      )}
+      <div className="gps-saved-tracks">
+        <h4>Your saved recordings</h4>
+        {loadingTracks && <p className="community-empty">Loading recordings...</p>}
+        {!loadingTracks && visibleTracks.length === 0 && (
+          <p className="community-empty">No recordings yet. Start GPS tracking above.</p>
+        )}
+        {visibleTracks.slice(0, 5).map((track) => (
+          <article key={track.id} className="hike-record-card">
+            <strong>{track.trailName}</strong>
+            <span>{new Date(track.startedAt).toLocaleString()}</span>
+            <small>
+              {formatDistance(track.distanceKm)}
+              {track.synced ? ' · Synced' : ' · On this device'}
+            </small>
+            <button
+              className="ghost-link"
+              onClick={() =>
+                downloadTextFile(
+                  `${track.id}.gpx`,
+                  buildGpx({ name: track.trailName, points: track.points }),
+                  'application/gpx+xml',
+                )
+              }
+              type="button"
+            >
+              Download GPX
+            </button>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }

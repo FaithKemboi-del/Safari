@@ -51,6 +51,7 @@ export type RecordedHikeTrack = {
   points: GpsPoint[];
   distanceKm: number;
   notes?: string;
+  synced?: boolean;
 };
 
 export const SAVANNA_TRAILS_KEY = 'savanna-trail-reviews';

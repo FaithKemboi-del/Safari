@@ -12,8 +12,10 @@ import {
   type EventStatus,
   type HikeRecord,
 } from '../categoryContent';
-import { savannaTrails } from '../data/savannaTrails';
 import { useAuth } from '../context/AuthContext';
+import { useTrails } from '../context/TrailsContext';
+import { CreateTrailForm } from './CreateTrailForm';
+import { HikeGpsRecorder } from './HikeGpsRecorder';
 
 function CategoryIcon({ icon }: { icon: Category['icon'] }) {
   const paths: Record<Category['icon'], string> = {
@@ -117,6 +119,7 @@ function HikingCategoryPage({
   meta: { title: string; subtitle: string; eyebrow: string };
   spots: typeof categorySpots;
 }) {
+  const { trails, loading: trailsLoading } = useTrails();
   const [records, setRecords] = useState<HikeRecord[]>([]);
   const [trailName, setTrailName] = useState('Mount Kenya — Naromoru Route');
   const [date, setDate] = useState('');
@@ -192,7 +195,8 @@ function HikingCategoryPage({
         </div>
 
         <div className="trail-list">
-          {savannaTrails.map((trail) => (
+          {trailsLoading && <p className="community-empty">Loading trails...</p>}
+          {trails.map((trail) => (
             <article key={trail.id} className="trail-card trail-card--explorer">
               <img src={trail.image} alt="" />
               <div className="trail-content">
@@ -247,12 +251,24 @@ function HikingCategoryPage({
       </section>
 
       <section className="section">
+        <CreateTrailForm />
+      </section>
+
+      <section className="section category-muted-band">
         <div className="section-intro">
-          <h2>Record your hike</h2>
+          <h2>Record your hike with GPS</h2>
           <p>
-            Log trails you&apos;ve completed — saved on this device in your browser (localStorage).
-            Sign in + Supabase sync can be added later.
+            Start tracking from here — pick a trail or record freely. Sign in to sync recordings
+            across your devices.
           </p>
+        </div>
+        <HikeGpsRecorder showTrailPicker trailOptions={trails} />
+      </section>
+
+      <section className="section">
+        <div className="section-intro">
+          <h2>Log a completed hike</h2>
+          <p>Quick manual log if you forgot to use GPS or want to add notes after the trek.</p>
         </div>
         <div className="hike-record-layout">
           <form
@@ -265,7 +281,7 @@ function HikingCategoryPage({
             <label>
               Trail name
               <select value={trailName} onChange={(event) => setTrailName(event.target.value)}>
-                {savannaTrails.map((trail) => (
+                {trails.map((trail) => (
                   <option key={trail.id}>{trail.title}</option>
                 ))}
                 <option>Other trail</option>

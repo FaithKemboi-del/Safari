@@ -87,6 +87,100 @@ export type Database = {
           created_at: string;
           updated_at: string;
         }>;
+      trails: TableDef<
+        {
+          id: string;
+          slug: string;
+          title: string;
+          location: string;
+          difficulty: 'easy' | 'moderate' | 'hard' | 'expert';
+          difficulty_label: string;
+          duration: string;
+          distance_km: number;
+          elevation_gain_m: number;
+          budget: string;
+          description: string;
+          image: string;
+          map_query: string;
+          google_maps_url: string;
+          destination_slug: string | null;
+          route_type: 'loop' | 'out-and-back' | 'point-to-point';
+          coordinates: Json;
+          waypoints: Json;
+          elevation_profile: Json;
+          tips: string[];
+          status: 'published' | 'draft';
+          created_by_user_id: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        {
+          id: string;
+          slug: string;
+          title: string;
+          location: string;
+          difficulty: 'easy' | 'moderate' | 'hard' | 'expert';
+          difficulty_label: string;
+          duration: string;
+          distance_km: number;
+          elevation_gain_m: number;
+          budget: string;
+          description: string;
+          image: string;
+          map_query: string;
+          google_maps_url: string;
+          destination_slug?: string | null;
+          route_type: 'loop' | 'out-and-back' | 'point-to-point';
+          coordinates: Json;
+          waypoints: Json;
+          elevation_profile: Json;
+          tips?: string[];
+          status?: 'published' | 'draft';
+          created_by_user_id?: string | null;
+        }
+      >;
+      trail_reviews: TableDef<
+        {
+          id: string;
+          trail_id: string;
+          user_id: string | null;
+          author_name: string;
+          rating: number;
+          comment: string;
+          created_at: string;
+        },
+        {
+          trail_id: string;
+          user_id: string | null;
+          author_name: string;
+          rating: number;
+          comment: string;
+        }
+      >;
+      hike_tracks: TableDef<
+        {
+          id: string;
+          trail_id: string | null;
+          user_id: string | null;
+          trail_name: string;
+          track_points: Json;
+          distance_km: number;
+          started_at: string;
+          ended_at: string | null;
+          notes: string | null;
+          created_at: string;
+        },
+        {
+          trail_id?: string | null;
+          user_id?: string | null;
+          trail_name: string;
+          track_points: Json;
+          distance_km: number;
+          started_at: string;
+          ended_at?: string | null;
+          notes?: string | null;
+        }
+      >;
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

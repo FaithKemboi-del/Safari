@@ -7,6 +7,7 @@ import {
   type TrailReview,
 } from '../data/savannaTrails';
 import { buildGpx, downloadTextFile } from '../lib/trailUtils';
+import { fetchTrailReviews, postTrailReview } from '../services/trailsApi';
 import { ElevationChart } from './ElevationChart';
 import { HikeGpsRecorder } from './HikeGpsRecorder';
 import { TrailMap } from './TrailMap';
@@ -32,15 +33,44 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
   const [showRecorder, setShowRecorder] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(SAVANNA_TRAILS_KEY);
-    const local = stored ? (JSON.parse(stored) as TrailReview[]) : [];
-    const seeded = seedTrailReviews.filter((review) => review.trailId === trail.id);
-    setReviews([...local.filter((review) => review.trailId === trail.id), ...seeded]);
+    let active = true;
+
+    void fetchTrailReviews(trail.id).then((remote) => {
+      if (!active) {
+        return;
+      }
+
+      const stored = localStorage.getItem(SAVANNA_TRAILS_KEY);
+      const local = stored ? (JSON.parse(stored) as TrailReview[]) : [];
+      const seeded = seedTrailReviews.filter((review) => review.trailId === trail.id);
+      const localForTrail = local.filter((review) => review.trailId === trail.id);
+      setReviews([...remote, ...localForTrail, ...seeded]);
+    });
+
+    return () => {
+      active = false;
+    };
   }, [trail.id]);
 
-  const postReview = () => {
+  const submitReview = async () => {
     if (!comment.trim()) {
       return;
+    }
+
+    if (user?.id) {
+      const saved = await postTrailReview({
+        trailId: trail.id,
+        userId: user.id,
+        authorName: displayName || 'You',
+        rating,
+        comment: comment.trim(),
+      });
+
+      if (saved) {
+        setReviews((current) => [saved, ...current]);
+        setComment('');
+        return;
+      }
     }
 
     const review: TrailReview = {
@@ -150,7 +180,7 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
         </div>
       )}
 
-      {showRecorder && <HikeGpsRecorder trail={trail} />}
+      {showRecorder && <HikeGpsRecorder filterTrailId={trail.id} trail={trail} />}
 
       <div className="trail-reviews">
         <div className="trail-reviews-header">
@@ -195,9 +225,9 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
                   onChange={(event) => setComment(event.target.value)}
                 />
               </label>
-              <button className="primary-button" onClick={postReview} type="button">
-                Post review
-              </button>
+            <button className="primary-button" onClick={() => void submitReview()} type="button">
+              Post review
+            </button>
             </>
           ) : (
             <div className="community-signin-prompt">

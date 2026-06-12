@@ -90,6 +90,60 @@ function escapeXml(value: string): string {
     .replaceAll('"', '&quot;');
 }
 
+export function parseGpx(xml: string): GpsPoint[] {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xml, 'application/xml');
+  const points = Array.from(doc.querySelectorAll('trkpt, rtept, wpt'));
+
+  const parsed: GpsPoint[] = [];
+
+  for (const node of points) {
+    const lat = Number(node.getAttribute('lat'));
+    const lng = Number(node.getAttribute('lon'));
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      continue;
+    }
+
+    const elevationText = node.querySelector('ele')?.textContent;
+    const elevationM = elevationText ? Number(elevationText) : undefined;
+    const timestamp = node.querySelector('time')?.textContent ?? new Date().toISOString();
+
+    parsed.push({
+      lat,
+      lng,
+      elevationM: Number.isFinite(elevationM) ? elevationM : undefined,
+      timestamp,
+    });
+  }
+
+  return parsed;
+}
+
+export function buildElevationProfile(
+  coordinates: Array<LatLng & { elevationM?: number }>,
+): ElevationPoint[] {
+  if (coordinates.length === 0) {
+    return [];
+  }
+
+  let distanceSoFar = 0;
+  const profile: ElevationPoint[] = [];
+
+  coordinates.forEach((point, index) => {
+    if (index > 0) {
+      distanceSoFar += haversineKm(coordinates[index - 1], point);
+    }
+
+    profile.push({
+      distanceKm: Number(distanceSoFar.toFixed(2)),
+      elevationM: point.elevationM ?? 2000 + index * 5,
+    });
+  });
+
+  return profile;
+}
+
 export function downloadTextFile(filename: string, content: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);

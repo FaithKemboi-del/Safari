@@ -2695,6 +2695,21 @@ td button:last-child {
   border-radius: 1.4rem;
 }
 
+.create-trail-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.create-trail-preview {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.create-trail-preview p {
+  margin: 0;
+  color: var(--muted);
+}
+
 @media (min-width: 768px) {
   .trail-explorer-stats {
     grid-template-columns: repeat(4, minmax(0, 1fr));

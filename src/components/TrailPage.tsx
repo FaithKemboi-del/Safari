@@ -1,8 +1,18 @@
+import { useTrails } from '../context/TrailsContext';
 import { getSavannaTrail } from '../data/savannaTrails';
 import { TrailExplorer } from './TrailExplorer';
 
 export function TrailPage({ trailId }: { trailId: string }) {
-  const trail = getSavannaTrail(trailId) ?? getSavannaTrail('longonot-trail')!;
+  const { getTrail, loading } = useTrails();
+  const trail = getTrail(trailId) ?? getSavannaTrail(trailId) ?? getSavannaTrail('longonot-trail')!;
+
+  if (loading && !trail) {
+    return (
+      <section className="section">
+        <p className="community-empty">Loading trail...</p>
+      </section>
+    );
+  }
 
   return (
     <article className="trail-page category-page category-page--hiking">
