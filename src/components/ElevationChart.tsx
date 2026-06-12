@@ -42,15 +42,15 @@ export function ElevationChart({ profile, height = 120 }: ElevationChartProps) {
       <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Trail elevation profile">
         <defs>
           <linearGradient id="elevationFill" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="rgba(46, 125, 50, 0.45)" />
-            <stop offset="100%" stopColor="rgba(46, 125, 50, 0.05)" />
+            <stop offset="0%" stopColor="rgba(196, 106, 56, 0.45)" />
+            <stop offset="100%" stopColor="rgba(196, 106, 56, 0.05)" />
           </linearGradient>
         </defs>
         <polygon fill="url(#elevationFill)" points={areaPoints} />
         <polyline
           fill="none"
           points={points}
-          stroke="#2e7d32"
+          stroke="#c46a38"
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="3"

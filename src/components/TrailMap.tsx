@@ -124,7 +124,7 @@ export function TrailMap({
 
     if (latLngs.length > 1) {
       layers.route = L.polyline(latLngs, {
-        color: '#2e7d32',
+        color: '#c46a38',
         weight: 5,
         opacity: 0.9,
       }).addTo(map);

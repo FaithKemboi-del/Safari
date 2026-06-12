@@ -404,15 +404,15 @@ h2 {
 }
 
 .category-chip--hiking {
-  border-color: rgba(129, 199, 132, 0.55);
-  background: rgba(27, 94, 32, 0.42);
-  color: #e8f5e9;
+  border-color: rgba(212, 160, 90, 0.55);
+  background: rgba(74, 47, 30, 0.58);
+  color: #fff5e9;
 }
 
 .category-chip--hiking:hover,
 .category-chip--hiking.active {
-  background: rgba(56, 142, 60, 0.62);
-  border-color: #a5d6a7;
+  background: rgba(122, 78, 50, 0.82);
+  border-color: var(--savanna);
   color: #fff;
 }
 
@@ -588,6 +588,7 @@ h2 {
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(14rem, auto);
 }
 
 .trending-card {
@@ -2148,7 +2149,13 @@ td button:last-child {
 }
 
 .category-page--hiking .category-hero {
-  background: linear-gradient(135deg, #1b5e20, #2e7d32 55%, #43a047);
+  background: linear-gradient(
+    135deg,
+    var(--earth-deep) 0%,
+    var(--sienna) 42%,
+    var(--gold-dark) 72%,
+    var(--savanna) 100%
+  );
 }
 
 .category-page--waterfalls .category-hero {
@@ -2246,11 +2253,52 @@ td button:last-child {
   line-height: 1.6;
 }
 
-.category-spot-card a {
+.spot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+
+.spot-actions a {
   display: inline-flex;
-  margin-top: 0.65rem;
-  color: var(--gold-dark);
+  align-items: center;
+  min-height: 2.25rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
   font-weight: 800;
+  text-decoration: none;
+  transition:
+    transform var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.spot-actions a:first-child {
+  background: var(--gold);
+  color: #3d2208;
+}
+
+.spot-actions a:first-child:hover {
+  transform: translateY(-1px);
+  background: var(--gold-bright);
+}
+
+.spot-actions a:last-child:not(:only-child) {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--earth);
+}
+
+.spot-actions a:only-child {
+  background: var(--gold);
+  color: #3d2208;
+}
+
+.spot-actions a:last-child:not(:only-child):hover {
+  transform: translateY(-1px);
+  border-color: rgba(192, 110, 24, 0.35);
+  background: var(--dune);
 }
 
 .category-muted-band {
@@ -2295,8 +2343,8 @@ td button:last-child {
 .trail-meta span {
   padding: 0.4rem 0.7rem;
   border-radius: 999px;
-  background: rgba(46, 125, 50, 0.12);
-  color: #2e7d32;
+  background: rgba(192, 110, 24, 0.14);
+  color: var(--gold-dark);
   font-size: 0.78rem;
   font-weight: 800;
 }
@@ -2388,7 +2436,7 @@ td button:last-child {
   margin-bottom: 0.75rem;
   padding: 0.85rem;
   border-radius: 1rem;
-  background: rgba(46, 125, 50, 0.08);
+  background: rgba(212, 160, 90, 0.14);
 }
 
 .hike-record-card span,
@@ -2500,8 +2548,8 @@ td button:last-child {
 
 /* Savanna Trails */
 .savanna-trails-banner {
-  border-color: rgba(46, 125, 50, 0.22);
-  background: linear-gradient(135deg, rgba(232, 245, 233, 0.95), rgba(255, 249, 242, 0.98));
+  border-color: rgba(192, 110, 24, 0.22);
+  background: linear-gradient(135deg, rgba(255, 235, 210, 0.95), rgba(255, 249, 242, 0.98));
 }
 
 .trail-card--explorer .trail-content {
@@ -2531,7 +2579,7 @@ td button:last-child {
 .trail-explorer-stats div {
   padding: 0.75rem;
   border-radius: 1rem;
-  background: rgba(46, 125, 50, 0.08);
+  background: rgba(212, 160, 90, 0.12);
 }
 
 .trail-explorer-stats small {
@@ -2548,7 +2596,7 @@ td button:last-child {
 }
 
 .trail-difficulty--easy {
-  color: #2e7d32;
+  color: var(--olive);
 }
 
 .trail-difficulty--moderate {
@@ -2611,8 +2659,8 @@ td button:last-child {
 }
 
 .waypoint-kind--start {
-  background: rgba(46, 125, 50, 0.15);
-  color: #2e7d32;
+  background: rgba(192, 110, 24, 0.15);
+  color: var(--gold-dark);
 }
 
 .waypoint-kind--summit {
@@ -2642,9 +2690,9 @@ td button:last-child {
   display: grid;
   gap: 1rem;
   padding: 1rem;
-  border: 1px solid rgba(46, 125, 50, 0.2);
+  border: 1px solid rgba(192, 110, 24, 0.22);
   border-radius: 1.2rem;
-  background: rgba(232, 245, 233, 0.45);
+  background: rgba(255, 243, 224, 0.55);
 }
 
 .gps-recorder-header {

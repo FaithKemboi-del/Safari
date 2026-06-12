@@ -14,6 +14,7 @@ import {
 } from '../categoryContent';
 import { useAuth } from '../context/AuthContext';
 import { useTrails } from '../context/TrailsContext';
+import { CategorySpotActions } from './CategorySpotActions';
 import { CreateTrailForm } from './CreateTrailForm';
 import { HikeGpsRecorder } from './HikeGpsRecorder';
 
@@ -90,17 +91,7 @@ function GenericCategoryPage({
                 <h3>{spot.title}</h3>
                 <p className="spot-location">{spot.location}</p>
                 <p>{spot.description}</p>
-                {spot.slug ? (
-                  <a href={`#destination/${spot.slug}`}>View details</a>
-                ) : spot.mapQuery ? (
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.mapQuery)}`}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    Open in Google Maps
-                  </a>
-                ) : null}
+                <CategorySpotActions spot={spot} />
               </div>
             </article>
           ))}
@@ -243,7 +234,7 @@ function HikingCategoryPage({
                 <h3>{spot.title}</h3>
                 <p className="spot-location">{spot.location}</p>
                 <p>{spot.description}</p>
-                {spot.slug && <a href={`#destination/${spot.slug}`}>View details</a>}
+                <CategorySpotActions spot={spot} />
               </div>
             </article>
           ))}

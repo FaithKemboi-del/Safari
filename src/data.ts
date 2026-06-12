@@ -452,6 +452,7 @@ export type TrendingItem = {
   searches: string;
   image: string;
   slug: string;
+  mapQuery?: string;
 };
 
 export const categories: Category[] = [
@@ -505,6 +506,17 @@ export const trendingThisWeek: TrendingItem[] = [
     image:
       'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
     slug: 'samburu',
+  },
+  {
+    id: 'watamu-snorkel',
+    title: 'Watamu reef snorkel trips',
+    location: 'Kilifi Coast',
+    tag: 'Coast',
+    searches: '+19% searches',
+    image:
+      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=900&q=80',
+    slug: 'tsavo',
+    mapQuery: 'Watamu Marine National Park Kenya',
   },
 ];
 
