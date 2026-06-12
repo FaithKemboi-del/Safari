@@ -5,6 +5,7 @@ import {
   categoryMeta,
   categorySpots,
   eventChatKey,
+  ALLTRAILS_KENYA_URL,
   HIKE_RECORDS_KEY,
   hikingTrails,
   kenyaEvents,
@@ -170,8 +171,27 @@ function HikingCategoryPage({
       <section className="section">
         <div className="section-intro">
           <h2>Featured hiking trails</h2>
-          <p>Follow the route on the map or open the full trail in Google Maps.</p>
+          <p>
+            Preview the route below, open turn-by-turn directions in Google Maps, or jump to AllTrails
+            for elevation profiles, reviews, and GPX downloads.
+          </p>
         </div>
+
+        <div className="trail-map-guide glass-panel">
+          <div>
+            <span className="eyebrow">Maps &amp; trails</span>
+            <h3>Two ways to follow every route</h3>
+            <p>
+              <strong>Google Maps</strong> is best for getting to the trailhead and navigating on the
+              road. <strong>AllTrails</strong> adds the full hiking path, distance, elevation, and
+              hiker reviews — ideal once you&apos;re on the trail.
+            </p>
+          </div>
+          <a className="secondary-button" href={ALLTRAILS_KENYA_URL} rel="noreferrer" target="_blank">
+            Browse all Kenya trails on AllTrails
+          </a>
+        </div>
+
         <div className="trail-list">
           {hikingTrails.map((trail) => (
             <article key={trail.id} className="trail-card">
@@ -192,8 +212,18 @@ function HikingCategoryPage({
                     rel="noreferrer"
                     target="_blank"
                   >
-                    Open trail in Google Maps
+                    Open in Google Maps
                   </a>
+                  {trail.allTrailsUrl && (
+                    <a
+                      className="alltrails-button"
+                      href={trail.allTrailsUrl}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      View on AllTrails
+                    </a>
+                  )}
                   {trail.slug && <a href={`#destination/${trail.slug}`}>Destination page</a>}
                 </div>
                 <div className="map-frame trail-map">

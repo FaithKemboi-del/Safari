@@ -26,8 +26,12 @@
 
   /* Safari accents */
   --olive: #7a8f45;
+  --jungle-deep: #1e3d24;
+  --jungle-mid: #2d5a35;
+  --jungle-light: #4a7c4e;
   --terra: #c46a38;
   --savanna: #d4a05a;
+  --amber-gem: #b8860b;
 
   --line: rgba(92, 61, 40, 0.14);
   --white-soft: rgba(255, 249, 242, 0.94);
@@ -413,15 +417,15 @@ h2 {
 }
 
 .category-chip--waterfalls {
-  border-color: rgba(129, 212, 250, 0.55);
-  background: rgba(1, 87, 155, 0.38);
-  color: #e1f5fe;
+  border-color: rgba(129, 199, 132, 0.5);
+  background: rgba(30, 61, 36, 0.55);
+  color: #e8f5e9;
 }
 
 .category-chip--waterfalls:hover,
 .category-chip--waterfalls.active {
-  background: rgba(2, 119, 189, 0.58);
-  border-color: #81d4fa;
+  background: rgba(45, 90, 53, 0.78);
+  border-color: #81c784;
   color: #fff;
 }
 
@@ -452,15 +456,15 @@ h2 {
 }
 
 .category-chip--hidden-gems {
-  border-color: rgba(206, 147, 216, 0.55);
-  background: rgba(74, 20, 140, 0.42);
-  color: #f3e5f5;
+  border-color: rgba(212, 160, 90, 0.55);
+  background: rgba(74, 47, 30, 0.55);
+  color: #fff3e0;
 }
 
 .category-chip--hidden-gems:hover,
 .category-chip--hidden-gems.active {
-  background: rgba(106, 27, 154, 0.62);
-  border-color: #ce93d8;
+  background: rgba(122, 78, 50, 0.78);
+  border-color: #d4a05a;
   color: #fff;
 }
 
@@ -491,15 +495,15 @@ h2 {
 }
 
 .category-chip--events {
-  border-color: rgba(255, 138, 128, 0.55);
-  background: rgba(183, 28, 28, 0.42);
-  color: #ffebee;
+  border-color: rgba(255, 179, 71, 0.55);
+  background: rgba(74, 47, 30, 0.55);
+  color: #fff5e9;
 }
 
 .category-chip--events:hover,
 .category-chip--events.active {
-  background: rgba(211, 47, 47, 0.62);
-  border-color: #ff8a80;
+  background: rgba(192, 110, 24, 0.72);
+  border-color: #ffcb6b;
   color: #fff;
 }
 
@@ -2097,6 +2101,11 @@ td button:last-child {
   .hike-record-layout {
     grid-template-columns: 1fr 1fr;
   }
+
+  .trail-map-guide {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
 }
 
 /* Category pages */
@@ -2143,7 +2152,13 @@ td button:last-child {
 }
 
 .category-page--waterfalls .category-hero {
-  background: linear-gradient(135deg, #01579b, #0277bd 55%, #039be5);
+  background: linear-gradient(
+    135deg,
+    var(--jungle-deep) 0%,
+    var(--jungle-mid) 42%,
+    var(--jungle-light) 72%,
+    var(--olive) 100%
+  );
 }
 
 .category-page--camping .category-hero {
@@ -2155,7 +2170,13 @@ td button:last-child {
 }
 
 .category-page--hidden-gems .category-hero {
-  background: linear-gradient(135deg, #4a148c, #6a1b9a 55%, #ab47bc);
+  background: linear-gradient(
+    135deg,
+    var(--earth-deep) 0%,
+    var(--earth) 45%,
+    var(--sienna) 72%,
+    var(--savanna) 100%
+  );
 }
 
 .category-page--wildlife .category-hero {
@@ -2167,7 +2188,13 @@ td button:last-child {
 }
 
 .category-page--events .category-hero {
-  background: linear-gradient(135deg, #b71c1c, #c62828 55%, #ff7043);
+  background: linear-gradient(
+    135deg,
+    var(--earth-deep) 0%,
+    var(--sienna) 48%,
+    var(--gold-dark) 78%,
+    var(--sunset) 100%
+  );
 }
 
 .category-spot-grid {
@@ -2282,9 +2309,56 @@ td button:last-child {
   margin: 0.85rem 0;
 }
 
-.trail-actions a:not(.primary-button) {
+.trail-actions a:not(.primary-button):not(.alltrails-button) {
   color: var(--gold-dark);
   font-weight: 800;
+}
+
+.trail-map-guide {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 1.4rem;
+  background: var(--white-soft);
+}
+
+.trail-map-guide h3 {
+  margin: 0.35rem 0 0.5rem;
+  font-size: 1.35rem;
+}
+
+.trail-map-guide p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.trail-map-guide .secondary-button {
+  justify-self: start;
+}
+
+.alltrails-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgba(45, 90, 53, 0.35);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  color: var(--jungle-deep);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.alltrails-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(30, 61, 36, 0.14);
 }
 
 .trail-map iframe {

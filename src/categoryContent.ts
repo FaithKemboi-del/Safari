@@ -21,8 +21,11 @@ export type HikingTrail = {
   image: string;
   mapQuery: string;
   googleMapsUrl: string;
+  allTrailsUrl?: string;
   slug?: string;
 };
+
+export const ALLTRAILS_KENYA_URL = 'https://www.alltrails.com/kenya';
 
 export type HikeRecord = {
   id: string;
@@ -67,8 +70,9 @@ export const categoryMeta: Record<
   },
   waterfalls: {
     eyebrow: 'Waterfalls',
-    title: 'Rift Valley falls & forest walks',
-    subtitle: 'Affordable waterfall stops near Nairobi and the Great Rift.',
+    title: 'Chasing waterfalls across Kenya',
+    subtitle:
+      'From misty highland cascades to hidden forest pools — budget-friendly falls from the coast to the central highlands.',
   },
   camping: {
     eyebrow: 'Camping',
@@ -82,8 +86,8 @@ export const categoryMeta: Record<
   },
   'hidden-gems': {
     eyebrow: 'Hidden gems',
-    title: 'Off-radar Kenya spots',
-    subtitle: 'Less crowded places locals and backpackers love.',
+    title: 'Kenya\'s best-kept secrets',
+    subtitle: 'Quiet viewpoints, village trails, and local favorites — discovered on a shoestring.',
   },
   wildlife: {
     eyebrow: 'Wildlife',
@@ -97,8 +101,8 @@ export const categoryMeta: Record<
   },
   events: {
     eyebrow: 'Events',
-    title: 'Festivals, markets & live moments',
-    subtitle: 'See what\'s happening now, plan ahead, or browse past highlights.',
+    title: 'Where Kenya comes alive',
+    subtitle: 'Festivals, night markets, and cultural gatherings — happening now, coming soon, or worth remembering.',
   },
 };
 
@@ -330,6 +334,7 @@ export const hikingTrails: HikingTrail[] = [
     mapQuery: 'Mount Kenya Naromoru Gate Trailhead Kenya',
     googleMapsUrl:
       'https://www.google.com/maps/dir/?api=1&destination=Mount+Kenya+Naromoru+Gate+Kenya&travelmode=walking',
+    allTrailsUrl: 'https://www.alltrails.com/trail/kenya/central/mount-kenya-summit-naro-moru-route',
     slug: 'hells-gate',
   },
   {
@@ -344,6 +349,7 @@ export const hikingTrails: HikingTrail[] = [
     mapQuery: 'Mount Kenya Sirimon Gate Kenya',
     googleMapsUrl:
       'https://www.google.com/maps/dir/?api=1&destination=Mount+Kenya+Sirimon+Gate+Kenya&travelmode=walking',
+    allTrailsUrl: 'https://www.alltrails.com/trail/kenya/central/mount-kenya-summit-sirimon-route',
   },
   {
     id: 'longonot-trail',
@@ -357,6 +363,7 @@ export const hikingTrails: HikingTrail[] = [
     mapQuery: 'Mount Longonot National Park Kenya',
     googleMapsUrl:
       'https://www.google.com/maps/dir/?api=1&destination=Mount+Longonot+National+Park+Kenya&travelmode=walking',
+    allTrailsUrl: 'https://www.alltrails.com/trail/kenya/rift-valley/mount-longonot',
   },
 ];
 
