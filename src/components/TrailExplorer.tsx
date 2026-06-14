@@ -7,6 +7,7 @@ import {
   type TrailReview,
 } from '../data/savannaTrails';
 import { buildGpx, downloadTextFile } from '../lib/trailUtils';
+import { readJson, writeJson } from '../lib/storage';
 import { fetchTrailReviews, postTrailReview } from '../services/trailsApi';
 import { ElevationChart } from './ElevationChart';
 import { HikeGpsRecorder } from './HikeGpsRecorder';
@@ -28,24 +29,33 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
   const { user, displayName, isConfigured } = useAuth();
   const signedIn = isConfigured ? Boolean(user) : sessionStorage.getItem('safari-signed-in') === 'true';
   const [reviews, setReviews] = useState<TrailReview[]>([]);
+  const [reviewsError, setReviewsError] = useState('');
+  const [reviewMessage, setReviewMessage] = useState('');
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [showRecorder, setShowRecorder] = useState(false);
 
   useEffect(() => {
     let active = true;
+    setReviewsError('');
 
-    void fetchTrailReviews(trail.id).then((remote) => {
-      if (!active) {
-        return;
-      }
+    void fetchTrailReviews(trail.id)
+      .then((remote) => {
+        if (!active) {
+          return;
+        }
 
-      const stored = localStorage.getItem(SAVANNA_TRAILS_KEY);
-      const local = stored ? (JSON.parse(stored) as TrailReview[]) : [];
-      const seeded = seedTrailReviews.filter((review) => review.trailId === trail.id);
-      const localForTrail = local.filter((review) => review.trailId === trail.id);
-      setReviews([...remote, ...localForTrail, ...seeded]);
-    });
+        const local = readJson<TrailReview[]>(SAVANNA_TRAILS_KEY, []);
+        const seeded = seedTrailReviews.filter((review) => review.trailId === trail.id);
+        const localForTrail = local.filter((review) => review.trailId === trail.id);
+        setReviews([...remote, ...localForTrail, ...seeded]);
+      })
+      .catch((loadError) => {
+        console.error('Failed to load trail reviews:', loadError);
+        if (active) {
+          setReviewsError('Could not load reviews. Try refreshing the page.');
+        }
+      });
 
     return () => {
       active = false;
@@ -57,37 +67,51 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
       return;
     }
 
-    if (user?.id) {
-      const saved = await postTrailReview({
+    setReviewMessage('');
+
+    try {
+      if (user?.id) {
+        const saved = await postTrailReview({
+          trailId: trail.id,
+          userId: user.id,
+          authorName: displayName || 'You',
+          rating,
+          comment: comment.trim(),
+        });
+
+        if (saved) {
+          setReviews((current) => [saved, ...current]);
+          setComment('');
+          return;
+        }
+
+        setReviewMessage('Could not save your review to your account. Saved on this device instead.');
+      }
+
+      const review: TrailReview = {
+        id: `review-${Date.now()}`,
         trailId: trail.id,
-        userId: user.id,
-        authorName: displayName || 'You',
+        author: signedIn ? displayName || 'You' : 'Guest',
         rating,
         comment: comment.trim(),
-      });
+        postedAgo: 'Just now',
+      };
 
-      if (saved) {
-        setReviews((current) => [saved, ...current]);
-        setComment('');
+      const local = readJson<TrailReview[]>(SAVANNA_TRAILS_KEY, []);
+      const next = [review, ...local];
+      const writeResult = writeJson(SAVANNA_TRAILS_KEY, next);
+
+      if (!writeResult.ok) {
+        setReviewMessage(writeResult.error);
         return;
       }
+
+      setReviews((current) => [review, ...current]);
+      setComment('');
+    } catch (submitError) {
+      console.error('Failed to submit trail review:', submitError);
+      setReviewMessage('Could not save your review. Try again.');
     }
-
-    const review: TrailReview = {
-      id: `review-${Date.now()}`,
-      trailId: trail.id,
-      author: signedIn ? displayName || 'You' : 'Guest',
-      rating,
-      comment: comment.trim(),
-      postedAgo: 'Just now',
-    };
-
-    const stored = localStorage.getItem(SAVANNA_TRAILS_KEY);
-    const local = stored ? (JSON.parse(stored) as TrailReview[]) : [];
-    const next = [review, ...local];
-    localStorage.setItem(SAVANNA_TRAILS_KEY, JSON.stringify(next));
-    setReviews((current) => [review, ...current]);
-    setComment('');
   };
 
   const gpxPoints = trail.coordinates.map((point, index) => ({
@@ -187,6 +211,7 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
           <h4>Trail reviews</h4>
           <span>{reviews.length} hiker{reviews.length === 1 ? '' : 's'}</span>
         </div>
+        {reviewsError ? <p className="auth-message">{reviewsError}</p> : null}
         <div className="community-list">
           {reviews.map((review) => (
             <article key={review.id} className="community-card">
@@ -228,6 +253,7 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
             <button className="primary-button" onClick={() => void submitReview()} type="button">
               Post review
             </button>
+            {reviewMessage ? <p className="auth-message">{reviewMessage}</p> : null}
             </>
           ) : (
             <div className="community-signin-prompt">

@@ -5,7 +5,18 @@ import { getSupabase } from '../lib/supabase';
 import type { Database } from '../lib/database.types';
 import type { ElevationPoint, GpsPoint, LatLng } from '../lib/trailUtils';
 import { buildElevationProfile, polylineDistanceKm } from '../lib/trailUtils';
+import { readJson, writeJson } from '../lib/storage';
 import type { TrailReview, TrailWaypoint } from '../data/savannaTrails';
+
+export type TrailCreateResult = {
+  trail: SavannaTrail;
+  source: 'cloud' | 'local';
+};
+
+export type SyncTracksResult = {
+  synced: number;
+  failed: number;
+};
 
 type TrailRow = Database['public']['Tables']['trails']['Row'];
 type HikeTrackRow = Database['public']['Tables']['hike_tracks']['Row'];
@@ -65,29 +76,19 @@ function mapHikeTrackRow(row: HikeTrackRow): RecordedHikeTrack {
 }
 
 function readLocalCustomTrails(): SavannaTrail[] {
-  const stored = localStorage.getItem(LOCAL_CUSTOM_TRAILS_KEY);
-  if (!stored) {
-    return [];
-  }
-
-  return JSON.parse(stored) as SavannaTrail[];
+  return readJson<SavannaTrail[]>(LOCAL_CUSTOM_TRAILS_KEY, []);
 }
 
 function writeLocalCustomTrails(trails: SavannaTrail[]) {
-  localStorage.setItem(LOCAL_CUSTOM_TRAILS_KEY, JSON.stringify(trails));
+  writeJson(LOCAL_CUSTOM_TRAILS_KEY, trails);
 }
 
 function readLocalTracks(): RecordedHikeTrack[] {
-  const stored = localStorage.getItem(SAVANNA_GPS_TRACKS_KEY);
-  if (!stored) {
-    return [];
-  }
-
-  return JSON.parse(stored) as RecordedHikeTrack[];
+  return readJson<RecordedHikeTrack[]>(SAVANNA_GPS_TRACKS_KEY, []);
 }
 
 function writeLocalTracks(tracks: RecordedHikeTrack[]) {
-  localStorage.setItem(SAVANNA_GPS_TRACKS_KEY, JSON.stringify(tracks));
+  writeJson(SAVANNA_GPS_TRACKS_KEY, tracks);
 }
 
 function mergeTrails(remote: SavannaTrail[], localCustom: SavannaTrail[]): SavannaTrail[] {
@@ -168,6 +169,7 @@ export async function saveHikeTrack(input: {
   startedAt: string;
   endedAt: string;
   notes?: string;
+  id?: string;
 }): Promise<RecordedHikeTrack> {
   const distanceKm = polylineDistanceKm(input.points);
   const supabase = getSupabase();
@@ -198,7 +200,7 @@ export async function saveHikeTrack(input: {
   }
 
   const localTrack: RecordedHikeTrack = {
-    id: `track-${Date.now()}`,
+    id: input.id ?? `track-${Date.now()}`,
     trailId: input.trailId,
     trailName: input.trailName,
     startedAt: input.startedAt,
@@ -209,20 +211,20 @@ export async function saveHikeTrack(input: {
     synced: false,
   };
 
-  const next = [localTrack, ...readLocalTracks()];
+  const next = [localTrack, ...readLocalTracks().filter((track) => track.id !== localTrack.id)];
   writeLocalTracks(next);
   return localTrack;
 }
 
-export async function syncLocalTracksToCloud(userId: string): Promise<number> {
+export async function syncLocalTracksToCloud(userId: string): Promise<SyncTracksResult> {
   const localTracks = readLocalTracks().filter((track) => !track.synced);
-  let syncedCount = 0;
-
-  const unsyncedIds = new Set(localTracks.map((track) => track.id));
+  let synced = 0;
+  let failed = 0;
 
   for (const track of localTracks) {
-    await saveHikeTrack({
+    const saved = await saveHikeTrack({
       userId,
+      id: track.id,
       trailId: track.trailId,
       trailName: track.trailName,
       points: track.points,
@@ -230,20 +232,21 @@ export async function syncLocalTracksToCloud(userId: string): Promise<number> {
       endedAt: track.endedAt ?? new Date().toISOString(),
       notes: track.notes,
     });
-    syncedCount += 1;
+
+    if (saved.synced) {
+      synced += 1;
+    } else {
+      failed += 1;
+    }
   }
 
-  if (syncedCount > 0) {
-    writeLocalTracks(readLocalTracks().filter((track) => !unsyncedIds.has(track.id) || track.synced));
-  }
-
-  return syncedCount;
+  return { synced, failed };
 }
 
 export async function createTrail(input: {
   userId?: string;
   trail: SavannaTrail;
-}): Promise<SavannaTrail> {
+}): Promise<TrailCreateResult> {
   const supabase = getSupabase();
 
   if (supabase && input.userId) {
@@ -276,7 +279,7 @@ export async function createTrail(input: {
     const row = data as TrailRow | null;
 
     if (!error && row) {
-      return mapTrailRow(row);
+      return { trail: mapTrailRow(row), source: 'cloud' };
     }
 
     console.warn('Supabase trail create fallback:', error?.message);
@@ -285,13 +288,14 @@ export async function createTrail(input: {
   const localCustom = readLocalCustomTrails();
   const next = [input.trail, ...localCustom.filter((trail) => trail.id !== input.trail.id)];
   writeLocalCustomTrails(next);
-  return input.trail;
+  return { trail: input.trail, source: 'local' };
 }
 
 export async function fetchTrailReviews(trailId: string): Promise<TrailReview[]> {
   const supabase = getSupabase();
 
   if (!supabase) {
+    console.warn('Supabase trail reviews unavailable: client not configured.');
     return [];
   }
 
@@ -304,6 +308,7 @@ export async function fetchTrailReviews(trailId: string): Promise<TrailReview[]>
   const rows = data as TrailReviewRow[] | null;
 
   if (error || !rows) {
+    console.warn('Supabase trail reviews fallback:', error?.message);
     return [];
   }
 
@@ -326,6 +331,7 @@ export async function postTrailReview(input: {
 }): Promise<TrailReview | null> {
   const supabase = getSupabase();
   if (!supabase) {
+    console.warn('Failed to post trail review: Supabase client not configured.');
     return null;
   }
 
