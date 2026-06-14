@@ -14,6 +14,7 @@ import {
 } from '../categoryContent';
 import { useAuth } from '../context/AuthContext';
 import { useTrails } from '../context/TrailsContext';
+import { readJson, writeJson } from '../lib/storage';
 import { CategorySpotActions } from './CategorySpotActions';
 import { CreateTrailForm } from './CreateTrailForm';
 import { HikeGpsRecorder } from './HikeGpsRecorder';
@@ -110,8 +111,9 @@ function HikingCategoryPage({
   meta: { title: string; subtitle: string; eyebrow: string };
   spots: typeof categorySpots;
 }) {
-  const { trails, loading: trailsLoading } = useTrails();
+  const { trails, loading: trailsLoading, error: trailsError } = useTrails();
   const [records, setRecords] = useState<HikeRecord[]>([]);
+  const [hikeMessage, setHikeMessage] = useState('');
   const [trailName, setTrailName] = useState('Mount Kenya — Naromoru Route');
   const [date, setDate] = useState('');
   const [duration, setDuration] = useState('');
@@ -119,14 +121,12 @@ function HikingCategoryPage({
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
-    const stored = localStorage.getItem(HIKE_RECORDS_KEY);
-    if (stored) {
-      setRecords(JSON.parse(stored) as HikeRecord[]);
-    }
+    setRecords(readJson<HikeRecord[]>(HIKE_RECORDS_KEY, []));
   }, []);
 
   const saveHike = () => {
     if (!trailName.trim() || !date) {
+      setHikeMessage('Add a trail name and date before saving your hike log.');
       return;
     }
 
@@ -141,8 +141,15 @@ function HikingCategoryPage({
     };
 
     const next = [record, ...records];
+    const writeResult = writeJson(HIKE_RECORDS_KEY, next);
+
+    if (!writeResult.ok) {
+      setHikeMessage(writeResult.error);
+      return;
+    }
+
     setRecords(next);
-    localStorage.setItem(HIKE_RECORDS_KEY, JSON.stringify(next));
+    setHikeMessage('Hike log saved on this device.');
     setDuration('');
     setDistance('');
     setNotes('');
@@ -187,6 +194,7 @@ function HikingCategoryPage({
 
         <div className="trail-list">
           {trailsLoading && <p className="community-empty">Loading trails...</p>}
+          {trailsError ? <p className="auth-message">{trailsError}</p> : null}
           {trails.map((trail) => (
             <article key={trail.id} className="trail-card trail-card--explorer">
               <img src={trail.image} alt="" />
@@ -304,6 +312,7 @@ function HikingCategoryPage({
             <button className="primary-button" type="submit">
               Save hike record
             </button>
+            {hikeMessage ? <p className="auth-message">{hikeMessage}</p> : null}
           </form>
 
           <div className="hike-record-list">
@@ -438,12 +447,12 @@ function EventLiveChat({
   const signedIn = isConfigured ? Boolean(user) : sessionStorage.getItem('safari-signed-in') === 'true';
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<EventChatMessage[]>([]);
+  const [chatError, setChatError] = useState('');
 
   useEffect(() => {
     const key = eventChatKey(event.id);
-    const stored = localStorage.getItem(key);
+    const local = readJson<EventChatMessage[]>(key, []);
     const seeded = seedEventChat.filter((item) => item.eventId === event.id);
-    const local = stored ? (JSON.parse(stored) as EventChatMessage[]) : [];
     setMessages([...local, ...seeded]);
   }, [event.id]);
 
@@ -462,10 +471,16 @@ function EventLiveChat({
     };
 
     const key = eventChatKey(event.id);
-    const stored = localStorage.getItem(key);
-    const local = stored ? (JSON.parse(stored) as EventChatMessage[]) : [];
+    const local = readJson<EventChatMessage[]>(key, []);
     const nextLocal = [newMessage, ...local];
-    localStorage.setItem(key, JSON.stringify(nextLocal));
+    const writeResult = writeJson(key, nextLocal);
+
+    if (!writeResult.ok) {
+      setChatError(writeResult.error);
+      return;
+    }
+
+    setChatError('');
     setMessages((current) => [newMessage, ...current]);
     setMessage('');
   };
@@ -519,6 +534,7 @@ function EventLiveChat({
             <button className="primary-button" onClick={postMessage} type="button">
               Post live update
             </button>
+            {chatError ? <p className="auth-message">{chatError}</p> : null}
           </>
         ) : (
           <div className="community-signin-prompt">

@@ -606,23 +606,28 @@ function AuthPage({ mode }: { mode: 'signin' | 'signup' }) {
     setSubmitting(true);
     setMessage('');
 
-    const result = isSignUp
-      ? await signUp(email, password, fullName)
-      : await signIn(email, password);
+    try {
+      const result = isSignUp
+        ? await signUp(email, password, fullName)
+        : await signIn(email, password);
 
-    setSubmitting(false);
+      if (result.error) {
+        setMessage(result.error);
+        return;
+      }
 
-    if (result.error) {
-      setMessage(result.error);
-      return;
+      if (isSignUp && isConfigured) {
+        setMessage('Account created. Check your email to confirm, then sign in.');
+        return;
+      }
+
+      window.location.hash = 'home';
+    } catch (authError) {
+      console.error('Auth submit failed:', authError);
+      setMessage('Something went wrong. Check your connection and try again.');
+    } finally {
+      setSubmitting(false);
     }
-
-    if (isSignUp && isConfigured) {
-      setMessage('Account created. Check your email to confirm, then sign in.');
-      return;
-    }
-
-    window.location.hash = 'home';
   };
 
   return (
@@ -1040,16 +1045,29 @@ function CommunityFeed({
   const [updates, setUpdates] = useState<CommunityUpdate[]>([]);
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
+  const [feedError, setFeedError] = useState('');
+  const [postError, setPostError] = useState('');
 
   useEffect(() => {
     let active = true;
     setLoading(true);
-    void fetchCommunityUpdates(destinationSlug).then((data) => {
-      if (active) {
-        setUpdates(data);
-        setLoading(false);
-      }
-    });
+    setFeedError('');
+
+    void fetchCommunityUpdates(destinationSlug)
+      .then((data) => {
+        if (active) {
+          setUpdates(data);
+          setLoading(false);
+        }
+      })
+      .catch((loadError) => {
+        console.error('Failed to load community updates:', loadError);
+        if (active) {
+          setFeedError('Could not load community updates. Try refreshing the page.');
+          setLoading(false);
+        }
+      });
+
     return () => {
       active = false;
     };
@@ -1063,21 +1081,28 @@ function CommunityFeed({
     }
 
     setPosting(true);
+    setPostError('');
 
-    if (isConfigured && user) {
-      const saved = await postCommunityUpdate({
-        destinationSlug,
-        userId: user.id,
-        authorName: displayName || 'Traveler',
-        comment: comment.trim(),
-        isOnGround: onGround,
-      });
+    try {
+      if (isConfigured && user) {
+        const saved = await postCommunityUpdate({
+          destinationSlug,
+          userId: user.id,
+          authorName: displayName || 'Traveler',
+          comment: comment.trim(),
+          isOnGround: onGround,
+        });
 
-      if (saved) {
-        setUpdates((current) => [saved, ...current]);
-        setComment('');
+        if (saved) {
+          setUpdates((current) => [saved, ...current]);
+          setComment('');
+          return;
+        }
+
+        setPostError('Could not post your update right now. Try again in a moment.');
+        return;
       }
-    } else {
+
       const localUpdate: CommunityUpdate = {
         id: `local-${Date.now()}`,
         destinationSlug,
@@ -1090,9 +1115,12 @@ function CommunityFeed({
       };
       setUpdates((current) => [localUpdate, ...current]);
       setComment('');
+    } catch (postFailure) {
+      console.error('Failed to post community update:', postFailure);
+      setPostError('Could not post your update. Try again.');
+    } finally {
+      setPosting(false);
     }
-
-    setPosting(false);
   };
 
   return (
@@ -1114,7 +1142,8 @@ function CommunityFeed({
 
       <div className="community-list">
         {loading && <p className="community-empty">Loading community updates...</p>}
-        {!loading && updates.length === 0 && (
+        {feedError ? <p className="auth-message">{feedError}</p> : null}
+        {!loading && !feedError && updates.length === 0 && (
           <p className="community-empty">
             No updates yet. Be the first to share your experience at this destination.
           </p>
@@ -1163,6 +1192,7 @@ function CommunityFeed({
             <button className="primary-button" disabled={posting} onClick={() => void postUpdate()} type="button">
               {posting ? 'Posting...' : 'Post update'}
             </button>
+            {postError ? <p className="auth-message">{postError}</p> : null}
           </>
         ) : (
           <div className="community-signin-prompt">

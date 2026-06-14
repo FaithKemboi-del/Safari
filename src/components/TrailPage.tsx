@@ -3,13 +3,21 @@ import { getSavannaTrail } from '../data/savannaTrails';
 import { TrailExplorer } from './TrailExplorer';
 
 export function TrailPage({ trailId }: { trailId: string }) {
-  const { getTrail, loading } = useTrails();
+  const { getTrail, loading, error: trailsError } = useTrails();
   const trail = getTrail(trailId) ?? getSavannaTrail(trailId) ?? getSavannaTrail('longonot-trail')!;
 
   if (loading && !trail) {
     return (
       <section className="section">
         <p className="community-empty">Loading trail...</p>
+      </section>
+    );
+  }
+
+  if (trailsError) {
+    return (
+      <section className="section">
+        <p className="auth-message">{trailsError}</p>
       </section>
     );
   }

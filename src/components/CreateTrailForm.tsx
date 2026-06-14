@@ -42,16 +42,21 @@ export function CreateTrailForm() {
       return;
     }
 
-    const xml = await file.text();
-    const points = parseGpx(xml);
+    try {
+      const xml = await file.text();
+      const points = parseGpx(xml);
 
-    if (points.length < 2) {
-      setMessage('Could not read a valid route from that GPX file. Try another export.');
-      return;
+      if (points.length < 2) {
+        setMessage('Could not read a valid route from that GPX file. Try another export.');
+        return;
+      }
+
+      setCoordinates(points);
+      setMessage(`Loaded ${points.length} points from GPX. Add details and publish.`);
+    } catch (uploadError) {
+      console.error('Failed to read GPX file:', uploadError);
+      setMessage('Could not read that GPX file. Try another export.');
     }
-
-    setCoordinates(points);
-    setMessage(`Loaded ${points.length} points from GPX. Add details and publish.`);
   };
 
   const publishTrail = async () => {
@@ -68,18 +73,28 @@ export function CreateTrailForm() {
     setSubmitting(true);
     setMessage('');
 
-    const saved = await createTrail({
-      userId: user?.id,
-      trail: previewTrail,
-    });
+    try {
+      const result = await createTrail({
+        userId: user?.id,
+        trail: previewTrail,
+      });
 
-    await refreshTrails();
-    setSubmitting(false);
-    setMessage(`Trail published: ${saved.title}. Open it from the list below.`);
-    setTitle('');
-    setLocation('');
-    setDescription('');
-    setCoordinates([]);
+      await refreshTrails();
+      setMessage(
+        result.source === 'cloud'
+          ? `Trail published: ${result.trail.title}. Open it from the list below.`
+          : `Trail saved on this device only: ${result.trail.title}. Cloud publish failed — try again when signed in with Supabase configured.`,
+      );
+      setTitle('');
+      setLocation('');
+      setDescription('');
+      setCoordinates([]);
+    } catch (publishError) {
+      console.error('Failed to publish trail:', publishError);
+      setMessage('Could not publish that trail. Try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

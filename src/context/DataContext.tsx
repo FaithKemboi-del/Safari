@@ -14,6 +14,7 @@ type DataContextValue = {
   destinations: Destination[];
   itineraries: Itinerary[];
   loading: boolean;
+  error: string | null;
   source: 'supabase' | 'local';
   refresh: () => Promise<void>;
 };
@@ -24,18 +25,30 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [destinations, setDestinations] = useState<Destination[]>(localDestinations);
   const [itineraries, setItineraries] = useState<Itinerary[]>(localItineraries);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [source, setSource] = useState<'supabase' | 'local'>(getDataSourceLabel());
 
   const load = async () => {
     setLoading(true);
-    const [nextDestinations, nextItineraries] = await Promise.all([
-      fetchDestinations(),
-      fetchItineraries(),
-    ]);
-    setDestinations(nextDestinations);
-    setItineraries(nextItineraries);
-    setSource(getDataSourceLabel());
-    setLoading(false);
+    setError(null);
+
+    try {
+      const [nextDestinations, nextItineraries] = await Promise.all([
+        fetchDestinations(),
+        fetchItineraries(),
+      ]);
+      setDestinations(nextDestinations);
+      setItineraries(nextItineraries);
+      setSource(getDataSourceLabel());
+    } catch (loadError) {
+      console.error('Failed to load destinations and itineraries:', loadError);
+      setDestinations(localDestinations);
+      setItineraries(localItineraries);
+      setSource('local');
+      setError('Could not load live data. Showing saved demo content instead.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -47,10 +60,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
       destinations,
       itineraries,
       loading,
+      error,
       source,
       refresh: load,
     }),
-    [destinations, itineraries, loading, source],
+    [destinations, itineraries, loading, error, source],
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

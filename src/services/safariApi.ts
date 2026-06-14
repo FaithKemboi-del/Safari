@@ -159,6 +159,7 @@ export async function postCommunityUpdate(input: {
 }): Promise<CommunityUpdate | null> {
   const supabase = getSupabase();
   if (!supabase) {
+    console.warn('Failed to post community update: Supabase client not configured.');
     return null;
   }
 

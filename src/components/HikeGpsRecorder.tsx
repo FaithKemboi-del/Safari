@@ -45,16 +45,17 @@ export function HikeGpsRecorder({
 
   const loadTracks = async () => {
     setLoadingTracks(true);
+    setError('');
 
-    if (user?.id) {
-      const tracks = await fetchUserHikeTracks(user.id);
+    try {
+      const tracks = await fetchUserHikeTracks(user?.id ?? '');
       setSavedTracks(tracks);
-    } else {
-      const tracks = await fetchUserHikeTracks('');
-      setSavedTracks(tracks);
+    } catch (loadError) {
+      console.error('Failed to load hike recordings:', loadError);
+      setError('Could not load your recordings. Try refreshing the page.');
+    } finally {
+      setLoadingTracks(false);
     }
-
-    setLoadingTracks(false);
   };
 
   useEffect(() => {
@@ -140,24 +141,29 @@ export function HikeGpsRecorder({
     const trailName = activeTrail?.title ?? 'Free hike';
     const endedAt = new Date().toISOString();
 
-    const saved = await saveHikeTrack({
-      userId: user?.id,
-      trailId: activeTrail?.id,
-      trailName,
-      points,
-      startedAt,
-      endedAt,
-    });
+    try {
+      const saved = await saveHikeTrack({
+        userId: user?.id,
+        trailId: activeTrail?.id,
+        trailName,
+        points,
+        startedAt,
+        endedAt,
+      });
 
-    setSavedTracks((current) => [saved, ...current.filter((track) => track.id !== saved.id)]);
-    setPoints([]);
-    setStartedAt(null);
-    setElapsedSeconds(0);
-    setSyncMessage(
-      saved.synced
-        ? 'Track saved to your account — available on any signed-in device.'
-        : 'Track saved on this device. Sign in to sync across devices.',
-    );
+      setSavedTracks((current) => [saved, ...current.filter((track) => track.id !== saved.id)]);
+      setPoints([]);
+      setStartedAt(null);
+      setElapsedSeconds(0);
+      setSyncMessage(
+        saved.synced
+          ? 'Track saved to your account — available on any signed-in device.'
+          : 'Track saved on this device. Sign in to sync across devices.',
+      );
+    } catch (saveError) {
+      console.error('Failed to save hike track:', saveError);
+      setError('Could not save this recording. Check storage space and try again.');
+    }
   };
 
   const syncTracks = async () => {
@@ -166,9 +172,25 @@ export function HikeGpsRecorder({
       return;
     }
 
-    const count = await syncLocalTracksToCloud(user.id);
-    await loadTracks();
-    setSyncMessage(count > 0 ? `Synced ${count} local recording(s) to your account.` : 'All recordings are already synced.');
+    setSyncMessage('');
+
+    try {
+      const { synced, failed } = await syncLocalTracksToCloud(user.id);
+      await loadTracks();
+
+      if (synced > 0 && failed === 0) {
+        setSyncMessage(`Synced ${synced} local recording(s) to your account.`);
+      } else if (synced > 0 && failed > 0) {
+        setSyncMessage(`Synced ${synced} recording(s). ${failed} could not reach the cloud — try again later.`);
+      } else if (failed > 0) {
+        setError(`Could not sync ${failed} recording(s) to the cloud. Try again when you are online.`);
+      } else {
+        setSyncMessage('All recordings are already synced.');
+      }
+    } catch (syncError) {
+      console.error('Failed to sync hike recordings:', syncError);
+      setError('Could not sync recordings right now. Try again.');
+    }
   };
 
   const visibleTracks = savedTracks.filter((track) =>
