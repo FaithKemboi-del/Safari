@@ -10,11 +10,15 @@ npm install
 npm run setup:env   # creates .env.local from .env.example
 ```
 
-Edit `.env.local` and add the **same** `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` you use on Vercel (Supabase → Settings → API). Then:
+Edit `.env.local` and add the **same** `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` you use on Vercel (Supabase → Settings → API). Variable names must start with `VITE_`.
+
+Then:
 
 ```bash
 npm run dev
 ```
+
+Use `npm run dev` for local work — **not** `npm run preview` (preview serves a production build without your local env vars).
 
 Restart `npm run dev` after changing `.env.local` — Vite only reads env vars on startup.
 

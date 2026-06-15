@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { getSupabaseEnvDiagnostic } from '../lib/config';
 
 type AdminLoginPageProps = {
   onSuccess: () => void;
@@ -12,6 +13,7 @@ export function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const verifying = loading || (Boolean(user) && adminLoading);
+  const envDiagnostic = import.meta.env.DEV ? getSupabaseEnvDiagnostic() : null;
 
   useEffect(() => {
     if (!verifying && isAdmin) {
@@ -69,13 +71,26 @@ export function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
       <div className="auth-card admin-login-card">
         <span className="eyebrow">Admin sign in</span>
         <h2>Travel operations login</h2>
-        {import.meta.env.DEV && !isConfigured ? (
-          <p className="auth-message admin-local-setup">
-            Local dev needs Supabase env vars. Copy <code>.env.example</code> to{' '}
-            <code>.env.local</code>, paste the same <code>VITE_SUPABASE_URL</code> and{' '}
-            <code>VITE_SUPABASE_ANON_KEY</code> from your Vercel project settings, then restart{' '}
-            <code>npm run dev</code>.
-          </p>
+        {envDiagnostic && !isConfigured ? (
+          <div className="auth-message admin-local-setup">
+            <p>
+              <strong>Local setup:</strong> {envDiagnostic.hint}
+            </p>
+            <ul>
+              <li>
+                URL: {envDiagnostic.urlUsable ? 'OK' : envDiagnostic.urlFound ? 'placeholder' : 'missing'}
+              </li>
+              <li>
+                Anon key:{' '}
+                {envDiagnostic.keyUsable ? 'OK' : envDiagnostic.keyFound ? 'placeholder' : 'missing'}
+              </li>
+            </ul>
+            <p>
+              File must be <code>.env.local</code> in the project root. Variable names must be{' '}
+              <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code>. Then stop and
+              run <code>npm run dev</code> again (not <code>npm run preview</code>).
+            </p>
+          </div>
         ) : null}
         <form className="form-stack" onSubmit={handleSubmit}>
           <label>

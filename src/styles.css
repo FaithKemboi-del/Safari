@@ -1933,6 +1933,15 @@ textarea:focus {
   font-size: 0.82rem;
 }
 
+.admin-local-setup ul {
+  margin: 0.75rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.admin-local-setup li + li {
+  margin-top: 0.25rem;
+}
+
 .admin-main {
   padding: 1rem;
 }
