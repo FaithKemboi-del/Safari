@@ -7,9 +7,16 @@ routes, authentication flows, and an admin management dashboard.
 
 ```bash
 npm install
-cp .env.example .env.local   # then add your Supabase keys
+npm run setup:env   # creates .env.local from .env.example
+```
+
+Edit `.env.local` and add the **same** `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` you use on Vercel (Supabase → Settings → API). Then:
+
+```bash
 npm run dev
 ```
+
+Restart `npm run dev` after changing `.env.local` — Vite only reads env vars on startup.
 
 ## Supabase database
 

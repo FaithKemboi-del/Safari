@@ -6,7 +6,7 @@ type AdminLoginPageProps = {
 };
 
 export function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
-  const { adminSignIn, loading, adminLoading, isAdmin, user } = useAuth();
+  const { adminSignIn, isConfigured, loading, adminLoading, isAdmin, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -69,6 +69,14 @@ export function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
       <div className="auth-card admin-login-card">
         <span className="eyebrow">Admin sign in</span>
         <h2>Travel operations login</h2>
+        {import.meta.env.DEV && !isConfigured ? (
+          <p className="auth-message admin-local-setup">
+            Local dev needs Supabase env vars. Copy <code>.env.example</code> to{' '}
+            <code>.env.local</code>, paste the same <code>VITE_SUPABASE_URL</code> and{' '}
+            <code>VITE_SUPABASE_ANON_KEY</code> from your Vercel project settings, then restart{' '}
+            <code>npm run dev</code>.
+          </p>
+        ) : null}
         <form className="form-stack" onSubmit={handleSubmit}>
           <label>
             Email address

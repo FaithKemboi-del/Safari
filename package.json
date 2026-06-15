@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "setup:env": "cp .env.example .env.local",
     "build": "tsc -b && vite build",
     "vercel-build": "npm run build",
     "preview": "vite preview",
