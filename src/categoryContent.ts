@@ -7,6 +7,7 @@ export type CategorySpot = {
   description: string;
   image: string;
   slug?: string;
+  trailId?: string;
   mapQuery?: string;
 };
 
@@ -126,6 +127,7 @@ export const categorySpots: CategorySpot[] = [
     budget: 'From $26 entry + matatu ~$8',
     description: 'Steep but rewarding crater rim hike — start early to beat the heat.',
     image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    slug: 'longonot',
     mapQuery: 'Mount Longonot National Park Kenya',
   },
   {
@@ -136,6 +138,7 @@ export const categorySpots: CategorySpot[] = [
     budget: 'From $4 entry',
     description: 'Shaded city forest walks, waterfalls, and caves — perfect budget escape in Nairobi.',
     image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80',
+    slug: 'karura-forest',
     mapQuery: 'Karura Forest Nairobi',
   },
   {

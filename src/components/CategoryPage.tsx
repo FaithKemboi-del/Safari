@@ -15,7 +15,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useTrails } from '../context/TrailsContext';
 import { readJson, writeJson } from '../lib/storage';
-import { CategorySpotActions } from './CategorySpotActions';
+import { CategorySpotActions, SpotActionBar } from './CategorySpotActions';
 import { CreateTrailForm } from './CreateTrailForm';
 import { HikeGpsRecorder } from './HikeGpsRecorder';
 
@@ -168,27 +168,33 @@ function HikingCategoryPage({
         </div>
       </section>
 
-      <section className="section">
+      <section className="section hiking-trails-section">
         <div className="section-intro">
           <h2>Savanna Trails — built in, free</h2>
-          <p>
-            Interactive maps, elevation profiles, GPX downloads, GPS recording, and hiker reviews —
-            no subscription required. Powered by OpenStreetMap.
+          <p className="savanna-trails-lead">
+            <strong>Interactive maps, elevation profiles, GPX downloads, GPS recording, and hiker reviews</strong>
+            — no subscription required. Powered by OpenStreetMap.
           </p>
+          <div className="savanna-trails-features" aria-label="Trail features">
+            <span>Interactive maps</span>
+            <span>Elevation profiles</span>
+            <span>GPX downloads</span>
+            <span>GPS recording</span>
+            <span>Hiker reviews</span>
+          </div>
         </div>
 
         <div className="trail-map-guide glass-panel savanna-trails-banner">
           <div>
-            <span className="eyebrow">Your AllTrails alternative</span>
-            <h3>Follow every route on our platform</h3>
+            <span className="eyebrow">Get the full trail map</span>
+            <h3>Follow every route on Savanna Trails</h3>
             <p>
-              <strong>Savanna Trails</strong> gives you trail maps, waypoint markers, elevation
-              charts, and live GPS tracking — all integrated here. Download GPX files or record your
-              hike directly from your phone.
+              Open waypoint markers, elevation charts, and live GPS tracking — all on this site.
+              Download GPX files or record your hike directly from your phone.
             </p>
           </div>
           <a className="primary-button" href="#trail/longonot-trail">
-            Try Mount Longonot trail
+            Get the full trail map
           </a>
         </div>
 
@@ -209,20 +215,14 @@ function HikingCategoryPage({
                   <span>{trail.distanceKm} km</span>
                   <span>{trail.elevationGainM} m gain</span>
                 </div>
-                <div className="trail-actions">
-                  <a className="primary-button" href={`#trail/${trail.id}`}>
-                    Open interactive trail map
-                  </a>
-                  <a
-                    className="secondary-button compact-button"
-                    href={trail.googleMapsUrl}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    Directions to trailhead
-                  </a>
-                  {trail.slug && <a href={`#destination/${trail.slug}`}>Destination page</a>}
-                </div>
+                <SpotActionBar
+                  slug={trail.slug}
+                  trailId={trail.id}
+                  mapsHref={trail.googleMapsUrl}
+                />
+                <a className="trail-map-link" href={`#trail/${trail.id}`}>
+                  Open interactive trail map →
+                </a>
               </div>
             </article>
           ))}
