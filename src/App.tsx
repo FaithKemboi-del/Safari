@@ -356,6 +356,45 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
           ))}
         </div>
       </section>
+
+      <section className="landing-cta section-dark" aria-labelledby="landing-cta-title">
+        <img
+          className="landing-cta-image"
+          src="https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1800&q=80"
+          alt=""
+        />
+        <div className="landing-cta-overlay" />
+        <div className="landing-cta-inner">
+          <div className="landing-cta-copy">
+            <span className="eyebrow">Ready to explore?</span>
+            <h2 id="landing-cta-title">Your next Kenya adventure starts here.</h2>
+            <p>
+              Browse budget destinations, follow Savanna Trails with free maps, and get live tips
+              from travelers on the ground — no expensive tour packages required.
+            </p>
+            <ul className="landing-cta-points">
+              <li>Free trail maps &amp; GPS recording</li>
+              <li>Community updates from real travelers</li>
+              <li>Itineraries built for matatu, SGR &amp; camps</li>
+            </ul>
+          </div>
+          <div className="landing-cta-actions">
+            <a className="primary-button" href="#destinations">
+              Browse destinations
+            </a>
+            <a
+              className="secondary-button"
+              href="#category/hiking"
+              onClick={goToCategory('hiking')}
+            >
+              Explore hiking trails
+            </a>
+            <a className="landing-cta-link" href="#signup">
+              Create a free account →
+            </a>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
