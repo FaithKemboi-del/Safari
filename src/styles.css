@@ -267,15 +267,26 @@ img {
   place-items: end start;
   padding: 8rem 1rem 2rem;
   isolation: isolate;
+  overflow: hidden;
+  background-color: var(--earth-deep);
 }
 
-.hero-background-image {
+.hero::before {
+  content: '';
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
   z-index: 0;
+  background:
+    linear-gradient(
+      125deg,
+      rgba(74, 47, 30, 0.18) 0%,
+      rgba(240, 138, 42, 0.12) 42%,
+      rgba(58, 38, 26, 0.22) 100%
+    ),
+    url('https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=2400&q=85')
+      center / cover no-repeat;
+  transform: scale(1.04);
+  transform-origin: center;
 }
 
 .auth-image,
@@ -293,8 +304,13 @@ img {
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(115deg, rgba(42, 31, 23, 0.72) 0%, rgba(58, 38, 26, 0.45) 52%, rgba(42, 31, 23, 0.55) 100%),
-    linear-gradient(180deg, rgba(42, 31, 23, 0.15) 0%, rgba(42, 31, 23, 0.65) 100%);
+    linear-gradient(
+      115deg,
+      rgba(42, 31, 23, 0.78) 0%,
+      rgba(58, 38, 26, 0.48) 48%,
+      rgba(74, 47, 30, 0.32) 100%
+    ),
+    linear-gradient(180deg, rgba(42, 31, 23, 0.1) 0%, rgba(42, 31, 23, 0.62) 100%);
   pointer-events: none;
 }
 

@@ -214,12 +214,7 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
   return (
     <>
       <section className="hero section-dark">
-        <img
-          className="hero-background-image"
-          src="https://images.unsplash.com/photo-1489392197799-37adffc731ad?auto=format&fit=crop&w=2200&q=90"
-          alt=""
-        />
-        <div className="hero-overlay" />
+        <div className="hero-overlay" aria-hidden="true" />
         <div className="hero-content">
           <span className="eyebrow">Affordable Kenya travel</span>
           <h1 className="hero-title-horizontal">
