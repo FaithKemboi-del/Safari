@@ -74,7 +74,6 @@ export const savannaTrails: SavannaTrail[] = [
     mapQuery: 'Mount Kenya Naromoru Gate Trailhead Kenya',
     googleMapsUrl:
       'https://www.google.com/maps/dir/?api=1&destination=Mount+Kenya+Naromoru+Gate+Kenya&travelmode=walking',
-    slug: 'hells-gate',
     routeType: 'out-and-back',
     coordinates: [
       { lat: -0.1634, lng: 37.0182 },
@@ -240,6 +239,7 @@ export const savannaTrails: SavannaTrail[] = [
     mapQuery: 'Mount Longonot National Park Kenya',
     googleMapsUrl:
       'https://www.google.com/maps/dir/?api=1&destination=Mount+Longonot+National+Park+Kenya&travelmode=walking',
+    slug: 'longonot',
     routeType: 'loop',
     coordinates: [
       { lat: -0.9142, lng: 36.4561 },

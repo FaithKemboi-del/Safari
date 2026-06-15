@@ -103,7 +103,8 @@ export function CreateTrailForm() {
         <h2>Create a trail</h2>
         <p>
           Upload a GPX file from your phone or watch, add details, and share the route with other
-          budget hikers. Free — no AllTrails subscription needed.
+          Share GPX routes with the community on Savanna Trails — free maps and reviews for
+          budget hikers.
         </p>
       </div>
 

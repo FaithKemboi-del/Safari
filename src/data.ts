@@ -225,6 +225,55 @@ export const destinations: Destination[] = [
     highlights: ['Canyon hikes', 'Cycling trails', 'Geothermal vents', 'Day-trip from Nairobi'],
     mapQuery: "Hell's Gate National Park Kenya",
   },
+  {
+    slug: 'longonot',
+    title: 'Mount Longonot National Park',
+    location: 'Naivasha, Nakuru County',
+    region: 'Rift Valley',
+    experienceType: 'hike',
+    description:
+      'A dormant stratovolcano with a rewarding crater rim hike and sweeping views across the Rift Valley — one of Kenya’s most popular budget day trips from Nairobi.',
+    hikeDifficulty:
+      'Moderate — steep rim sections, 4–6 hours round trip. Start early to avoid midday heat.',
+    pricing: 'From ~$26 park entry + matatu ~$8 from Nairobi',
+    transportAndLogistics:
+      'Matatu to Naivasha (~1.5 hrs), then shared taxi to the gate. Most visitors finish as a day trip.',
+    additionalInfo:
+      'Carry 2L+ water, sun protection, and grippy shoes. Combine with Lake Naivasha boat lunch on the way back.',
+    image:
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80',
+    ],
+    highlights: ['Crater rim hike', 'Rift Valley views', 'Budget day trip', 'Savanna Trails map'],
+    mapQuery: 'Mount Longonot National Park Kenya',
+  },
+  {
+    slug: 'karura-forest',
+    title: 'Karura Forest',
+    location: 'Nairobi',
+    region: 'Nairobi',
+    experienceType: 'hike',
+    description:
+      'A lush urban forest reserve with marked walking and biking trails, waterfalls, caves, and picnic sites — the easiest nature escape in Nairobi.',
+    hikeDifficulty: 'Easy to moderate — shaded forest loops from 5 km to 15 km.',
+    pricing: 'From ~$4 entry',
+    transportAndLogistics:
+      'Uber or matatu to the Limuru Road or Sigiria gate. Safe for solo daytime visits on main trails.',
+    additionalInfo:
+      'Visit the waterfall and Mau Mau caves on the middle loop. Weekends are busier — weekday mornings are quietest.',
+    image:
+      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1600&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80',
+    ],
+    highlights: ['Forest waterfalls', 'Caves', 'City escape', 'Family-friendly'],
+    mapQuery: 'Karura Forest Nairobi',
+  },
 ];
 
 export const communityUpdates: CommunityUpdate[] = [
