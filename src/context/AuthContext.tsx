@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
-import { isAdminEmail, isSupabaseConfigured } from '../lib/config';
+import { isSupabaseConfigured } from '../lib/config';
 import { getSupabase } from '../lib/supabase';
 import { initialsFromName } from '../lib/format';
 
@@ -35,7 +35,7 @@ const ADMIN_PROFILE_TIMEOUT_MS = 12_000;
 const SESSION_BOOTSTRAP_TIMEOUT_MS = 10_000;
 
 async function fetchIsAdmin(user: User | null): Promise<boolean> {
-  if (!user || !isAdminEmail(user.email)) {
+  if (!user) {
     return false;
   }
 
@@ -82,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isConfigured = isSupabaseConfigured();
 
   const syncAdminStatus = useCallback(async (nextUser: User | null) => {
-    if (!nextUser || !isAdminEmail(nextUser.email)) {
+    if (!nextUser) {
       setIsAdmin(false);
       setAdminLoading(false);
       return false;
@@ -212,19 +212,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async adminSignIn(email, password) {
         const supabase = getSupabase();
         if (!supabase) {
-          return {
-            error:
-              'Admin login requires Supabase. Configure .env.local and seed the admin user first.',
-          };
-        }
-
-        if (!isAdminEmail(email)) {
-          return { error: 'This email is not authorized for admin access.' };
+          return { error: 'Admin sign-in is not available right now.' };
         }
 
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
-          return { error: error.message };
+          return { error: 'Invalid email or password.' };
         }
 
         setAdminLoading(true);
@@ -233,10 +226,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const admin = await fetchIsAdmin(data.user);
           if (!admin) {
             await supabase.auth.signOut();
-            return {
-              error:
-                'Account found but admin access is not enabled. Run scripts/seed-admin-user.mjs and migration 004.',
-            };
+            return { error: 'You do not have access to this area.' };
           }
 
           setUser(data.user);

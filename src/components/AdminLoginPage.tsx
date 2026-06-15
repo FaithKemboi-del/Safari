@@ -1,6 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { ADMIN_EMAIL } from '../lib/config';
 
 type AdminLoginPageProps = {
   onSuccess: () => void;
@@ -8,7 +7,7 @@ type AdminLoginPageProps = {
 
 export function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
   const { adminSignIn, isConfigured, loading, adminLoading, isAdmin, user } = useAuth();
-  const [email, setEmail] = useState(ADMIN_EMAIL);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -36,7 +35,7 @@ export function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
       onSuccess();
     } catch (error) {
       console.error('Admin sign-in failed:', error);
-      setMessage('Something went wrong. Check your connection and try again.');
+      setMessage('Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -71,22 +70,18 @@ export function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
         <span className="eyebrow">Admin sign in</span>
         <h2>Travel operations login</h2>
         {!isConfigured ? (
-          <p className="auth-message">
-            Supabase is not configured. Add <code>VITE_SUPABASE_URL</code> and{' '}
-            <code>VITE_SUPABASE_ANON_KEY</code> to <code>.env.local</code>, then run the admin seed
-            script.
-          </p>
+          <p className="auth-message">Admin sign-in is not available right now.</p>
         ) : (
           <form className="form-stack" onSubmit={handleSubmit}>
             <label>
-              Admin email
+              Email address
               <input
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder={ADMIN_EMAIL}
+                placeholder="you@example.com"
                 required
-                autoComplete="username"
+                autoComplete="off"
               />
             </label>
             <label>
@@ -98,7 +93,7 @@ export function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
                 placeholder="••••••••"
                 required
                 minLength={8}
-                autoComplete="current-password"
+                autoComplete="new-password"
               />
             </label>
             {message ? <p className="auth-message">{message}</p> : null}
