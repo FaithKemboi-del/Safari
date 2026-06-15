@@ -1,3 +1,5 @@
+import { TRAILS_FEATURE_NAME } from './config';
+
 export type LatLng = { lat: number; lng: number };
 
 export type ElevationPoint = {
@@ -76,7 +78,7 @@ export function buildGpx({
     .join('');
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<gpx version="1.1" creator="Savanna Luxe Trails" xmlns="http://www.topografix.com/GPX/1/1">
+<gpx version="1.1" creator="${TRAILS_FEATURE_NAME}" xmlns="http://www.topografix.com/GPX/1/1">
   <metadata><name>${escapeXml(name)}</name></metadata>
   <trk><name>${escapeXml(name)}</name><trkseg>${trackPoints}</trkseg></trk>
 </gpx>`;

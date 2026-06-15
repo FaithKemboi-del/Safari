@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { BRAND_NAME } from '../lib/config';
 
 type ErrorBoundaryProps = {
   children: ReactNode;
@@ -16,7 +17,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('Savanna Luxe render error:', error, info.componentStack);
+    console.error(`${BRAND_NAME} render error:`, error, info.componentStack);
   }
 
   render() {

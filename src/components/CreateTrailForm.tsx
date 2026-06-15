@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTrails } from '../context/TrailsContext';
 import type { SavannaTrail } from '../data/savannaTrails';
+import { BRAND_NAME, TRAILS_FEATURE_NAME } from '../lib/config';
 import { parseGpx } from '../lib/trailUtils';
 import { buildTrailFromRoute, createTrail } from '../services/trailsApi';
 import { TrailMap } from './TrailMap';
@@ -29,7 +30,7 @@ export function CreateTrailForm() {
     return buildTrailFromRoute({
       title: title.trim(),
       location: location.trim(),
-      description: description.trim() || 'Community-submitted trail on Savanna Luxe.',
+      description: description.trim() || `Community-submitted trail on ${BRAND_NAME}.`,
       budget: budget.trim(),
       difficulty,
       routeType,
@@ -103,8 +104,7 @@ export function CreateTrailForm() {
         <h2>Create a trail</h2>
         <p>
           Upload a GPX file from your phone or watch, add details, and share the route with other
-          Share GPX routes with the community on Savanna Trails — free maps and reviews for
-          budget hikers.
+          hikers on {TRAILS_FEATURE_NAME} — free maps and reviews for budget explorers.
         </p>
       </div>
 

@@ -13,6 +13,7 @@ import {
   type HikeRecord,
 } from '../categoryContent';
 import { useAuth } from '../context/AuthContext';
+import { TRAILS_FEATURE_NAME } from '../lib/config';
 import { useTrails } from '../context/TrailsContext';
 import { readJson, writeJson } from '../lib/storage';
 import { CategorySpotActions, SpotActionBar } from './CategorySpotActions';
@@ -168,7 +169,7 @@ function HikingCategoryPage({
 
       <section className="section hiking-trails-section">
         <div className="section-intro">
-          <h2>Savanna Trails — built in, free</h2>
+          <h2>{TRAILS_FEATURE_NAME} — built in, free</h2>
           <p className="savanna-trails-lead">
             <strong>Interactive maps, elevation profiles, GPX downloads, GPS recording, and hiker reviews</strong>
             — no subscription required. Powered by OpenStreetMap.
@@ -185,7 +186,7 @@ function HikingCategoryPage({
         <div className="trail-map-guide glass-panel savanna-trails-banner">
           <div>
             <span className="eyebrow">Get the full trail map</span>
-            <h3>Follow every route on Savanna Trails</h3>
+            <h3>Follow every route on {TRAILS_FEATURE_NAME}</h3>
             <p>
               Open waypoint markers, elevation charts, and live GPS tracking — all on this site.
               Download GPX files or record your hike directly from your phone.

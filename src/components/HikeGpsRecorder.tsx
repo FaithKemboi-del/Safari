@@ -8,6 +8,7 @@ import {
   type GpsPoint,
 } from '../lib/trailUtils';
 import type { RecordedHikeTrack, SavannaTrail } from '../data/savannaTrails';
+import { BRAND_NAME } from '../lib/config';
 import { fetchUserHikeTracks, saveHikeTrack, syncLocalTracksToCloud } from '../services/trailsApi';
 import { useAuth } from '../context/AuthContext';
 import { TrailMap } from './TrailMap';
@@ -277,7 +278,7 @@ export function HikeGpsRecorder({
             onClick={() =>
               downloadTextFile(
                 `${activeTrail?.id ?? 'hike'}-live.gpx`,
-                buildGpx({ name: activeTrail?.title ?? 'Savanna hike', points }),
+                buildGpx({ name: activeTrail?.title ?? `${BRAND_NAME} hike`, points }),
                 'application/gpx+xml',
               )
             }

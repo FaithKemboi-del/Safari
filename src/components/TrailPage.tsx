@@ -1,5 +1,6 @@
 import { useTrails } from '../context/TrailsContext';
 import { getSavannaTrail } from '../data/savannaTrails';
+import { TRAILS_FEATURE_NAME } from '../lib/config';
 import { TrailExplorer } from './TrailExplorer';
 
 export function TrailPage({ trailId }: { trailId: string }) {
@@ -29,7 +30,7 @@ export function TrailPage({ trailId }: { trailId: string }) {
           <a className="category-back" href="#category/hiking">
             ← Back to hiking
           </a>
-          <span className="eyebrow">Savanna Trails</span>
+          <span className="eyebrow">{TRAILS_FEATURE_NAME}</span>
           <span className="spot-budget trail-page-budget">{trail.budget}</span>
           <h1>{trail.title}</h1>
           <p>

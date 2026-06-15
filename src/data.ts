@@ -247,7 +247,7 @@ export const destinations: Destination[] = [
       'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80',
     ],
-    highlights: ['Crater rim hike', 'Rift Valley views', 'Budget day trip', 'Savanna Trails map'],
+    highlights: ['Crater rim hike', 'Rift Valley views', 'Budget day trip', 'Safiri Trails map'],
     mapQuery: 'Mount Longonot National Park Kenya',
   },
   {

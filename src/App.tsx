@@ -21,10 +21,13 @@ import {
 import { useAuth } from './context/AuthContext';
 import { useData } from './context/DataContext';
 import { fetchCommunityUpdates, postCommunityUpdate } from './services/safariApi';
+import { Brand } from './components/Brand';
 import { CategoryIcon, CategoryPage } from './components/CategoryPage';
 import { AdminLoginPage } from './components/AdminLoginPage';
 import { AdminProtected } from './components/AdminProtected';
+import { NavIcon, ProvinceIcon, type NavIconName } from './components/SafiriIcons';
 import { TrailPage } from './components/TrailPage';
+import { BRAND_NAME, TRAILS_FEATURE_NAME } from './lib/config';
 
 type Route =
   | { page: 'home' }
@@ -39,11 +42,11 @@ type Route =
   | { page: 'admin-login' }
   | { page: 'admin' };
 
-const navItems = [
-  { label: 'Home', hash: '#home' },
-  { label: 'Destinations', hash: '#destinations' },
-  { label: 'Itineraries', hash: '#itineraries' },
-  { label: 'Plan with AI', hash: '#plan-ai' },
+const navItems: { label: string; hash: string; icon: NavIconName }[] = [
+  { label: 'Home', hash: '#home', icon: 'home' },
+  { label: 'Destinations', hash: '#destinations', icon: 'destinations' },
+  { label: 'Itineraries', hash: '#itineraries', icon: 'itineraries' },
+  { label: 'Plan with AI', hash: '#plan-ai', icon: 'plan' },
 ];
 
 const adminTables = {
@@ -187,13 +190,7 @@ function App() {
 function Header({ activePage }: { activePage: string }) {
   return (
     <header className="topbar">
-      <a className="brand" href="#home" aria-label="Savanna Luxe home">
-        <span className="brand-mark">SL</span>
-        <span>
-          <strong>Savanna Luxe</strong>
-          <small>Budget Kenya Travel</small>
-        </span>
-      </a>
+      <Brand />
 
       <nav className="nav-links" aria-label="Primary navigation">
         {navItems.map((item) => (
@@ -202,6 +199,7 @@ function Header({ activePage }: { activePage: string }) {
             className={activePage === item.hash.replace('#', '') ? 'active' : ''}
             href={item.hash}
           >
+            <NavIcon name={item.icon} />
             {item.label}
           </a>
         ))}
@@ -380,7 +378,7 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
             <span className="eyebrow">Ready to explore?</span>
             <h2 id="landing-cta-title">Your next Kenya adventure starts here.</h2>
             <p>
-              Browse budget destinations, follow Savanna Trails with free maps, and get live tips
+              Browse budget destinations, follow {TRAILS_FEATURE_NAME} with free maps, and get live tips
               from travelers on the ground — no expensive tour packages required.
             </p>
             <ul className="landing-cta-points">
@@ -426,7 +424,7 @@ function DestinationsPage() {
 
   return (
     <PageFrame
-      eyebrow="Safari destinations"
+      eyebrow="Safiri destinations"
       title="Find affordable places to explore"
       body="Search by destination, town, or county. Filter by Kenyan province to narrow results."
     >
@@ -439,14 +437,22 @@ function DestinationsPage() {
             placeholder="Try Eldoret, Samburu, Maasai Mara, Diani..."
           />
         </label>
-        <label>
-          Filter by province
-          <select value={province} onChange={(event) => setProvince(event.target.value as typeof province)}>
+        <div className="province-filter" role="group" aria-label="Filter by province">
+          <span className="province-filter-label">Filter by province</span>
+          <div className="province-filter-chips">
             {KENYA_PROVINCE_FILTER_OPTIONS.map((provinceName) => (
-              <option key={provinceName}>{provinceName}</option>
+              <button
+                key={provinceName}
+                className={province === provinceName ? 'active' : ''}
+                onClick={() => setProvince(provinceName)}
+                type="button"
+              >
+                <ProvinceIcon name={provinceName} />
+                {provinceName}
+              </button>
             ))}
-          </select>
-        </label>
+          </div>
+        </div>
       </div>
       <div className="destination-grid">
         {filteredDestinations.map((destination) => (
@@ -700,7 +706,7 @@ function AuthPage({ mode }: { mode: 'signin' | 'signup' }) {
 
       <div className="auth-card">
         <span className="eyebrow">{isSignUp ? 'Create account' : 'Sign in'}</span>
-        <h2>{isSignUp ? 'Join Savanna Luxe' : 'Access your dashboard'}</h2>
+        <h2>{isSignUp ? `Join ${BRAND_NAME}` : 'Access your dashboard'}</h2>
         <div className="social-buttons">
           <button type="button">Continue with Google</button>
           <button type="button">Continue with Apple</button>
@@ -745,7 +751,7 @@ function AuthPage({ mode }: { mode: 'signin' | 'signup' }) {
           </button>
         </form>
         <p className="auth-switch">
-          {isSignUp ? 'Already have an account?' : 'New to Savanna Luxe?'}{' '}
+          {isSignUp ? 'Already have an account?' : `New to ${BRAND_NAME}?`}{' '}
           <a href={isSignUp ? '#signin' : '#signup'}>{isSignUp ? 'Sign in' : 'Create one'}</a>
         </p>
       </div>
@@ -901,13 +907,7 @@ function AdminDashboard({ onSignOut }: { onSignOut: () => void }) {
   return (
     <section className="admin-shell">
       <aside className="admin-sidebar">
-        <a className="brand admin-brand" href="#home">
-          <span className="brand-mark">SL</span>
-          <span>
-            <strong>Travel Admin</strong>
-            <small>Operations</small>
-          </span>
-        </a>
+        <Brand className="brand admin-brand" />
         {(['Destinations', 'Itineraries', 'Routes'] as const).map((item) => (
           <button
             key={item}
@@ -1314,7 +1314,7 @@ function PlanWithAIPage() {
       const wantsHike = /hike|trek|trail|waterfall/i.test(prompt) || selectedInterests.includes('Hiking');
 
       const title = wantsCoast
-        ? 'Savanna to Shore Signature Route'
+        ? 'Safiri to Shore Signature Route'
         : wantsHike
           ? 'Rift Valley Trails & Wildlife Circuit'
           : 'Classic Kenya Wildlife Luxe Loop';
@@ -1476,13 +1476,7 @@ function Footer() {
   return (
     <footer className="footer section-dark">
       <div>
-        <a className="brand" href="#home">
-          <span className="brand-mark">SL</span>
-          <span>
-            <strong>Savanna Luxe</strong>
-            <small>Budget Kenya Travel</small>
-          </span>
-        </a>
+        <Brand />
         <p>Affordable Kenya travel discovery, route planning, and community tips for budget explorers.</p>
       </div>
       <div className="footer-links">

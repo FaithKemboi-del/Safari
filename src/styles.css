@@ -148,6 +148,74 @@ img {
   letter-spacing: -0.04em;
 }
 
+.brand-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.nav-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-icon {
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.88;
+}
+
+.province-filter {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.province-filter-label {
+  color: var(--charcoal);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.province-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.province-filter-chips button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--charcoal);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.province-filter-chips button:hover {
+  border-color: var(--gold-dark);
+}
+
+.province-filter-chips button.active {
+  border-color: var(--gold-bright);
+  background: rgba(212, 160, 90, 0.18);
+  color: var(--earth-deep);
+}
+
+.province-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+}
+
 .brand strong,
 .brand small {
   display: block;
@@ -2806,7 +2874,7 @@ td button:last-child {
   }
 }
 
-/* Savanna Trails */
+/* Safiri Trails */
 .hiking-trails-section .section-intro {
   margin-bottom: 1.5rem;
 }
