@@ -8,9 +8,10 @@ type AdminProtectedProps = {
 };
 
 export function AdminProtected({ onNavigate, children }: AdminProtectedProps) {
-  const { isAdmin, loading, user } = useAuth();
+  const { isAdmin, loading, adminLoading, user } = useAuth();
+  const verifying = loading || (Boolean(user) && adminLoading);
 
-  if (loading) {
+  if (verifying) {
     return (
       <section className="admin-shell admin-shell--gate">
         <p className="auth-message">Verifying admin access...</p>

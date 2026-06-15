@@ -7,17 +7,18 @@ type AdminLoginPageProps = {
 };
 
 export function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
-  const { adminSignIn, isConfigured, loading, isAdmin } = useAuth();
+  const { adminSignIn, isConfigured, loading, adminLoading, isAdmin, user } = useAuth();
   const [email, setEmail] = useState(ADMIN_EMAIL);
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const verifying = loading || (Boolean(user) && adminLoading);
 
   useEffect(() => {
-    if (!loading && isAdmin) {
+    if (!verifying && isAdmin) {
       onSuccess();
     }
-  }, [isAdmin, loading, onSuccess]);
+  }, [isAdmin, verifying, onSuccess]);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -41,7 +42,7 @@ export function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
     }
   };
 
-  if (loading) {
+  if (verifying) {
     return (
       <section className="auth-page admin-login-page">
         <div className="auth-card admin-login-card">

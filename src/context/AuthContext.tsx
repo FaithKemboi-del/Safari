@@ -15,7 +15,10 @@ import { initialsFromName } from '../lib/format';
 type AuthContextValue = {
   user: User | null;
   session: Session | null;
+  /** True while the initial Supabase session is being restored. */
   loading: boolean;
+  /** True while the admin flag is being loaded from profiles. */
+  adminLoading: boolean;
   isConfigured: boolean;
   isAdmin: boolean;
   displayName: string;
@@ -28,6 +31,9 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+const ADMIN_PROFILE_TIMEOUT_MS = 12_000;
+const SESSION_BOOTSTRAP_TIMEOUT_MS = 10_000;
+
 async function fetchIsAdmin(user: User | null): Promise<boolean> {
   if (!user || !isAdminEmail(user.email)) {
     return false;
@@ -38,31 +44,59 @@ async function fetchIsAdmin(user: User | null): Promise<boolean> {
     return false;
   }
 
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('is_admin')
-    .eq('id', user.id)
-    .maybeSingle();
+  try {
+    const profileQuery = supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .maybeSingle();
 
-  if (error) {
-    console.error('Failed to load admin profile:', error);
+    const { data, error } = await Promise.race([
+      profileQuery,
+      new Promise<Awaited<typeof profileQuery>>((_, reject) => {
+        window.setTimeout(
+          () => reject(new Error('Admin profile check timed out')),
+          ADMIN_PROFILE_TIMEOUT_MS,
+        );
+      }),
+    ]);
+
+    if (error) {
+      console.error('Failed to load admin profile:', error);
+      return false;
+    }
+
+    return Boolean(data?.is_admin);
+  } catch (profileError) {
+    console.error('Failed to load admin profile:', profileError);
     return false;
   }
-
-  return Boolean(data?.is_admin);
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [adminLoading, setAdminLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const isConfigured = isSupabaseConfigured();
 
   const syncAdminStatus = useCallback(async (nextUser: User | null) => {
-    const admin = await fetchIsAdmin(nextUser);
-    setIsAdmin(admin);
-    return admin;
+    if (!nextUser || !isAdminEmail(nextUser.email)) {
+      setIsAdmin(false);
+      setAdminLoading(false);
+      return false;
+    }
+
+    setAdminLoading(true);
+
+    try {
+      const admin = await fetchIsAdmin(nextUser);
+      setIsAdmin(admin);
+      return admin;
+    } finally {
+      setAdminLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -70,32 +104,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (!supabase) {
       setLoading(false);
+      setAdminLoading(false);
       return;
     }
 
+    let cancelled = false;
+
+    const finishBootstrap = () => {
+      if (!cancelled) {
+        setLoading(false);
+      }
+    };
+
+    const bootstrapTimeout = window.setTimeout(finishBootstrap, SESSION_BOOTSTRAP_TIMEOUT_MS);
+
     supabase.auth
       .getSession()
-      .then(async ({ data }) => {
+      .then(({ data }) => {
+        if (cancelled) {
+          return;
+        }
+
         setSession(data.session);
         setUser(data.session?.user ?? null);
-        await syncAdminStatus(data.session?.user ?? null);
-        setLoading(false);
+        finishBootstrap();
+        window.setTimeout(() => {
+          void syncAdminStatus(data.session?.user ?? null);
+        }, 0);
       })
       .catch((sessionError) => {
         console.error('Failed to restore auth session:', sessionError);
-        setLoading(false);
+        finishBootstrap();
       });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, nextSession) => {
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      if (cancelled) {
+        return;
+      }
+
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
-      await syncAdminStatus(nextSession?.user ?? null);
-      setLoading(false);
+      finishBootstrap();
+
+      // Defer async profile work — awaiting inside this callback can deadlock getSession().
+      window.setTimeout(() => {
+        void syncAdminStatus(nextSession?.user ?? null);
+      }, 0);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      window.clearTimeout(bootstrapTimeout);
+      subscription.unsubscribe();
+    };
   }, [syncAdminStatus]);
 
   const displayName = useMemo(() => {
@@ -117,6 +180,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       session,
       loading,
+      adminLoading,
       isConfigured,
       isAdmin,
       displayName,
@@ -163,24 +227,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return { error: error.message };
         }
 
-        const admin = await fetchIsAdmin(data.user);
-        if (!admin) {
-          await supabase.auth.signOut();
-          return {
-            error:
-              'Account found but admin access is not enabled. Run scripts/seed-admin-user.mjs and migration 004.',
-          };
-        }
+        setAdminLoading(true);
 
-        setUser(data.user);
-        setSession(data.session);
-        setIsAdmin(true);
-        return {};
+        try {
+          const admin = await fetchIsAdmin(data.user);
+          if (!admin) {
+            await supabase.auth.signOut();
+            return {
+              error:
+                'Account found but admin access is not enabled. Run scripts/seed-admin-user.mjs and migration 004.',
+            };
+          }
+
+          setUser(data.user);
+          setSession(data.session);
+          setIsAdmin(true);
+          return {};
+        } finally {
+          setAdminLoading(false);
+        }
       },
       async signOut() {
         const supabase = getSupabase();
         sessionStorage.removeItem('safari-signed-in');
         setIsAdmin(false);
+        setAdminLoading(false);
         if (!supabase) {
           setUser(null);
           setSession(null);
@@ -189,7 +260,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await supabase.auth.signOut();
       },
     }),
-    [user, session, loading, isConfigured, isAdmin, displayName, avatarInitials],
+    [user, session, loading, adminLoading, isConfigured, isAdmin, displayName, avatarInitials],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
