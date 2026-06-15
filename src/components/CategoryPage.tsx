@@ -18,23 +18,7 @@ import { readJson, writeJson } from '../lib/storage';
 import { CategorySpotActions, SpotActionBar } from './CategorySpotActions';
 import { CreateTrailForm } from './CreateTrailForm';
 import { HikeGpsRecorder } from './HikeGpsRecorder';
-
-function CategorySpotCard({
-  image,
-  className,
-  children,
-}: {
-  image: string;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <article className={['category-spot-card', className].filter(Boolean).join(' ')}>
-      <img src={image} alt="" />
-      <div className="category-spot-card__body">{children}</div>
-    </article>
-  );
-}
+import { SpotCard } from './SpotCard';
 
 function CategoryIcon({ icon }: { icon: Category['icon'] }) {
   const paths: Record<Category['icon'], string> = {
@@ -102,13 +86,13 @@ function GenericCategoryPage({
         </div>
         <div className="category-spot-grid">
           {spots.map((spot) => (
-            <CategorySpotCard key={spot.id} image={spot.image}>
+            <SpotCard key={spot.id} image={spot.image}>
               <span className="spot-budget">{spot.budget}</span>
               <h3>{spot.title}</h3>
               <p className="spot-location">{spot.location}</p>
               <p>{spot.description}</p>
               <CategorySpotActions spot={spot} />
-            </CategorySpotCard>
+            </SpotCard>
           ))}
         </div>
       </section>
@@ -216,7 +200,7 @@ function HikingCategoryPage({
           {trailsLoading && <p className="community-empty">Loading trails...</p>}
           {trailsError ? <p className="auth-message">{trailsError}</p> : null}
           {trails.map((trail) => (
-            <CategorySpotCard key={trail.id} className="category-spot-card--trail" image={trail.image}>
+            <SpotCard key={trail.id} className="category-spot-card--trail" image={trail.image}>
               <span className="spot-budget">{trail.budget}</span>
               <h3>{trail.title}</h3>
               <p className="spot-location">{trail.location}</p>
@@ -237,7 +221,7 @@ function HikingCategoryPage({
                   Open interactive trail map →
                 </a>
               </div>
-            </CategorySpotCard>
+            </SpotCard>
           ))}
         </div>
       </section>
@@ -248,13 +232,13 @@ function HikingCategoryPage({
         </div>
         <div className="category-spot-grid">
           {spots.map((spot) => (
-            <CategorySpotCard key={spot.id} image={spot.image}>
+            <SpotCard key={spot.id} image={spot.image}>
               <span className="spot-budget">{spot.budget}</span>
               <h3>{spot.title}</h3>
               <p className="spot-location">{spot.location}</p>
               <p>{spot.description}</p>
               <CategorySpotActions spot={spot} />
-            </CategorySpotCard>
+            </SpotCard>
           ))}
         </div>
       </section>
@@ -404,7 +388,7 @@ function EventsCategoryPage({
 
         <div className="category-spot-grid">
           {filtered.map((event) => (
-            <CategorySpotCard
+            <SpotCard
               key={event.id}
               className={`event-card ${selectedEventId === event.id ? 'selected' : ''}`}
               image={event.image}
@@ -435,7 +419,7 @@ function EventsCategoryPage({
                   ) : null}
                 </div>
               </div>
-            </CategorySpotCard>
+            </SpotCard>
           ))}
         </div>
       </section>

@@ -17,6 +17,7 @@ import { useAuth } from './context/AuthContext';
 import { useData } from './context/DataContext';
 import { fetchCommunityUpdates, postCommunityUpdate } from './services/safariApi';
 import { CategoryIcon, CategoryPage } from './components/CategoryPage';
+import { SpotCard } from './components/SpotCard';
 import { TrailPage } from './components/TrailPage';
 
 type Route =
@@ -254,24 +255,17 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
           title="What travelers are searching right now"
           body="What budget travelers are booking this week — shared vans, SGR hops, and low-cost stays."
         />
-        <div className="trending-grid">
-          {trendingThisWeek.map((item, index) => (
-            <article
-              key={item.id}
-              className={`trending-card ${index === 0 ? 'featured' : ''}`}
-            >
-              <img src={item.image} alt="" />
-              <div className="trending-overlay" />
-              <div className="trending-content">
-                <span className="trending-tag">{item.tag}</span>
-                <h3>{item.title}</h3>
-                <p>{item.location}</p>
-                <div className="trending-meta">
-                  <small>{item.searches}</small>
-                  <a href={`#destination/${item.slug}`}>Explore</a>
-                </div>
+        <div className="category-spot-grid landing-card-grid">
+          {trendingThisWeek.map((item) => (
+            <SpotCard key={item.id} image={item.image}>
+              <span className="spot-budget">{item.tag}</span>
+              <h3>{item.title}</h3>
+              <p className="spot-location">{item.location}</p>
+              <p>{item.searches}</p>
+              <div className="spot-actions">
+                <a href={`#destination/${item.slug}`}>Explore</a>
               </div>
-            </article>
+            </SpotCard>
           ))}
         </div>
       </section>
@@ -305,9 +299,17 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
           title="Top spots that won't break the bank"
           body="Wildlife, hikes, coast, and hidden gems with honest pricing, transport options, and safety notes."
         />
-        <div className="destination-row">
+        <div className="category-spot-grid landing-card-grid">
           {destinations.slice(0, 3).map((destination) => (
-            <DestinationCard key={destination.slug} destination={destination} compact />
+            <SpotCard key={destination.slug} image={destination.image}>
+              <span className="spot-budget">{destination.region}</span>
+              <h3>{destination.title}</h3>
+              <p className="spot-location">{destination.location}</p>
+              <p>{destination.description}</p>
+              <div className="spot-actions">
+                <a href={`#destination/${destination.slug}`}>View details</a>
+              </div>
+            </SpotCard>
           ))}
         </div>
       </section>
@@ -318,17 +320,17 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
           title="Affordable routes that still feel epic"
           body="Day-by-day plans with public transport, shared vans, camps, and hostels where possible."
         />
-        <div className="itinerary-showcase">
+        <div className="category-spot-grid landing-card-grid">
           {itineraries.map((itinerary) => (
-            <article key={itinerary.id} className="showcase-card">
-              <img src={itinerary.image} alt="" />
-              <div>
-                <span>{itinerary.duration}</span>
-                <h3>{itinerary.title}</h3>
-                <p>{itinerary.route}</p>
-                <strong>{itinerary.price}</strong>
+            <SpotCard key={itinerary.id} image={itinerary.image}>
+              <span className="spot-budget">{itinerary.duration}</span>
+              <h3>{itinerary.title}</h3>
+              <p className="spot-location">{itinerary.route}</p>
+              <p>{itinerary.style}</p>
+              <div className="category-card-footer">
+                <strong className="landing-card-price">{itinerary.price}</strong>
               </div>
-            </article>
+            </SpotCard>
           ))}
         </div>
       </section>
@@ -339,15 +341,15 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
           title="Designed to capture attention and trust"
           body="Real tips from travelers on the ground — so you know what to expect before you go."
         />
-        <div className="testimonial-grid">
+        <div className="category-spot-grid landing-card-grid">
           {testimonials.map((testimonial) => (
-            <figure key={testimonial.name} className="testimonial-card">
+            <SpotCard key={testimonial.name} className="testimonial-card">
               <blockquote>“{testimonial.quote}”</blockquote>
               <figcaption>
                 <strong>{testimonial.name}</strong>
                 <span>{testimonial.role}</span>
               </figcaption>
-            </figure>
+            </SpotCard>
           ))}
         </div>
       </section>

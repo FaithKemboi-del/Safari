@@ -39,7 +39,7 @@
   --shadow-warm: 0 20px 50px rgba(240, 138, 42, 0.14);
   --overlay-heavy: rgba(58, 38, 26, 0.9);
 
-  /* Category cards — change here to resize every card site-wide */
+  /* Uniform spot cards — category pages + landing page */
   --category-card-image-height: 220px;
   --category-card-body-min-height: 21.5rem;
   --category-card-title-lines: 2;
@@ -1035,6 +1035,66 @@ h2 {
   padding-bottom: 3rem;
 }
 
+.landing-card-grid {
+  width: 100%;
+}
+
+.landing-card-price {
+  color: var(--gold-dark);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.testimonial-card.category-spot-card {
+  min-height: calc(var(--category-card-image-height) + var(--category-card-body-min-height));
+  transition:
+    transform var(--transition-smooth),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-smooth);
+}
+
+.testimonial-card.category-spot-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 179, 71, 0.4);
+  box-shadow: 0 20px 55px rgba(58, 38, 26, 0.1);
+}
+
+.testimonial-card blockquote {
+  display: -webkit-box;
+  flex: 1;
+  margin: 0;
+  overflow: hidden;
+  color: var(--charcoal);
+  font-size: 1.02rem;
+  line-height: 1.68;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  min-height: calc(1.68em * 4);
+}
+
+.testimonial-card figcaption {
+  display: grid;
+  gap: 0.18rem;
+  margin-top: auto;
+  padding-top: 0.85rem;
+}
+
+.testimonial-card figcaption strong {
+  color: var(--earth-deep);
+  font-size: 0.95rem;
+}
+
+.testimonial-card figcaption span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (min-width: 860px) {
+  .landing-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .landing-cta {
   position: relative;
   overflow: hidden;
@@ -1131,42 +1191,6 @@ h2 {
 
 .landing-cta-link:hover {
   color: var(--gold-bright);
-}
-
-.testimonial-card {
-  margin: 0;
-  padding: 1.35rem;
-  border: 1px solid var(--line);
-  border-radius: 1.5rem;
-  background: rgba(255, 249, 242, 0.94);
-  box-shadow: 0 16px 45px rgba(58, 38, 26, 0.08);
-  transition:
-    transform var(--transition-smooth),
-    border-color var(--transition-fast),
-    box-shadow var(--transition-smooth);
-}
-
-.testimonial-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(255, 179, 71, 0.4);
-  box-shadow: 0 20px 55px rgba(58, 38, 26, 0.1);
-}
-
-.testimonial-card blockquote {
-  margin: 0 0 1.2rem;
-  color: var(--charcoal);
-  font-size: 1.05rem;
-  line-height: 1.7;
-}
-
-.testimonial-card figcaption {
-  display: grid;
-  gap: 0.18rem;
-}
-
-.testimonial-card span {
-  color: var(--muted);
-  font-size: 0.9rem;
 }
 
 .page-hero {
