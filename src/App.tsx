@@ -475,6 +475,9 @@ function DestinationDetailPage({ slug }: { slug: string }) {
           <h1>{destination.title}</h1>
           <p>{destination.description}</p>
           <div className="detail-badges">
+            {destination.pricing ? (
+              <span className="detail-budget">{destination.pricing}</span>
+            ) : null}
             <span>{destination.region}</span>
             <span>{isHike ? 'Hiking' : 'Budget travel'}</span>
             {isHike && destination.hikeDifficulty && (

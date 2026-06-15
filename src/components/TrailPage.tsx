@@ -30,6 +30,7 @@ export function TrailPage({ trailId }: { trailId: string }) {
             ← Back to hiking
           </a>
           <span className="eyebrow">Savanna Trails</span>
+          <span className="spot-budget trail-page-budget">{trail.budget}</span>
           <h1>{trail.title}</h1>
           <p>
             {trail.location} · {trail.difficultyLabel} · {trail.duration}
