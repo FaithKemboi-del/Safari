@@ -6,7 +6,7 @@ type AdminLoginPageProps = {
 };
 
 export function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
-  const { adminSignIn, isConfigured, loading, adminLoading, isAdmin, user } = useAuth();
+  const { adminSignIn, loading, adminLoading, isAdmin, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -69,39 +69,35 @@ export function AdminLoginPage({ onSuccess }: AdminLoginPageProps) {
       <div className="auth-card admin-login-card">
         <span className="eyebrow">Admin sign in</span>
         <h2>Travel operations login</h2>
-        {!isConfigured ? (
-          <p className="auth-message">Admin sign-in is not available right now.</p>
-        ) : (
-          <form className="form-stack" onSubmit={handleSubmit}>
-            <label>
-              Email address
-              <input
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@example.com"
-                required
-                autoComplete="off"
-              />
-            </label>
-            <label>
-              Password
-              <input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="••••••••"
-                required
-                minLength={8}
-                autoComplete="new-password"
-              />
-            </label>
-            {message ? <p className="auth-message">{message}</p> : null}
-            <button className="primary-button full-width" disabled={submitting} type="submit">
-              {submitting ? 'Signing in...' : 'Sign in to admin'}
-            </button>
-          </form>
-        )}
+        <form className="form-stack" onSubmit={handleSubmit}>
+          <label>
+            Email address
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="you@example.com"
+              required
+              autoComplete="off"
+            />
+          </label>
+          <label>
+            Password
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="••••••••"
+              required
+              minLength={8}
+              autoComplete="new-password"
+            />
+          </label>
+          {message ? <p className="auth-message">{message}</p> : null}
+          <button className="primary-button full-width" disabled={submitting} type="submit">
+            {submitting ? 'Signing in...' : 'Sign in to admin'}
+          </button>
+        </form>
         <p className="auth-switch">
           <a href="#home">← Back to site</a>
         </p>

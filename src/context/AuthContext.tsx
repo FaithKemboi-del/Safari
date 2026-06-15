@@ -212,7 +212,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async adminSignIn(email, password) {
         const supabase = getSupabase();
         if (!supabase) {
-          return { error: 'Admin sign-in is not available right now.' };
+          return { error: 'Sign-in failed. Please try again later.' };
         }
 
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
