@@ -4,7 +4,7 @@ function buildMapsHref(mapQuery: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`;
 }
 
-export function getDetailsHref(slug?: string, trailId?: string): string | undefined {
+export function getDetailsHref(slug?: string, trailId?: string): string {
   if (slug) {
     return `#destination/${slug}`;
   }
@@ -13,7 +13,7 @@ export function getDetailsHref(slug?: string, trailId?: string): string | undefi
     return `#trail/${trailId}`;
   }
 
-  return undefined;
+  return '#destinations';
 }
 
 type SpotActionBarProps = {
@@ -27,18 +27,20 @@ export function SpotActionBar({ slug, trailId, mapQuery, mapsHref }: SpotActionB
   const detailsHref = getDetailsHref(slug, trailId);
   const mapsUrl = mapsHref ?? (mapQuery ? buildMapsHref(mapQuery) : undefined);
 
-  if (!detailsHref && !mapsUrl) {
-    return null;
+  if (!mapsUrl) {
+    return (
+      <div className="spot-actions">
+        <a href={detailsHref}>View details</a>
+      </div>
+    );
   }
 
   return (
     <div className="spot-actions">
-      {detailsHref ? <a href={detailsHref}>View details</a> : null}
-      {mapsUrl ? (
-        <a href={mapsUrl} rel="noreferrer" target="_blank">
-          Open in Maps
-        </a>
-      ) : null}
+      <a href={detailsHref}>View details</a>
+      <a href={mapsUrl} rel="noreferrer" target="_blank">
+        Open in Maps
+      </a>
     </div>
   );
 }

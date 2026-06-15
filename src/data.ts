@@ -274,6 +274,58 @@ export const destinations: Destination[] = [
     highlights: ['Forest waterfalls', 'Caves', 'City escape', 'Family-friendly'],
     mapQuery: 'Karura Forest Nairobi',
   },
+  {
+    slug: 'diani',
+    title: 'Diani Beach & South Coast',
+    location: 'Kwale County',
+    region: 'Coast',
+    experienceType: 'standard',
+    description:
+      'White-sand beaches, reef snorkelling, and a laid-back backpacker corridor from Diani through Shimoni — Kenya’s most accessible tropical coast on a budget.',
+    pricing:
+      'Hostels from ~$25/night. Matatu and tuk-tuk hops from $1. Snorkel trips from ~$30 pp at the jetty.',
+    safetyAndConditions:
+      'Strong sun and rip currents on open beaches — swim near flagged areas. Haggle boat trips at the beach, not through hotel desks.',
+    transportAndLogistics:
+      'SGR to Mombasa then matatu/tuk-tuk to Diani (~2 hrs total). Flights to Ukunda airstrip for faster access.',
+    additionalInfo:
+      'Combine with Shimba Hills day trip or Wasini dolphin tour. Kilifi and Watamu are easy northbound hops on the coast road.',
+    image:
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1544551763-77aef23d0ce3?auto=format&fit=crop&w=1200&q=80',
+    ],
+    highlights: ['White-sand beaches', 'Snorkelling', 'Budget hostels', 'Coast road trips'],
+    mapQuery: 'Diani Beach Kenya',
+  },
+  {
+    slug: 'nairobi-national-park',
+    title: 'Nairobi National Park',
+    location: 'Nairobi',
+    region: 'Nairobi',
+    experienceType: 'standard',
+    description:
+      'A unique skyline safari minutes from the city — lions, rhinos, and giraffes with Nairobi’s towers on the horizon.',
+    pricing:
+      'Park entry ~$43 for non-residents. Shared van day tours from ~$60 pp from city hotels.',
+    safetyAndConditions:
+      'Stay in your vehicle except at designated picnic sites. Early morning drives are coolest and best for predators.',
+    transportAndLogistics:
+      '30-minute drive from central Nairobi. Most visitors book a shared van or Uber to the main gate.',
+    additionalInfo:
+      'Half-day is enough for a first visit. Combine with Giraffe Centre or Karen Blixen Museum on the same trip.',
+    image:
+      'https://images.unsplash.com/photo-1549366021-9f761d040a94?auto=format&fit=crop&w=1600&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=1200&q=80',
+    ],
+    highlights: ['Skyline safari', 'Rhino sightings', 'Day trip from Nairobi', 'Budget shared tours'],
+    mapQuery: 'Nairobi National Park Kenya',
+  },
 ];
 
 export const communityUpdates: CommunityUpdate[] = [

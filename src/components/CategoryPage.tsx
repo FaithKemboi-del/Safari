@@ -198,13 +198,13 @@ function HikingCategoryPage({
           </a>
         </div>
 
-        <div className="trail-list">
+        <div className="category-spot-grid">
           {trailsLoading && <p className="community-empty">Loading trails...</p>}
           {trailsError ? <p className="auth-message">{trailsError}</p> : null}
           {trails.map((trail) => (
-            <article key={trail.id} className="trail-card trail-card--explorer">
+            <article key={trail.id} className="category-spot-card category-spot-card--trail">
               <img src={trail.image} alt="" />
-              <div className="trail-content">
+              <div>
                 <span className="spot-budget">{trail.budget}</span>
                 <h3>{trail.title}</h3>
                 <p className="spot-location">{trail.location}</p>
@@ -216,8 +216,8 @@ function HikingCategoryPage({
                   <span>{trail.elevationGainM} m gain</span>
                 </div>
                 <SpotActionBar
-                  slug={trail.slug}
                   trailId={trail.id}
+                  mapQuery={trail.mapQuery}
                   mapsHref={trail.googleMapsUrl}
                 />
                 <a className="trail-map-link" href={`#trail/${trail.id}`}>
@@ -409,6 +409,10 @@ function EventsCategoryPage({
                   {event.location} · {event.dateLabel}
                 </p>
                 <p>{event.description}</p>
+                <SpotActionBar
+                  slug={event.slug}
+                  mapQuery={event.mapQuery ?? `${event.title} ${event.location} Kenya`}
+                />
                 {event.status === 'happening-now' && (
                   <button
                     className="secondary-button compact-button"

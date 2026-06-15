@@ -2310,8 +2310,8 @@ td button:last-child {
 
 .category-spot-card img {
   width: 100%;
-  aspect-ratio: 4 / 3;
-  height: auto;
+  height: 220px;
+  flex-shrink: 0;
   object-fit: cover;
 }
 
@@ -2416,9 +2416,12 @@ td button:last-child {
   padding-inline: max(1rem, calc((100vw - 1160px) / 2));
 }
 
-.trail-list {
-  display: grid;
-  gap: 1.5rem;
+.category-spot-card--trail .trail-meta {
+  margin: 0.35rem 0 0;
+}
+
+.category-spot-card--trail .trail-map-link {
+  margin-top: 0.35rem;
 }
 
 .trail-card {
