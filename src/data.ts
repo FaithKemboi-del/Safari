@@ -49,7 +49,7 @@ export const destinations: Destination[] = [
     slug: 'maasai-mara',
     title: 'Maasai Mara National Reserve',
     location: 'Narok County',
-    region: 'Savanna',
+    region: 'Rift Valley',
     experienceType: 'standard',
     description:
       'Kenya’s most iconic safari landscape with rolling golden plains, big cats, dramatic river crossings, and luxury tented camps that bring guests close to the action.',
@@ -75,7 +75,7 @@ export const destinations: Destination[] = [
     slug: 'amboseli',
     title: 'Amboseli National Park',
     location: 'Kajiado County',
-    region: 'Mountain views',
+    region: 'Rift Valley',
     experienceType: 'standard',
     description:
       'A cinematic safari setting known for immense elephant herds, open wetlands, and unforgettable views of Mount Kilimanjaro rising beyond the plains.',
@@ -101,7 +101,7 @@ export const destinations: Destination[] = [
     slug: 'samburu',
     title: 'Samburu National Reserve',
     location: 'Samburu County',
-    region: 'Arid wilderness',
+    region: 'Eastern',
     experienceType: 'standard',
     description:
       'A rugged northern circuit destination along the Ewaso Ngiro River, home to rare species, dramatic kopjes, and refined desert-style camps.',
@@ -153,7 +153,7 @@ export const destinations: Destination[] = [
     slug: 'tsavo',
     title: 'Tsavo East & West',
     location: 'Taita-Taveta County',
-    region: 'Wild frontier',
+    region: 'Coast',
     experienceType: 'standard',
     description:
       'A vast wilderness of red-earth elephants, lava flows, springs, baobab-studded horizons, and immersive routes between Nairobi and the coast.',
@@ -179,7 +179,7 @@ export const destinations: Destination[] = [
     slug: 'laikipia',
     title: 'Laikipia Conservancies',
     location: 'Laikipia Plateau',
-    region: 'Private conservancy',
+    region: 'Rift Valley',
     experienceType: 'standard',
     description:
       'A premium conservation-led safari region with rhino tracking, horseback rides, walking safaris, and intimate owner-run lodges below Mount Kenya.',

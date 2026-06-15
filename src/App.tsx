@@ -13,6 +13,11 @@ import {
   trendingThisWeek,
 } from './data';
 import type { CommunityUpdate, Destination } from './data';
+import {
+  destinationMatchesProvince,
+  destinationMatchesSearch,
+  KENYA_PROVINCE_FILTER_OPTIONS,
+} from './lib/kenyaProvinces';
 import { useAuth } from './context/AuthContext';
 import { useData } from './context/DataContext';
 import { fetchCommunityUpdates, postCommunityUpdate } from './services/safariApi';
@@ -408,22 +413,22 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
 function DestinationsPage() {
   const { destinations } = useData();
   const [search, setSearch] = useState('');
-  const [region, setRegion] = useState('All');
-  const regions = ['All', ...Array.from(new Set(destinations.map((destination) => destination.region)))];
+  const [province, setProvince] = useState<(typeof KENYA_PROVINCE_FILTER_OPTIONS)[number]>('All');
 
   const filteredDestinations = useMemo(() => {
     return destinations.filter((destination) => {
-      const matchesRegion = region === 'All' || destination.region === region;
-      const searchable = `${destination.title} ${destination.location} ${destination.description}`.toLowerCase();
-      return matchesRegion && searchable.includes(search.toLowerCase());
+      return (
+        destinationMatchesProvince(destination, province) &&
+        destinationMatchesSearch(destination, search)
+      );
     });
-  }, [destinations, region, search]);
+  }, [destinations, province, search]);
 
   return (
     <PageFrame
       eyebrow="Safari destinations"
       title="Find affordable places to explore"
-      body="Search by name, region, or vibe. Filter by budget-friendly routes and local transport options."
+      body="Search by destination, town, or county. Filter by Kenyan province to narrow results."
     >
       <div className="filter-panel">
         <label>
@@ -431,14 +436,14 @@ function DestinationsPage() {
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Try Maasai Mara, rhino, coast..."
+            placeholder="Try Eldoret, Samburu, Maasai Mara, Diani..."
           />
         </label>
         <label>
-          Filter by region
-          <select value={region} onChange={(event) => setRegion(event.target.value)}>
-            {regions.map((regionName) => (
-              <option key={regionName}>{regionName}</option>
+          Filter by province
+          <select value={province} onChange={(event) => setProvince(event.target.value as typeof province)}>
+            {KENYA_PROVINCE_FILTER_OPTIONS.map((provinceName) => (
+              <option key={provinceName}>{provinceName}</option>
             ))}
           </select>
         </label>
