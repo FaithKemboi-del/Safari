@@ -30,6 +30,26 @@ npm run dev
 
 ---
 
+## Vercel (live site) — required for admin login online
+
+If admin shows **“Supabase is not configured”** on your deployed site, add the same two variables in Vercel:
+
+1. Open [vercel.com](https://vercel.com) → your **Safari** project  
+2. **Settings** → **Environment Variables**  
+3. Add:
+
+| Name | Value |
+|------|--------|
+| `VITE_SUPABASE_URL` | `https://fwpsgtxowzinwsultfgl.supabase.co` (your Project URL) |
+| `VITE_SUPABASE_ANON_KEY` | Your **anon public** key from Supabase → Settings → API |
+
+4. Enable for **Production**, **Preview**, and **Development**  
+5. **Deployments** → open the latest deployment → **⋯** → **Redeploy** (required — env vars are baked in at build time)
+
+After redeploy, open `your-site.vercel.app/#admin-login` again.
+
+---
+
 ## One-time database setup
 
 In Supabase Dashboard → **SQL Editor**, run these files **in order**:
