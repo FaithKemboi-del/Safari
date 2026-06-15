@@ -1924,6 +1924,114 @@ textarea:focus {
   font-size: 0.92rem;
 }
 
+.admin-banner {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.admin-banner--success {
+  border: 1px solid rgba(122, 184, 122, 0.35);
+  background: rgba(122, 184, 122, 0.12);
+  color: #245524;
+}
+
+.admin-banner--error {
+  border: 1px solid rgba(196, 92, 74, 0.35);
+  background: rgba(196, 92, 74, 0.1);
+  color: #7a2d22;
+}
+
+.admin-empty {
+  padding: 1.5rem;
+  color: var(--charcoal);
+}
+
+.admin-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-actions button,
+.responsive-table button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--charcoal);
+  padding: 0.35rem 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.responsive-table td small {
+  display: block;
+  margin-top: 0.2rem;
+  color: rgba(58, 38, 26, 0.62);
+  font-size: 0.74rem;
+}
+
+.admin-status {
+  display: inline-flex;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.admin-status--published,
+.admin-status--live,
+.admin-status--active {
+  background: rgba(122, 184, 122, 0.18);
+  color: #245524;
+}
+
+.admin-status--draft,
+.admin-status--review {
+  background: rgba(212, 160, 90, 0.2);
+  color: #6d4512;
+}
+
+.admin-day-editor {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-day-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-day-editor-header h3 {
+  margin: 0;
+}
+
+.admin-day-card {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: rgba(255, 249, 242, 0.72);
+}
+
+.admin-day-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.admin-form {
+  max-height: 70vh;
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
 .admin-shell--gate {
   place-items: center;
   padding: 2rem 1rem;
