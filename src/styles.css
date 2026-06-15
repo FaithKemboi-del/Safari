@@ -2233,11 +2233,36 @@ td button:last-child {
 /* Category pages */
 .category-page {
   min-height: 100vh;
+  --category-text-strong: var(--earth-deep);
+  --category-text-body: var(--sienna);
+  --category-text-soft: #6f4f38;
+  --category-pill-bg: rgba(255, 179, 71, 0.26);
+  --category-pill-text: var(--earth-deep);
 }
 
 .category-hero {
   padding: 8rem 1rem 3rem;
   color: #fff;
+}
+
+.category-hero .eyebrow {
+  color: rgba(255, 245, 233, 0.96);
+}
+
+.category-hero .eyebrow::before {
+  background: var(--gold-bright);
+}
+
+.category-page .section-intro .eyebrow {
+  color: var(--gold-dark);
+}
+
+.category-page .section-intro p {
+  color: var(--category-text-body);
+}
+
+.category-page .section-intro h2 {
+  color: var(--category-text-strong);
 }
 
 .category-hero-inner {
@@ -2366,8 +2391,8 @@ td button:last-child {
   margin-bottom: 0.1rem;
   padding: 0.32rem 0.7rem;
   border-radius: 999px;
-  background: rgba(255, 179, 71, 0.18);
-  color: var(--gold-dark);
+  background: var(--category-pill-bg, rgba(255, 179, 71, 0.26));
+  color: var(--category-pill-text, var(--earth-deep));
   font-size: 0.74rem;
   font-weight: 800;
   overflow: hidden;
@@ -2377,6 +2402,7 @@ td button:last-child {
 
 .category-spot-card h3 {
   margin: 0.2rem 0 0;
+  color: var(--category-text-strong, var(--earth-deep));
   font-size: clamp(1.15rem, 2.2vw, 1.32rem);
   line-height: 1.28;
   display: -webkit-box;
@@ -2387,7 +2413,7 @@ td button:last-child {
 }
 
 .spot-location {
-  color: var(--muted);
+  color: var(--category-text-body, var(--sienna));
   font-weight: 700;
   font-size: 0.9rem;
   overflow: hidden;
@@ -2396,7 +2422,7 @@ td button:last-child {
 }
 
 .category-spot-card p {
-  color: var(--muted);
+  color: var(--category-text-soft, #6f4f38);
   line-height: 1.62;
   font-size: 0.94rem;
 }
@@ -2491,9 +2517,9 @@ td button:last-child {
 }
 
 .spot-actions a:last-child:not(:only-child) {
-  border: 1px solid var(--line);
+  border: 1px solid rgba(92, 61, 40, 0.22);
   background: #fff;
-  color: var(--earth);
+  color: var(--earth-deep);
 }
 
 .spot-actions a:only-child {
@@ -2544,11 +2570,12 @@ td button:last-child {
   margin: 0.75rem 0;
 }
 
-.trail-meta span {
+.category-spot-card--trail .trail-meta span,
+.category-page .trail-meta span {
   padding: 0.4rem 0.7rem;
   border-radius: 999px;
-  background: rgba(192, 110, 24, 0.14);
-  color: var(--gold-dark);
+  background: var(--category-pill-bg, rgba(255, 179, 71, 0.26));
+  color: var(--category-pill-text, var(--earth-deep));
   font-size: 0.78rem;
   font-weight: 800;
 }
@@ -2579,11 +2606,12 @@ td button:last-child {
 .trail-map-guide h3 {
   margin: 0.35rem 0 0.5rem;
   font-size: 1.35rem;
+  color: var(--earth-deep);
 }
 
 .trail-map-guide p {
   margin: 0;
-  color: var(--muted);
+  color: var(--sienna);
   line-height: 1.65;
 }
 
@@ -2645,7 +2673,13 @@ td button:last-child {
 
 .hike-record-card span,
 .hike-record-card small {
-  color: var(--muted);
+  color: var(--sienna);
+}
+
+.category-page .hike-record-card span,
+.category-page .hike-record-card small,
+.category-page .community-empty {
+  color: var(--category-text-body, var(--sienna));
 }
 
 .hike-record-card p {
@@ -2678,8 +2712,8 @@ td button:last-child {
 .event-filters button:hover {
   transform: translateY(-2px);
   border-color: rgba(192, 110, 24, 0.45);
-  background: rgba(255, 179, 71, 0.2);
-  color: var(--gold-dark);
+  background: rgba(255, 179, 71, 0.28);
+  color: var(--earth-deep);
 }
 
 .event-status {
@@ -2694,18 +2728,18 @@ td button:last-child {
 }
 
 .event-status--happening-now {
-  background: rgba(232, 118, 58, 0.18);
-  color: var(--ember);
+  background: rgba(232, 118, 58, 0.24);
+  color: #9a3d14;
 }
 
 .event-status--upcoming {
-  background: rgba(255, 179, 71, 0.2);
-  color: var(--gold-dark);
+  background: rgba(255, 179, 71, 0.3);
+  color: var(--earth-deep);
 }
 
 .event-status--past {
-  background: rgba(92, 61, 40, 0.12);
-  color: var(--muted);
+  background: rgba(92, 61, 40, 0.16);
+  color: var(--sienna);
 }
 
 .event-card.selected {
@@ -2768,7 +2802,7 @@ td button:last-child {
 }
 
 .savanna-trails-lead strong {
-  color: var(--gold-dark);
+  color: var(--earth-deep);
   font-weight: 800;
 }
 
@@ -2785,8 +2819,8 @@ td button:last-child {
   min-height: 2rem;
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  background: rgba(192, 110, 24, 0.14);
-  color: var(--gold-dark);
+  background: var(--category-pill-bg, rgba(255, 179, 71, 0.26));
+  color: var(--category-pill-text, var(--earth-deep));
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -2798,7 +2832,7 @@ td button:last-child {
 }
 
 .savanna-trails-banner .eyebrow {
-  color: var(--gold-dark);
+  color: var(--earth-deep);
 }
 
 .savanna-trails-banner h3 {
@@ -2819,14 +2853,14 @@ td button:last-child {
   align-items: center;
   width: fit-content;
   margin-top: 0.15rem;
-  color: var(--gold-dark);
+  color: var(--earth);
   font-size: 0.85rem;
   font-weight: 800;
   text-decoration: none;
 }
 
 .trail-map-link:hover {
-  color: var(--ember);
+  color: var(--gold-dark);
   text-decoration: underline;
 }
 
