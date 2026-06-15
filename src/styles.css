@@ -38,6 +38,12 @@
   --shadow: 0 22px 70px rgba(58, 38, 26, 0.16);
   --shadow-warm: 0 20px 50px rgba(240, 138, 42, 0.14);
   --overlay-heavy: rgba(58, 38, 26, 0.9);
+
+  /* Category cards — change here to resize every card site-wide */
+  --category-card-image-height: 220px;
+  --category-card-body-min-height: 21.5rem;
+  --category-card-title-lines: 2;
+  --category-card-description-lines: 3;
   --overlay-mid: rgba(92, 61, 40, 0.68);
   --overlay-light: rgba(58, 38, 26, 0.34);
   --glow-sunset: rgba(255, 179, 71, 0.32);
@@ -2295,12 +2301,14 @@ td button:last-child {
   display: grid;
   gap: 1.5rem;
   grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
 }
 
 .category-spot-card {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: calc(var(--category-card-image-height) + var(--category-card-body-min-height));
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 1.4rem;
@@ -2308,24 +2316,32 @@ td button:last-child {
   box-shadow: 0 12px 36px rgba(58, 38, 26, 0.08);
 }
 
+.category-spot-card > img,
 .category-spot-card img {
+  display: block;
   width: 100%;
-  height: 220px;
+  height: var(--category-card-image-height);
+  min-height: var(--category-card-image-height);
+  max-height: var(--category-card-image-height);
   flex-shrink: 0;
   object-fit: cover;
+  object-position: center;
 }
 
+.category-spot-card__body,
 .category-spot-card > div {
   display: flex;
   flex: 1;
   flex-direction: column;
   gap: 0.45rem;
+  min-height: var(--category-card-body-min-height);
   padding: 1.25rem 1.35rem 1.4rem;
 }
 
 .spot-budget {
   display: inline-flex;
   width: fit-content;
+  max-width: 100%;
   margin-bottom: 0.1rem;
   padding: 0.32rem 0.7rem;
   border-radius: 999px;
@@ -2333,18 +2349,29 @@ td button:last-child {
   color: var(--gold-dark);
   font-size: 0.74rem;
   font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .category-spot-card h3 {
   margin: 0.2rem 0 0;
   font-size: clamp(1.15rem, 2.2vw, 1.32rem);
   line-height: 1.28;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--category-card-title-lines);
+  min-height: calc(1.28em * var(--category-card-title-lines));
 }
 
 .spot-location {
   color: var(--muted);
   font-weight: 700;
   font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .category-spot-card p {
@@ -2353,11 +2380,14 @@ td button:last-child {
   font-size: 0.94rem;
 }
 
+.category-spot-card__body > p:not(.spot-location),
 .category-spot-card > div > p:not(.spot-location) {
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: var(--category-card-description-lines);
+  min-height: calc(1.62em * var(--category-card-description-lines));
+  margin: 0;
 }
 
 .spot-actions {
@@ -2366,6 +2396,53 @@ td button:last-child {
   gap: 0.6rem;
   margin-top: auto;
   padding-top: 0.85rem;
+}
+
+.category-card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-top: auto;
+  padding-top: 0.85rem;
+}
+
+.category-card-footer .spot-actions {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.category-card-extra {
+  display: flex;
+  align-items: center;
+  min-height: 2.4rem;
+}
+
+.category-spot-card--trail {
+  min-height: calc(var(--category-card-image-height) + 25rem);
+}
+
+.category-spot-card--trail .category-spot-card__body {
+  min-height: 25rem;
+}
+
+.category-spot-card--trail .trail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 4.25rem;
+  margin: 0.15rem 0 0;
+  align-content: flex-start;
+}
+
+.category-spot-card--trail .trail-map-link {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-card .event-status {
+  flex-shrink: 0;
 }
 
 .spot-actions a {
@@ -2414,14 +2491,6 @@ td button:last-child {
   max-width: none;
   width: 100%;
   padding-inline: max(1rem, calc((100vw - 1160px) / 2));
-}
-
-.category-spot-card--trail .trail-meta {
-  margin: 0.35rem 0 0;
-}
-
-.category-spot-card--trail .trail-map-link {
-  margin-top: 0.35rem;
 }
 
 .trail-card {

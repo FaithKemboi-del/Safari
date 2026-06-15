@@ -19,6 +19,23 @@ import { CategorySpotActions, SpotActionBar } from './CategorySpotActions';
 import { CreateTrailForm } from './CreateTrailForm';
 import { HikeGpsRecorder } from './HikeGpsRecorder';
 
+function CategorySpotCard({
+  image,
+  className,
+  children,
+}: {
+  image: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <article className={['category-spot-card', className].filter(Boolean).join(' ')}>
+      <img src={image} alt="" />
+      <div className="category-spot-card__body">{children}</div>
+    </article>
+  );
+}
+
 function CategoryIcon({ icon }: { icon: Category['icon'] }) {
   const paths: Record<Category['icon'], string> = {
     hiking: 'M13.5 5.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 20l3.5-7 2.5 2 3-6 3.5 11H7Z',
@@ -85,16 +102,13 @@ function GenericCategoryPage({
         </div>
         <div className="category-spot-grid">
           {spots.map((spot) => (
-            <article key={spot.id} className="category-spot-card">
-              <img src={spot.image} alt="" />
-              <div>
-                <span className="spot-budget">{spot.budget}</span>
-                <h3>{spot.title}</h3>
-                <p className="spot-location">{spot.location}</p>
-                <p>{spot.description}</p>
-                <CategorySpotActions spot={spot} />
-              </div>
-            </article>
+            <CategorySpotCard key={spot.id} image={spot.image}>
+              <span className="spot-budget">{spot.budget}</span>
+              <h3>{spot.title}</h3>
+              <p className="spot-location">{spot.location}</p>
+              <p>{spot.description}</p>
+              <CategorySpotActions spot={spot} />
+            </CategorySpotCard>
           ))}
         </div>
       </section>
@@ -202,19 +216,18 @@ function HikingCategoryPage({
           {trailsLoading && <p className="community-empty">Loading trails...</p>}
           {trailsError ? <p className="auth-message">{trailsError}</p> : null}
           {trails.map((trail) => (
-            <article key={trail.id} className="category-spot-card category-spot-card--trail">
-              <img src={trail.image} alt="" />
-              <div>
-                <span className="spot-budget">{trail.budget}</span>
-                <h3>{trail.title}</h3>
-                <p className="spot-location">{trail.location}</p>
-                <p>{trail.description}</p>
-                <div className="trail-meta">
-                  <span>{trail.difficultyLabel}</span>
-                  <span>{trail.duration}</span>
-                  <span>{trail.distanceKm} km</span>
-                  <span>{trail.elevationGainM} m gain</span>
-                </div>
+            <CategorySpotCard key={trail.id} className="category-spot-card--trail" image={trail.image}>
+              <span className="spot-budget">{trail.budget}</span>
+              <h3>{trail.title}</h3>
+              <p className="spot-location">{trail.location}</p>
+              <p>{trail.description}</p>
+              <div className="trail-meta">
+                <span>{trail.difficultyLabel}</span>
+                <span>{trail.duration}</span>
+                <span>{trail.distanceKm} km</span>
+                <span>{trail.elevationGainM} m gain</span>
+              </div>
+              <div className="category-card-footer">
                 <SpotActionBar
                   trailId={trail.id}
                   mapQuery={trail.mapQuery}
@@ -224,7 +237,7 @@ function HikingCategoryPage({
                   Open interactive trail map →
                 </a>
               </div>
-            </article>
+            </CategorySpotCard>
           ))}
         </div>
       </section>
@@ -235,16 +248,13 @@ function HikingCategoryPage({
         </div>
         <div className="category-spot-grid">
           {spots.map((spot) => (
-            <article key={spot.id} className="category-spot-card">
-              <img src={spot.image} alt="" />
-              <div>
-                <span className="spot-budget">{spot.budget}</span>
-                <h3>{spot.title}</h3>
-                <p className="spot-location">{spot.location}</p>
-                <p>{spot.description}</p>
-                <CategorySpotActions spot={spot} />
-              </div>
-            </article>
+            <CategorySpotCard key={spot.id} image={spot.image}>
+              <span className="spot-budget">{spot.budget}</span>
+              <h3>{spot.title}</h3>
+              <p className="spot-location">{spot.location}</p>
+              <p>{spot.description}</p>
+              <CategorySpotActions spot={spot} />
+            </CategorySpotCard>
           ))}
         </div>
       </section>
@@ -394,36 +404,38 @@ function EventsCategoryPage({
 
         <div className="category-spot-grid">
           {filtered.map((event) => (
-            <article
+            <CategorySpotCard
               key={event.id}
-              className={`category-spot-card event-card ${selectedEventId === event.id ? 'selected' : ''}`}
+              className={`event-card ${selectedEventId === event.id ? 'selected' : ''}`}
+              image={event.image}
             >
-              <img src={event.image} alt="" />
-              <div>
-                <span className={`event-status event-status--${event.status}`}>
-                  {event.status.replace('-', ' ')}
-                </span>
-                <span className="spot-budget">{event.budget}</span>
-                <h3>{event.title}</h3>
-                <p className="spot-location">
-                  {event.location} · {event.dateLabel}
-                </p>
-                <p>{event.description}</p>
+              <span className={`event-status event-status--${event.status}`}>
+                {event.status.replace('-', ' ')}
+              </span>
+              <span className="spot-budget">{event.budget}</span>
+              <h3>{event.title}</h3>
+              <p className="spot-location">
+                {event.location} · {event.dateLabel}
+              </p>
+              <p>{event.description}</p>
+              <div className="category-card-footer">
                 <SpotActionBar
                   slug={event.slug}
                   mapQuery={event.mapQuery ?? `${event.title} ${event.location} Kenya`}
                 />
-                {event.status === 'happening-now' && (
-                  <button
-                    className="secondary-button compact-button"
-                    onClick={() => setSelectedEventId(event.id)}
-                    type="button"
-                  >
-                    Join live chat
-                  </button>
-                )}
+                <div className="category-card-extra">
+                  {event.status === 'happening-now' ? (
+                    <button
+                      className="secondary-button compact-button"
+                      onClick={() => setSelectedEventId(event.id)}
+                      type="button"
+                    >
+                      Join live chat
+                    </button>
+                  ) : null}
+                </div>
               </div>
-            </article>
+            </CategorySpotCard>
           ))}
         </div>
       </section>
