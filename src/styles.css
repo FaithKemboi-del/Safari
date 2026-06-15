@@ -1848,6 +1848,27 @@ textarea:focus {
   color: #3d2208;
 }
 
+.admin-sidebar .admin-signout {
+  margin-left: auto;
+  border-color: rgba(255, 179, 71, 0.35);
+  color: var(--gold-bright);
+}
+
+.admin-user-label {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.admin-shell--gate {
+  place-items: center;
+  padding: 2rem 1rem;
+}
+
+.admin-login-page .admin-login-card code {
+  font-size: 0.82rem;
+}
+
 .admin-main {
   padding: 1rem;
 }

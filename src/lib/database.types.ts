@@ -75,6 +75,7 @@ export type Database = {
           id: string;
           full_name: string | null;
           avatar_initials: string | null;
+          is_admin: boolean;
           created_at: string;
           updated_at: string;
         }>;

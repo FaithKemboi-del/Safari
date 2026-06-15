@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "vercel-build": "npm run build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "seed:admin": "node scripts/seed-admin-user.mjs"
   },
   "engines": {
     "node": ">=20"

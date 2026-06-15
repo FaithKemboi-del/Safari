@@ -17,6 +17,8 @@ import { useAuth } from './context/AuthContext';
 import { useData } from './context/DataContext';
 import { fetchCommunityUpdates, postCommunityUpdate } from './services/safariApi';
 import { CategoryIcon, CategoryPage } from './components/CategoryPage';
+import { AdminLoginPage } from './components/AdminLoginPage';
+import { AdminProtected } from './components/AdminProtected';
 import { SpotCard } from './components/SpotCard';
 import { TrailPage } from './components/TrailPage';
 
@@ -30,6 +32,7 @@ type Route =
   | { page: 'plan-ai' }
   | { page: 'signin' }
   | { page: 'signup' }
+  | { page: 'admin-login' }
   | { page: 'admin' };
 
 const navItems = [
@@ -79,6 +82,7 @@ function parseHashFromPath(path?: string): Route {
     page === 'plan-ai' ||
     page === 'signin' ||
     page === 'signup' ||
+    page === 'admin-login' ||
     page === 'admin'
   ) {
     return { page };
@@ -162,9 +166,16 @@ function App() {
         {route.page === 'plan-ai' && <PlanWithAIPage />}
         {route.page === 'signin' && <AuthPage mode="signin" />}
         {route.page === 'signup' && <AuthPage mode="signup" />}
-        {route.page === 'admin' && <AdminDashboard />}
+        {route.page === 'admin-login' && (
+          <AdminLoginPage onSuccess={() => navigate('admin')} />
+        )}
+        {route.page === 'admin' && (
+          <AdminProtected onNavigate={navigate}>
+            <AdminDashboard onSignOut={() => navigate('admin-login')} />
+          </AdminProtected>
+        )}
       </main>
-      {route.page !== 'admin' && <Footer />}
+      {route.page !== 'admin' && route.page !== 'admin-login' && <Footer />}
     </div>
   );
 }
@@ -870,10 +881,16 @@ function DestinationAdminModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-function AdminDashboard() {
+function AdminDashboard({ onSignOut }: { onSignOut: () => void }) {
+  const { signOut, displayName } = useAuth();
   const [activeTable, setActiveTable] = useState<keyof typeof adminTables>('Destinations');
   const [modalOpen, setModalOpen] = useState(false);
   const columns = activeTable === 'Routes' ? ['Route', 'Type', 'Distance', 'Status'] : ['Name', 'Location/Days', 'Tier/Price', 'Status'];
+
+  const handleSignOut = async () => {
+    await signOut();
+    onSignOut();
+  };
 
   return (
     <section className="admin-shell">
@@ -895,6 +912,9 @@ function AdminDashboard() {
             {item}
           </button>
         ))}
+        <button className="admin-signout" onClick={handleSignOut} type="button">
+          Sign out
+        </button>
       </aside>
 
       <div className="admin-main">
@@ -902,6 +922,7 @@ function AdminDashboard() {
           <div>
             <span className="eyebrow">Admin dashboard</span>
             <h1>Manage {activeTable.toLowerCase()}</h1>
+            {displayName ? <p className="admin-user-label">Signed in as {displayName}</p> : null}
           </div>
           <button className="primary-button" onClick={() => setModalOpen(true)} type="button">
             Create {activeTable.slice(0, -1)}
@@ -1463,7 +1484,7 @@ function Footer() {
         <a href="#itineraries">Itineraries</a>
         <a href="#plan-ai">Plan with AI</a>
         <a href="#signin">Sign in</a>
-        <a href="#admin">Admin</a>
+        <a href="#admin-login">Admin</a>
       </div>
       <div className="footer-links">
         <a href="#home">Privacy</a>
