@@ -3,16 +3,18 @@ import { categories } from '../data';
 import type { Category } from '../data';
 import {
   categoryMeta,
-  categorySpots,
+  categorySpotToEvent,
   eventChatKey,
   HIKE_RECORDS_KEY,
-  kenyaEvents,
   seedEventChat,
   type EventChatMessage,
   type EventStatus,
   type HikeRecord,
+  type CategorySpot,
+  type KenyaEvent,
 } from '../categoryContent';
 import { useAuth } from '../context/AuthContext';
+import { useData } from '../context/DataContext';
 import { TRAILS_FEATURE_NAME } from '../lib/config';
 import { useTrails } from '../context/TrailsContext';
 import { readJson, writeJson } from '../lib/storage';
@@ -43,6 +45,7 @@ function CategoryIcon({ icon }: { icon: Category['icon'] }) {
 }
 
 export function CategoryPage({ categoryId }: { categoryId: string }) {
+  const { categorySpots } = useData();
   const category = categories.find((item) => item.id === categoryId) ?? categories[0];
   const meta = categoryMeta[category.id] ?? categoryMeta.hiking;
   const spots = categorySpots.filter((spot) => spot.categoryId === category.id);
@@ -52,7 +55,7 @@ export function CategoryPage({ categoryId }: { categoryId: string }) {
   }
 
   if (category.id === 'events') {
-    return <EventsCategoryPage category={category} meta={meta} />;
+    return <EventsCategoryPage category={category} meta={meta} spots={spots} />;
   }
 
   return <GenericCategoryPage category={category} meta={meta} spots={spots} />;
@@ -65,7 +68,7 @@ function GenericCategoryPage({
 }: {
   category: Category;
   meta: { title: string; subtitle: string; eyebrow: string };
-  spots: typeof categorySpots;
+  spots: CategorySpot[];
 }) {
   return (
     <div className={`category-page category-page--${category.theme}`}>
@@ -108,7 +111,7 @@ function HikingCategoryPage({
 }: {
   category: Category;
   meta: { title: string; subtitle: string; eyebrow: string };
-  spots: typeof categorySpots;
+  spots: CategorySpot[];
 }) {
   const { trails, loading: trailsLoading, error: trailsError } = useTrails();
   const [records, setRecords] = useState<HikeRecord[]>([]);
@@ -334,19 +337,26 @@ function HikingCategoryPage({
 function EventsCategoryPage({
   category,
   meta,
+  spots,
 }: {
   category: Category;
   meta: { title: string; subtitle: string; eyebrow: string };
+  spots: CategorySpot[];
 }) {
   const [filter, setFilter] = useState<EventStatus>('happening-now');
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
-  const filtered = useMemo(
-    () => kenyaEvents.filter((event) => event.status === filter),
-    [filter],
+  const events = useMemo(
+    () =>
+      spots
+        .map((spot) => categorySpotToEvent(spot))
+        .filter((event): event is NonNullable<typeof event> => Boolean(event)),
+    [spots],
   );
 
-  const liveEvents = kenyaEvents.filter((event) => event.status === 'happening-now');
+  const filtered = useMemo(() => events.filter((event) => event.status === filter), [events, filter]);
+
+  const liveEvents = events.filter((event) => event.status === 'happening-now');
 
   useEffect(() => {
     if (filter === 'happening-now' && liveEvents[0] && !selectedEventId) {
@@ -428,7 +438,7 @@ function EventsCategoryPage({
       {filter === 'happening-now' && selectedEventId && (
         <section className="section">
           <EventLiveChat
-            event={kenyaEvents.find((item) => item.id === selectedEventId)!}
+            event={events.find((item) => item.id === selectedEventId)!}
             onClose={() => setSelectedEventId(null)}
           />
         </section>
@@ -441,7 +451,7 @@ function EventLiveChat({
   event,
   onClose,
 }: {
-  event: (typeof kenyaEvents)[0];
+  event: KenyaEvent;
   onClose: () => void;
 }) {
   const { user, displayName, isConfigured } = useAuth();

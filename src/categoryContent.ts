@@ -1,3 +1,5 @@
+export type EventStatus = 'happening-now' | 'upcoming' | 'past';
+
 export type CategorySpot = {
   id: string;
   categoryId: string;
@@ -9,6 +11,8 @@ export type CategorySpot = {
   slug?: string;
   trailId?: string;
   mapQuery?: string;
+  dateLabel?: string;
+  eventStatus?: EventStatus;
 };
 
 export type HikingTrail = {
@@ -37,8 +41,6 @@ export type HikeRecord = {
   notes: string;
   createdAt: string;
 };
-
-export type EventStatus = 'happening-now' | 'upcoming' | 'past';
 
 export type KenyaEvent = {
   id: string;
@@ -490,3 +492,41 @@ export const seedEventChat: EventChatMessage[] = [
 
 export const HIKE_RECORDS_KEY = 'kenya-hike-records';
 export const eventChatKey = (eventId: string) => `kenya-event-chat-${eventId}`;
+
+/** Merged local spots + events for Supabase fallback and one-click admin import. */
+export function getAllLocalCategoryCards(): CategorySpot[] {
+  const eventCards: CategorySpot[] = kenyaEvents.map((event) => ({
+    id: event.id,
+    categoryId: 'events',
+    title: event.title,
+    location: event.location,
+    budget: event.budget,
+    description: event.description,
+    image: event.image,
+    slug: event.slug,
+    mapQuery: event.mapQuery,
+    dateLabel: event.dateLabel,
+    eventStatus: event.status,
+  }));
+
+  return [...categorySpots, ...eventCards];
+}
+
+export function categorySpotToEvent(spot: CategorySpot): KenyaEvent | null {
+  if (spot.categoryId !== 'events' || !spot.eventStatus) {
+    return null;
+  }
+
+  return {
+    id: spot.id,
+    title: spot.title,
+    location: spot.location,
+    dateLabel: spot.dateLabel ?? '',
+    status: spot.eventStatus,
+    budget: spot.budget,
+    description: spot.description,
+    image: spot.image,
+    slug: spot.slug,
+    mapQuery: spot.mapQuery,
+  };
+}

@@ -1,10 +1,13 @@
 import { getSupabase } from '../lib/supabase';
 import type { Database } from '../lib/database.types';
+import { getAllLocalCategoryCards } from '../categoryContent';
 import type {
+  AdminCategorySpot,
   AdminDestination,
   AdminItinerary,
   AdminMetrics,
   AdminRoute,
+  CategorySpotInput,
   DestinationInput,
   ItineraryInput,
   RouteInput,
@@ -14,6 +17,7 @@ type DestinationRow = Database['public']['Tables']['destinations']['Row'];
 type ItineraryRow = Database['public']['Tables']['itineraries']['Row'];
 type ItineraryDayRow = Database['public']['Tables']['itinerary_days']['Row'];
 type RouteRow = Database['public']['Tables']['routes']['Row'];
+type CategorySpotRow = Database['public']['Tables']['category_spots']['Row'];
 
 function requireSupabase() {
   const supabase = getSupabase();
@@ -346,17 +350,19 @@ export async function deleteRoute(id: string): Promise<void> {
 
 export async function fetchAdminMetrics(): Promise<AdminMetrics> {
   const supabase = requireSupabase();
-  const [destinations, itineraries, routes] = await Promise.all([
+  const [destinations, itineraries, routes, categorySpots] = await Promise.all([
     supabase.from('destinations').select('status'),
     supabase.from('itineraries').select('status'),
     supabase.from('routes').select('status'),
+    supabase.from('category_spots').select('status'),
   ]);
 
-  if (destinations.error || itineraries.error || routes.error) {
+  if (destinations.error || itineraries.error || routes.error || categorySpots.error) {
     throw new Error(
       destinations.error?.message ??
         itineraries.error?.message ??
         routes.error?.message ??
+        categorySpots.error?.message ??
         'Could not load metrics.',
     );
   }
@@ -364,11 +370,139 @@ export async function fetchAdminMetrics(): Promise<AdminMetrics> {
   const destinationRows = (destinations.data as { status: string }[] | null) ?? [];
   const itineraryRows = (itineraries.data as { status: string }[] | null) ?? [];
   const routeRows = (routes.data as { status: string }[] | null) ?? [];
+  const categoryRows = (categorySpots.data as { status: string }[] | null) ?? [];
 
   return {
     publishedDestinations: destinationRows.filter((row) => row.status === 'published').length,
     draftDestinations: destinationRows.filter((row) => row.status === 'draft').length,
     liveItineraries: itineraryRows.filter((row) => row.status === 'live').length,
     activeRoutes: routeRows.filter((row) => row.status === 'active').length,
+    publishedCategoryCards: categoryRows.filter((row) => row.status === 'published').length,
   };
+}
+
+function mapAdminCategorySpot(row: CategorySpotRow): AdminCategorySpot {
+  return {
+    id: row.id,
+    categoryId: row.category_id,
+    title: row.title,
+    location: row.location,
+    budget: row.budget,
+    description: row.description,
+    image: row.image,
+    slug: row.slug ?? undefined,
+    trailId: row.trail_id ?? undefined,
+    mapQuery: row.map_query ?? undefined,
+    dateLabel: row.date_label ?? undefined,
+    eventStatus: row.event_status ?? undefined,
+    status: row.status,
+    sortOrder: row.sort_order,
+    updatedAt: row.updated_at,
+  };
+}
+
+function categorySpotToRow(input: CategorySpotInput) {
+  return {
+    id: input.id,
+    category_id: input.categoryId,
+    title: input.title,
+    location: input.location,
+    budget: input.budget,
+    description: input.description,
+    image: input.image,
+    slug: input.slug ?? null,
+    trail_id: input.trailId ?? null,
+    map_query: input.mapQuery ?? null,
+    date_label: input.categoryId === 'events' ? input.dateLabel ?? null : null,
+    event_status: input.categoryId === 'events' ? input.eventStatus ?? null : null,
+    status: input.status,
+    sort_order: input.sortOrder,
+  };
+}
+
+export async function fetchAdminCategorySpots(): Promise<AdminCategorySpot[]> {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase
+    .from('category_spots')
+    .select('*')
+    .order('category_id')
+    .order('sort_order')
+    .order('title');
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return ((data as CategorySpotRow[] | null) ?? []).map(mapAdminCategorySpot);
+}
+
+export async function createCategorySpot(input: CategorySpotInput): Promise<AdminCategorySpot> {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase
+    .from('category_spots')
+    .insert(categorySpotToRow(input) as never)
+    .select('*')
+    .single();
+
+  if (error || !data) {
+    throw new Error(error?.message ?? 'Could not create category card.');
+  }
+
+  return mapAdminCategorySpot(data as CategorySpotRow);
+}
+
+export async function updateCategorySpot(input: CategorySpotInput): Promise<AdminCategorySpot> {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase
+    .from('category_spots')
+    .update(categorySpotToRow(input) as never)
+    .eq('id', input.id)
+    .select('*')
+    .single();
+
+  if (error || !data) {
+    throw new Error(error?.message ?? 'Could not update category card.');
+  }
+
+  return mapAdminCategorySpot(data as CategorySpotRow);
+}
+
+export async function deleteCategorySpot(id: string): Promise<void> {
+  const supabase = requireSupabase();
+  const { error } = await supabase.from('category_spots').delete().eq('id', id);
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function importDemoCategorySpots(): Promise<number> {
+  const existing = await fetchAdminCategorySpots();
+  if (existing.length > 0) {
+    throw new Error('Category cards already exist. Delete them first or edit individually.');
+  }
+
+  const localCards = getAllLocalCategoryCards();
+  let imported = 0;
+
+  for (const [index, card] of localCards.entries()) {
+    await createCategorySpot({
+      id: card.id,
+      categoryId: card.categoryId,
+      title: card.title,
+      location: card.location,
+      budget: card.budget,
+      description: card.description,
+      image: card.image,
+      slug: card.slug,
+      trailId: card.trailId,
+      mapQuery: card.mapQuery,
+      dateLabel: card.dateLabel,
+      eventStatus: card.eventStatus,
+      status: 'published',
+      sortOrder: index,
+    });
+    imported += 1;
+  }
+
+  return imported;
 }

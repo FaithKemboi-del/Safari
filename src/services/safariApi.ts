@@ -1,5 +1,7 @@
 import type { CommunityUpdate, Destination, Itinerary } from '../data';
 import { communityUpdates as localCommunity, destinations as localDestinations, itineraries as localItineraries } from '../data';
+import type { CategorySpot } from '../categoryContent';
+import { getAllLocalCategoryCards } from '../categoryContent';
 import { formatPostedAgo, isLiveUpdate } from '../lib/format';
 import { isSupabaseConfigured } from '../lib/config';
 import { getSupabase } from '../lib/supabase';
@@ -9,6 +11,24 @@ type DestinationRow = Database['public']['Tables']['destinations']['Row'];
 type ItineraryRow = Database['public']['Tables']['itineraries']['Row'];
 type ItineraryDayRow = Database['public']['Tables']['itinerary_days']['Row'];
 type CommunityRow = Database['public']['Tables']['community_updates']['Row'];
+type CategorySpotRow = Database['public']['Tables']['category_spots']['Row'];
+
+function mapCategorySpot(row: CategorySpotRow): CategorySpot {
+  return {
+    id: row.id,
+    categoryId: row.category_id,
+    title: row.title,
+    location: row.location,
+    budget: row.budget,
+    description: row.description,
+    image: row.image,
+    slug: row.slug ?? undefined,
+    trailId: row.trail_id ?? undefined,
+    mapQuery: row.map_query ?? undefined,
+    dateLabel: row.date_label ?? undefined,
+    eventStatus: row.event_status ?? undefined,
+  };
+}
 
 function mapDestination(row: DestinationRow): Destination {
   return {
@@ -126,6 +146,30 @@ export async function fetchItineraries(): Promise<Itinerary[]> {
   }
 
   return itineraries.map((row) => mapItinerary(row, days ?? []));
+}
+
+export async function fetchCategorySpots(): Promise<CategorySpot[]> {
+  const supabase = getSupabase();
+  if (!supabase) {
+    return getAllLocalCategoryCards();
+  }
+
+  const { data, error } = await supabase
+    .from('category_spots')
+    .select('*')
+    .eq('status', 'published')
+    .order('category_id')
+    .order('sort_order')
+    .order('title');
+
+  const rows = data as CategorySpotRow[] | null;
+
+  if (error || !rows?.length) {
+    console.warn('Supabase category spots fallback:', error?.message);
+    return getAllLocalCategoryCards();
+  }
+
+  return rows.map(mapCategorySpot);
 }
 
 export async function fetchCommunityUpdates(destinationSlug: string): Promise<CommunityUpdate[]> {

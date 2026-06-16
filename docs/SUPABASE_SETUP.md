@@ -58,7 +58,8 @@ In Supabase Dashboard → **SQL Editor**, run these files **in order**:
 2. `supabase/migrations/002_savanna_trails.sql` — Savanna Trails maps, reviews, GPS tracks  
 3. `supabase/migrations/003_trails_community.sql` — community trail publishing and sync policies  
 4. `supabase/migrations/004_admin_auth.sql` — admin role on profiles + admin-only write policies  
-5. `supabase/seed.sql` — starter destinations, itineraries, community posts  
+5. `supabase/migrations/005_category_spots.sql` — category page cards (hiking, coast, events, etc.)  
+6. `supabase/seed.sql` — starter destinations, itineraries, community posts  
 
 ---
 

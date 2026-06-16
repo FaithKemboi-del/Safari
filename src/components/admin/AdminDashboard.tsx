@@ -3,35 +3,44 @@ import { Brand } from '../Brand';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { isSupabaseConfigured } from '../../lib/config';
+import { categories } from '../../data';
 import {
+  createCategorySpot,
   createDestination,
   createItinerary,
   createRoute,
+  deleteCategorySpot,
   deleteDestination,
   deleteItinerary,
   deleteRoute,
+  fetchAdminCategorySpots,
   fetchAdminDestinations,
   fetchAdminItineraries,
   fetchAdminMetrics,
   fetchAdminRoutes,
+  importDemoCategorySpots,
+  updateCategorySpot,
   updateDestination,
   updateItinerary,
   updateRoute,
 } from '../../services/adminApi';
 import type {
+  AdminCategorySpot,
   AdminDestination,
   AdminItinerary,
   AdminMetrics,
   AdminRoute,
+  CategorySpotInput,
   DestinationInput,
   ItineraryInput,
   RouteInput,
 } from '../../types/admin';
+import { CategorySpotForm } from './CategorySpotForm';
 import { DestinationForm } from './DestinationForm';
 import { ItineraryForm } from './ItineraryForm';
 import { RouteForm } from './RouteForm';
 
-type AdminTab = 'Destinations' | 'Itineraries' | 'Routes';
+type AdminTab = 'Destinations' | 'Itineraries' | 'Routes' | 'Category cards';
 
 type AdminDashboardProps = {
   onSignOut: () => void;
@@ -54,16 +63,19 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
   const [destinations, setDestinations] = useState<AdminDestination[]>([]);
   const [itineraries, setItineraries] = useState<AdminItinerary[]>([]);
   const [routes, setRoutes] = useState<AdminRoute[]>([]);
+  const [categoryCards, setCategoryCards] = useState<AdminCategorySpot[]>([]);
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingDestination, setEditingDestination] = useState<AdminDestination | null>(null);
   const [editingItinerary, setEditingItinerary] = useState<AdminItinerary | null>(null);
   const [editingRoute, setEditingRoute] = useState<AdminRoute | null>(null);
+  const [editingCategoryCard, setEditingCategoryCard] = useState<AdminCategorySpot | null>(null);
 
   const loadAll = useCallback(async () => {
     if (!isSupabaseConfigured()) {
@@ -76,16 +88,19 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     setError('');
 
     try {
-      const [nextDestinations, nextItineraries, nextRoutes, nextMetrics] = await Promise.all([
+      const [nextDestinations, nextItineraries, nextRoutes, nextCategoryCards, nextMetrics] =
+        await Promise.all([
         fetchAdminDestinations(),
         fetchAdminItineraries(),
         fetchAdminRoutes(),
+        fetchAdminCategorySpots(),
         fetchAdminMetrics(),
       ]);
 
       setDestinations(nextDestinations);
       setItineraries(nextItineraries);
       setRoutes(nextRoutes);
+      setCategoryCards(nextCategoryCards);
       setMetrics(nextMetrics);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Could not load admin data.');
@@ -108,6 +123,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     setEditingDestination(null);
     setEditingItinerary(null);
     setEditingRoute(null);
+    setEditingCategoryCard(null);
     setModalOpen(true);
   };
 
@@ -115,6 +131,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     setEditingDestination(item);
     setEditingItinerary(null);
     setEditingRoute(null);
+    setEditingCategoryCard(null);
     setModalOpen(true);
   };
 
@@ -122,6 +139,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     setEditingItinerary(item);
     setEditingDestination(null);
     setEditingRoute(null);
+    setEditingCategoryCard(null);
     setModalOpen(true);
   };
 
@@ -129,6 +147,15 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     setEditingRoute(item);
     setEditingDestination(null);
     setEditingItinerary(null);
+    setEditingCategoryCard(null);
+    setModalOpen(true);
+  };
+
+  const openEditCategoryCard = (item: AdminCategorySpot) => {
+    setEditingCategoryCard(item);
+    setEditingDestination(null);
+    setEditingItinerary(null);
+    setEditingRoute(null);
     setModalOpen(true);
   };
 
@@ -137,6 +164,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     setEditingDestination(null);
     setEditingItinerary(null);
     setEditingRoute(null);
+    setEditingCategoryCard(null);
   };
 
   const handleDelete = async (label: string, action: () => Promise<void>) => {
@@ -182,12 +210,29 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     });
   }, [routes, search, statusFilter]);
 
+  const filteredCategoryCards = useMemo(() => {
+    return categoryCards.filter((item) => {
+      const matchesSearch =
+        !search ||
+        [item.title, item.location, item.categoryId, item.id]
+          .join(' ')
+          .toLowerCase()
+          .includes(search.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+      const matchesCategory = categoryFilter === 'all' || item.categoryId === categoryFilter;
+      return matchesSearch && matchesStatus && matchesCategory;
+    });
+  }, [categoryCards, search, statusFilter, categoryFilter]);
+
   const statusOptions =
     activeTab === 'Itineraries'
       ? ['all', 'live', 'draft', 'review']
       : activeTab === 'Routes'
         ? ['all', 'active', 'draft']
         : ['all', 'published', 'draft', 'review'];
+
+  const createLabel =
+    activeTab === 'Category cards' ? 'card' : activeTab.slice(0, -1).toLowerCase();
 
   const handleSignOut = async () => {
     await signOut();
@@ -198,7 +243,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     <section className="admin-shell">
       <aside className="admin-sidebar">
         <Brand className="brand admin-brand" />
-        {(['Destinations', 'Itineraries', 'Routes'] as const).map((item) => (
+        {(['Destinations', 'Itineraries', 'Routes', 'Category cards'] as const).map((item) => (
           <button
             key={item}
             className={activeTab === item ? 'active' : ''}
@@ -206,6 +251,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
               setActiveTab(item);
               setSearch('');
               setStatusFilter('all');
+              setCategoryFilter('all');
             }}
             type="button"
           >
@@ -224,9 +270,30 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
             <h1>Manage {activeTab.toLowerCase()}</h1>
             {displayName ? <p className="admin-user-label">Signed in as {displayName}</p> : null}
           </div>
-          <button className="primary-button" disabled={!isSupabaseConfigured()} onClick={openCreate} type="button">
-            Create {activeTab.slice(0, -1)}
-          </button>
+          <div className="admin-topline-actions">
+            {activeTab === 'Category cards' && categoryCards.length === 0 ? (
+              <button
+                className="secondary-button"
+                disabled={!isSupabaseConfigured()}
+                onClick={() =>
+                  void (async () => {
+                    try {
+                      const count = await importDemoCategorySpots();
+                      await afterMutation(`Imported ${count} demo category cards.`);
+                    } catch (importError) {
+                      setError(importError instanceof Error ? importError.message : 'Import failed.');
+                    }
+                  })()
+                }
+                type="button"
+              >
+                Import demo cards
+              </button>
+            ) : null}
+            <button className="primary-button" disabled={!isSupabaseConfigured()} onClick={openCreate} type="button">
+              Create {createLabel}
+            </button>
+          </div>
         </div>
 
         {message ? <p className="admin-banner admin-banner--success">{message}</p> : null}
@@ -242,6 +309,11 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
             label="Live itineraries"
             trend={`${itineraries.length} total`}
             value={String(metrics?.liveItineraries ?? 0).padStart(2, '0')}
+          />
+          <MetricCard
+            label="Category cards live"
+            trend={`${categoryCards.length} total`}
+            value={String(metrics?.publishedCategoryCards ?? 0).padStart(2, '0')}
           />
           <MetricCard
             label="Active routes"
@@ -270,6 +342,19 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
                 ))}
               </select>
             </label>
+            {activeTab === 'Category cards' ? (
+              <label>
+                Category
+                <select onChange={(event) => setCategoryFilter(event.target.value)} value={categoryFilter}>
+                  <option value="all">All categories</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
           </div>
 
           {loading ? (
@@ -371,7 +456,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
                 </tbody>
               </table>
             </div>
-          ) : (
+          ) : activeTab === 'Routes' ? (
             <div className="responsive-table">
               <table>
                 <thead>
@@ -405,6 +490,57 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
                           </button>
                           <button
                             onClick={() => void handleDelete(item.name, () => deleteRoute(item.id))}
+                            type="button"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="responsive-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredCategoryCards.length === 0 ? (
+                    <tr>
+                      <td colSpan={5}>No category cards found.</td>
+                    </tr>
+                  ) : (
+                    filteredCategoryCards.map((item) => (
+                      <tr key={item.id}>
+                        <td>
+                          <strong>{item.title}</strong>
+                          <small>{item.id}</small>
+                        </td>
+                        <td>{item.categoryId}</td>
+                        <td>
+                          {item.location}
+                          <small>{item.budget}</small>
+                        </td>
+                        <td>
+                          <span className={`admin-status admin-status--${item.status}`}>{item.status}</span>
+                        </td>
+                        <td className="admin-actions">
+                          <button onClick={() => openEditCategoryCard(item)} type="button">
+                            Edit
+                          </button>
+                          <button
+                            onClick={() =>
+                              void handleDelete(item.title, () => deleteCategorySpot(item.id))
+                            }
                             type="button"
                           >
                             Delete
@@ -467,6 +603,23 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
 
             await createRoute(input);
             await afterMutation('Route created.');
+          }}
+        />
+      ) : null}
+
+      {modalOpen && activeTab === 'Category cards' ? (
+        <CategorySpotForm
+          initial={editingCategoryCard}
+          onClose={closeModal}
+          onSave={async (input: CategorySpotInput) => {
+            if (editingCategoryCard) {
+              await updateCategorySpot(input);
+              await afterMutation('Category card updated.');
+              return;
+            }
+
+            await createCategorySpot(input);
+            await afterMutation('Category card created.');
           }}
         />
       ) : null}

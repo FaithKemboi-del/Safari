@@ -8,11 +8,19 @@ import {
 } from 'react';
 import type { Destination, Itinerary } from '../data';
 import { destinations as localDestinations, itineraries as localItineraries } from '../data';
-import { fetchDestinations, fetchItineraries, getDataSourceLabel } from '../services/safariApi';
+import type { CategorySpot } from '../categoryContent';
+import { getAllLocalCategoryCards } from '../categoryContent';
+import {
+  fetchCategorySpots,
+  fetchDestinations,
+  fetchItineraries,
+  getDataSourceLabel,
+} from '../services/safariApi';
 
 type DataContextValue = {
   destinations: Destination[];
   itineraries: Itinerary[];
+  categorySpots: CategorySpot[];
   loading: boolean;
   error: string | null;
   source: 'supabase' | 'local';
@@ -24,6 +32,7 @@ const DataContext = createContext<DataContextValue | null>(null);
 export function DataProvider({ children }: { children: ReactNode }) {
   const [destinations, setDestinations] = useState<Destination[]>(localDestinations);
   const [itineraries, setItineraries] = useState<Itinerary[]>(localItineraries);
+  const [categorySpots, setCategorySpots] = useState<CategorySpot[]>(getAllLocalCategoryCards());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [source, setSource] = useState<'supabase' | 'local'>(getDataSourceLabel());
@@ -33,17 +42,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     try {
-      const [nextDestinations, nextItineraries] = await Promise.all([
+      const [nextDestinations, nextItineraries, nextCategorySpots] = await Promise.all([
         fetchDestinations(),
         fetchItineraries(),
+        fetchCategorySpots(),
       ]);
       setDestinations(nextDestinations);
       setItineraries(nextItineraries);
+      setCategorySpots(nextCategorySpots);
       setSource(getDataSourceLabel());
     } catch (loadError) {
       console.error('Failed to load destinations and itineraries:', loadError);
       setDestinations(localDestinations);
       setItineraries(localItineraries);
+      setCategorySpots(getAllLocalCategoryCards());
       setSource('local');
       setError('Could not load live data. Showing saved demo content instead.');
     } finally {
@@ -59,12 +71,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
     () => ({
       destinations,
       itineraries,
+      categorySpots,
       loading,
       error,
       source,
       refresh: load,
     }),
-    [destinations, itineraries, loading, error, source],
+    [destinations, itineraries, categorySpots, loading, error, source],
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

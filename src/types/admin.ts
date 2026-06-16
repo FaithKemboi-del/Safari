@@ -58,8 +58,28 @@ export type AdminMetrics = {
   draftDestinations: number;
   liveItineraries: number;
   activeRoutes: number;
+  publishedCategoryCards: number;
+};
+
+export type AdminCategorySpot = {
+  id: string;
+  categoryId: string;
+  title: string;
+  location: string;
+  budget: string;
+  description: string;
+  image: string;
+  slug?: string;
+  trailId?: string;
+  mapQuery?: string;
+  dateLabel?: string;
+  eventStatus?: 'happening-now' | 'upcoming' | 'past';
+  status: ContentStatus;
+  sortOrder: number;
+  updatedAt: string;
 };
 
 export type DestinationInput = Omit<AdminDestination, 'id' | 'updatedAt'>;
 export type ItineraryInput = Omit<AdminItinerary, 'updatedAt'>;
 export type RouteInput = Omit<AdminRoute, 'id' | 'updatedAt'>;
+export type CategorySpotInput = Omit<AdminCategorySpot, 'updatedAt'>;

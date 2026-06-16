@@ -2055,9 +2055,18 @@ textarea:focus {
 }
 
 .admin-topline {
-  display: grid;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1rem;
+}
+
+.admin-topline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: flex-end;
 }
 
 .admin-topline h1 {
@@ -2396,12 +2405,11 @@ td button:last-child {
   }
 
   .admin-topline {
-    grid-template-columns: 1fr auto;
     align-items: center;
   }
 
   .metric-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .footer {

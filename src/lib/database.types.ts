@@ -88,6 +88,24 @@ export type Database = {
           created_at: string;
           updated_at: string;
         }>;
+      category_spots: TableDef<{
+          id: string;
+          category_id: string;
+          title: string;
+          location: string;
+          budget: string;
+          description: string;
+          image: string;
+          slug: string | null;
+          trail_id: string | null;
+          map_query: string | null;
+          date_label: string | null;
+          event_status: 'happening-now' | 'upcoming' | 'past' | null;
+          status: 'published' | 'draft' | 'review';
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        }>;
       trails: TableDef<
         {
           id: string;
