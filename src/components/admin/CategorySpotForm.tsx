@@ -1,18 +1,20 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { categories } from '../../data';
+import { getCategoryCardConfig, sanitizeCategorySpotInputForCategory } from '../../lib/categoryCardFields';
 import { slugify } from '../../lib/adminFormUtils';
 import type { AdminCategorySpot, CategorySpotInput } from '../../types/admin';
 import { AdminModal } from './AdminModal';
 
 type CategorySpotFormProps = {
   initial?: AdminCategorySpot | null;
+  defaultCategoryId?: string;
   onClose: () => void;
   onSave: (input: CategorySpotInput) => Promise<void>;
 };
 
-const emptySpot = (): CategorySpotInput => ({
+const emptySpot = (categoryId = 'hiking'): CategorySpotInput => ({
   id: '',
-  categoryId: 'hiking',
+  categoryId,
   title: '',
   location: '',
   budget: '',
@@ -27,24 +29,38 @@ const emptySpot = (): CategorySpotInput => ({
   sortOrder: 0,
 });
 
-export function CategorySpotForm({ initial, onClose, onSave }: CategorySpotFormProps) {
-  const [form, setForm] = useState<CategorySpotInput>(emptySpot());
+export function CategorySpotForm({
+  initial,
+  defaultCategoryId,
+  onClose,
+  onSave,
+}: CategorySpotFormProps) {
+  const [form, setForm] = useState<CategorySpotInput>(emptySpot(defaultCategoryId));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const isEvent = form.categoryId === 'events';
+  const config = useMemo(() => getCategoryCardConfig(form.categoryId), [form.categoryId]);
 
   useEffect(() => {
     if (initial) {
       const { updatedAt: _updatedAt, ...rest } = initial;
-      setForm(rest);
+      setForm(sanitizeCategorySpotInputForCategory(rest) as CategorySpotInput);
       return;
     }
 
-    setForm(emptySpot());
-  }, [initial]);
+    setForm(emptySpot(defaultCategoryId && defaultCategoryId !== 'all' ? defaultCategoryId : 'hiking'));
+  }, [initial, defaultCategoryId]);
 
   const update = <K extends keyof CategorySpotInput>(key: K, value: CategorySpotInput[K]) => {
-    setForm((current) => ({ ...current, [key]: value }));
+    setForm((current) => {
+      const next = { ...current, [key]: value };
+      if (key === 'categoryId' && typeof value === 'string') {
+        return sanitizeCategorySpotInputForCategory({
+          ...next,
+          categoryId: value,
+        }) as CategorySpotInput;
+      }
+      return next;
+    });
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -53,21 +69,22 @@ export function CategorySpotForm({ initial, onClose, onSave }: CategorySpotFormP
     setError('');
 
     try {
+      const sanitized = sanitizeCategorySpotInputForCategory(form);
       const payload: CategorySpotInput = {
-        ...form,
+        ...sanitized,
         id: slugify(form.id || form.title),
-        slug: form.slug?.trim() || undefined,
-        trailId: form.trailId?.trim() || undefined,
-        mapQuery: form.mapQuery?.trim() || undefined,
-        dateLabel: isEvent ? form.dateLabel?.trim() : undefined,
-        eventStatus: isEvent ? form.eventStatus : undefined,
+        slug: sanitized.slug?.trim() || undefined,
+        trailId: sanitized.trailId?.trim() || undefined,
+        mapQuery: sanitized.mapQuery?.trim() || undefined,
+        dateLabel: config.showEventFields ? sanitized.dateLabel?.trim() : undefined,
+        eventStatus: config.showEventFields ? sanitized.eventStatus : undefined,
       };
 
       if (!payload.title.trim() || !payload.id.trim() || !payload.image.trim()) {
         throw new Error('Title, ID, and image URL are required.');
       }
 
-      if (isEvent && (!payload.dateLabel || !payload.eventStatus)) {
+      if (config.showEventFields && (!payload.dateLabel || !payload.eventStatus)) {
         throw new Error('Events need a date label and event status.');
       }
 
@@ -83,12 +100,24 @@ export function CategorySpotForm({ initial, onClose, onSave }: CategorySpotFormP
   return (
     <AdminModal
       wide
-      eyebrow={initial ? 'Edit category card' : 'Add category card'}
-      lead="These cards appear on category pages — hiking, coast, waterfalls, events, and more."
-      title={initial ? `Edit ${initial.title}` : 'Category card details'}
+      eyebrow={initial ? `Edit ${config.eyebrow} card` : `Add ${config.eyebrow} card`}
+      lead={config.sectionLead}
+      title={initial ? `Edit ${initial.title}` : `${config.eyebrow} card details`}
       onClose={onClose}
     >
       <form className="form-stack admin-form" onSubmit={handleSubmit}>
+        <div className="category-form-preview" aria-label="Card preview guide">
+          <strong>On the public {config.eyebrow.toLowerCase()} page, this card shows:</strong>
+          <ul>
+            {config.previewLines.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+          <p>
+            Section: <code>{config.sectionTitle}</code>
+          </p>
+        </div>
+
         <div className="form-grid">
           <label>
             Category
@@ -134,7 +163,7 @@ export function CategorySpotForm({ initial, onClose, onSave }: CategorySpotFormP
             <input
               value={form.id}
               onChange={(event) => update('id', slugify(event.target.value))}
-              placeholder="hike-hells-gate"
+              placeholder={`${form.categoryId}-example`}
               required
             />
           </label>
@@ -143,15 +172,16 @@ export function CategorySpotForm({ initial, onClose, onSave }: CategorySpotFormP
             <input
               value={form.location}
               onChange={(event) => update('location', event.target.value)}
+              placeholder="Naivasha, Kwale, Westlands..."
               required
             />
           </label>
           <label>
-            Budget line
+            {config.budgetLabel}
             <input
               value={form.budget}
               onChange={(event) => update('budget', event.target.value)}
-              placeholder="From $15 park entry"
+              placeholder={config.budgetPlaceholder}
               required
             />
           </label>
@@ -180,51 +210,25 @@ export function CategorySpotForm({ initial, onClose, onSave }: CategorySpotFormP
           <textarea
             value={form.description}
             onChange={(event) => update('description', event.target.value)}
+            placeholder={config.descriptionPlaceholder}
             rows={4}
             required
           />
         </label>
 
-        <div className="form-grid">
-          <label>
-            Link to destination slug
-            <input
-              value={form.slug ?? ''}
-              onChange={(event) => update('slug', event.target.value)}
-              placeholder="hells-gate"
-            />
-          </label>
-          <label>
-            Link to trail ID
-            <input
-              value={form.trailId ?? ''}
-              onChange={(event) => update('trailId', event.target.value)}
-              placeholder="longonot-trail"
-            />
-          </label>
-          <label>
-            Map query
-            <input
-              value={form.mapQuery ?? ''}
-              onChange={(event) => update('mapQuery', event.target.value)}
-              placeholder="Hell's Gate National Park Kenya"
-            />
-          </label>
-        </div>
-
-        {isEvent ? (
+        {config.showEventFields ? (
           <div className="form-grid">
             <label>
-              Date label
+              {config.dateLabelLabel}
               <input
                 value={form.dateLabel ?? ''}
                 onChange={(event) => update('dateLabel', event.target.value)}
-                placeholder="Happening this week"
+                placeholder={config.dateLabelPlaceholder}
                 required
               />
             </label>
             <label>
-              Event status
+              {config.eventStatusLabel}
               <select
                 value={form.eventStatus ?? 'upcoming'}
                 onChange={(event) =>
@@ -237,6 +241,47 @@ export function CategorySpotForm({ initial, onClose, onSave }: CategorySpotFormP
                 <option value="past">Past</option>
               </select>
             </label>
+          </div>
+        ) : null}
+
+        {config.showDestinationSlug || config.showTrailId || config.showMapQuery ? (
+          <div className="category-form-links">
+            <h3>Card actions (matches user-side buttons)</h3>
+            <div className="form-grid">
+              {config.showDestinationSlug ? (
+                <label>
+                  {config.destinationSlugLabel}
+                  <input
+                    value={form.slug ?? ''}
+                    onChange={(event) => update('slug', event.target.value)}
+                    placeholder={config.destinationSlugPlaceholder}
+                  />
+                  <small className="field-help">{config.destinationSlugHelp}</small>
+                </label>
+              ) : null}
+              {config.showTrailId ? (
+                <label>
+                  {config.trailIdLabel}
+                  <input
+                    value={form.trailId ?? ''}
+                    onChange={(event) => update('trailId', event.target.value)}
+                    placeholder={config.trailIdPlaceholder}
+                  />
+                  <small className="field-help">{config.trailIdHelp}</small>
+                </label>
+              ) : null}
+              {config.showMapQuery ? (
+                <label>
+                  {config.mapQueryLabel}
+                  <input
+                    value={form.mapQuery ?? ''}
+                    onChange={(event) => update('mapQuery', event.target.value)}
+                    placeholder={config.mapQueryPlaceholder}
+                  />
+                  <small className="field-help">{config.mapQueryHelp}</small>
+                </label>
+              ) : null}
+            </div>
           </div>
         ) : null}
 

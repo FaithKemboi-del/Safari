@@ -609,6 +609,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
 
       {modalOpen && activeTab === 'Category cards' ? (
         <CategorySpotForm
+          defaultCategoryId={categoryFilter !== 'all' ? categoryFilter : undefined}
           initial={editingCategoryCard}
           onClose={closeModal}
           onSave={async (input: CategorySpotInput) => {

@@ -2032,6 +2032,40 @@ textarea:focus {
   padding-right: 0.25rem;
 }
 
+.category-form-preview {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: rgba(212, 160, 90, 0.1);
+}
+
+.category-form-preview ul {
+  margin: 0.65rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.category-form-preview li + li {
+  margin-top: 0.25rem;
+}
+
+.category-form-preview p {
+  margin: 0.75rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(58, 38, 26, 0.72);
+}
+
+.category-form-links h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.field-help {
+  color: rgba(58, 38, 26, 0.62);
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
 .admin-shell--gate {
   place-items: center;
   padding: 2rem 1rem;
