@@ -2684,6 +2684,58 @@ td button:last-child {
   margin: 0;
 }
 
+.spot-bullet-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  color: var(--category-text-soft, #6f4f38);
+  line-height: 1.62;
+  font-size: 0.94rem;
+}
+
+.spot-bullet-list li + li {
+  margin-top: 0.35rem;
+}
+
+.spot-bullet-list--preview {
+  min-height: calc(1.62em * 2 + 0.35rem);
+}
+
+.spot-description-empty {
+  margin: 0;
+  color: var(--category-text-soft, #6f4f38);
+  font-size: 0.94rem;
+  font-style: italic;
+}
+
+.category-spot-modal {
+  max-width: 32rem;
+}
+
+.category-spot-modal .spot-bullet-list--full {
+  margin: 1rem 0 1.25rem;
+}
+
+.spot-details-page-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: var(--gold);
+  color: #3d2208;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition:
+    transform var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.spot-details-page-link:hover {
+  transform: translateY(-1px);
+  background: var(--gold-bright);
+}
+
 .spot-actions {
   display: flex;
   flex-wrap: wrap;
@@ -2759,6 +2811,30 @@ td button:last-child {
 }
 
 .spot-actions a:first-child:hover {
+  transform: translateY(-1px);
+  background: var(--gold-bright);
+}
+
+.spot-actions .spot-action-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  padding: 0.45rem 0.85rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--gold);
+  color: #3d2208;
+  font-size: 0.8rem;
+  font-weight: 800;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.spot-actions .spot-action-link:hover {
   transform: translateY(-1px);
   background: var(--gold-bright);
 }

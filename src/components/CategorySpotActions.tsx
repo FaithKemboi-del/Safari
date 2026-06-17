@@ -21,23 +21,34 @@ type SpotActionBarProps = {
   trailId?: string;
   mapQuery?: string;
   mapsHref?: string;
+  onViewDetails?: () => void;
 };
 
-export function SpotActionBar({ slug, trailId, mapQuery, mapsHref }: SpotActionBarProps) {
+export function SpotActionBar({
+  slug,
+  trailId,
+  mapQuery,
+  mapsHref,
+  onViewDetails,
+}: SpotActionBarProps) {
   const detailsHref = getDetailsHref(slug, trailId);
   const mapsUrl = mapsHref ?? (mapQuery ? buildMapsHref(mapQuery) : undefined);
 
+  const viewDetailsControl = onViewDetails ? (
+    <button className="spot-action-link" onClick={onViewDetails} type="button">
+      View details
+    </button>
+  ) : (
+    <a href={detailsHref}>View details</a>
+  );
+
   if (!mapsUrl) {
-    return (
-      <div className="spot-actions">
-        <a href={detailsHref}>View details</a>
-      </div>
-    );
+    return <div className="spot-actions">{viewDetailsControl}</div>;
   }
 
   return (
     <div className="spot-actions">
-      <a href={detailsHref}>View details</a>
+      {viewDetailsControl}
       <a href={mapsUrl} rel="noreferrer" target="_blank">
         Open in Maps
       </a>

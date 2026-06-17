@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { categories } from '../../data';
 import { getCategoryCardConfig, sanitizeCategorySpotInputForCategory } from '../../lib/categoryCardFields';
+import { parseDescriptionPoints } from '../../lib/descriptionPoints';
 import { slugify } from '../../lib/adminFormUtils';
 import type { AdminCategorySpot, CategorySpotInput } from '../../types/admin';
 import { AdminModal } from './AdminModal';
@@ -39,6 +40,10 @@ export function CategorySpotForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const config = useMemo(() => getCategoryCardConfig(form.categoryId), [form.categoryId]);
+  const descriptionPreview = useMemo(
+    () => parseDescriptionPoints(form.description),
+    [form.description],
+  );
 
   useEffect(() => {
     if (initial) {
@@ -206,15 +211,36 @@ export function CategorySpotForm({
         </div>
 
         <label>
-          Description
+          Description points (one per line)
           <textarea
             value={form.description}
             onChange={(event) => update('description', event.target.value)}
             placeholder={config.descriptionPlaceholder}
-            rows={4}
+            rows={5}
             required
           />
+          <small className="field-help">
+            Each new line becomes a bullet on the card. Visitors see the first two points, then
+            tap View details for the full list.
+          </small>
         </label>
+
+        {descriptionPreview.length > 0 ? (
+          <div className="category-form-preview" aria-label="Description preview">
+            <strong>Card preview (first 2 points shown publicly):</strong>
+            <ul className="spot-bullet-list spot-bullet-list--preview">
+              {descriptionPreview.slice(0, 2).map((point, index) => (
+                <li key={`${index}-${point}`}>{point}</li>
+              ))}
+            </ul>
+            {descriptionPreview.length > 2 ? (
+              <p className="field-help">
+                + {descriptionPreview.length - 2} more point
+                {descriptionPreview.length - 2 === 1 ? '' : 's'} in View details
+              </p>
+            ) : null}
+          </div>
+        ) : null}
 
         {config.showEventFields ? (
           <div className="form-grid">

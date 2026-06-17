@@ -18,7 +18,8 @@ import { useData } from '../context/DataContext';
 import { TRAILS_FEATURE_NAME } from '../lib/config';
 import { useTrails } from '../context/TrailsContext';
 import { readJson, writeJson } from '../lib/storage';
-import { CategorySpotActions, SpotActionBar } from './CategorySpotActions';
+import { CategorySpotCardContent } from './CategorySpotCardContent';
+import { SpotActionBar } from './CategorySpotActions';
 import { CreateTrailForm } from './CreateTrailForm';
 import { HikeGpsRecorder } from './HikeGpsRecorder';
 import { SpotCard } from './SpotCard';
@@ -94,8 +95,13 @@ function GenericCategoryPage({
               <span className="spot-budget">{spot.budget}</span>
               <h3>{spot.title}</h3>
               <p className="spot-location">{spot.location}</p>
-              <p>{spot.description}</p>
-              <CategorySpotActions spot={spot} />
+              <CategorySpotCardContent
+                description={spot.description}
+                mapQuery={spot.mapQuery}
+                slug={spot.slug}
+                title={spot.title}
+                trailId={spot.trailId}
+              />
             </SpotCard>
           ))}
         </div>
@@ -240,8 +246,13 @@ function HikingCategoryPage({
               <span className="spot-budget">{spot.budget}</span>
               <h3>{spot.title}</h3>
               <p className="spot-location">{spot.location}</p>
-              <p>{spot.description}</p>
-              <CategorySpotActions spot={spot} />
+              <CategorySpotCardContent
+                description={spot.description}
+                mapQuery={spot.mapQuery}
+                slug={spot.slug}
+                title={spot.title}
+                trailId={spot.trailId}
+              />
             </SpotCard>
           ))}
         </div>
@@ -412,14 +423,10 @@ function EventsCategoryPage({
               <p className="spot-location">
                 {event.location} · {event.dateLabel}
               </p>
-              <p>{event.description}</p>
-              <div className="category-card-footer">
-                <SpotActionBar
-                  slug={event.slug}
-                  mapQuery={event.mapQuery ?? `${event.title} ${event.location} Kenya`}
-                />
-                <div className="category-card-extra">
-                  {event.status === 'happening-now' ? (
+              <CategorySpotCardContent
+                description={event.description}
+                footerExtra={
+                  event.status === 'happening-now' ? (
                     <button
                       className="secondary-button compact-button"
                       onClick={() => setSelectedEventId(event.id)}
@@ -427,9 +434,12 @@ function EventsCategoryPage({
                     >
                       Join live chat
                     </button>
-                  ) : null}
-                </div>
-              </div>
+                  ) : null
+                }
+                mapQuery={event.mapQuery ?? `${event.title} ${event.location} Kenya`}
+                slug={event.slug}
+                title={event.title}
+              />
             </SpotCard>
           ))}
         </div>
