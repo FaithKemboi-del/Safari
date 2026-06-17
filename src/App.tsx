@@ -35,6 +35,7 @@ import { CommunityFeedPreview, CommunityPage } from './components/CommunityPage'
 import { CategorySpotPage } from './components/CategorySpotPage';
 import { TrailPage } from './components/TrailPage';
 import { BRAND_NAME, TRAILS_FEATURE_NAME } from './lib/config';
+import { splitHikeDifficulty, splitPricing } from './lib/destinationDetail';
 
 type Route =
   | { page: 'home' }
@@ -485,6 +486,38 @@ function DestinationDetailPage({ slug }: { slug: string }) {
     .slice(0, 3);
   const fallbackRelated = related.length ? related : destinations.filter((item) => item.slug !== destination.slug).slice(0, 3);
   const isHike = destination.experienceType === 'hike';
+  const { badge: pricingBadge, detail: pricingDetail } = splitPricing(destination.pricing);
+  const { badge: hikeBadge, detail: hikeDifficultyDetail } = splitHikeDifficulty(
+    destination.hikeDifficulty,
+  );
+  const practicalSections = isHike
+    ? [
+        hikeDifficultyDetail ? { title: 'Hike difficulty', body: hikeDifficultyDetail } : null,
+        destination.transportAndLogistics
+          ? { title: 'Transport & logistics', body: destination.transportAndLogistics }
+          : null,
+        destination.safetyAndConditions
+          ? { title: 'Safety & conditions', body: destination.safetyAndConditions }
+          : null,
+        destination.additionalInfo
+          ? { title: 'Good to know', body: destination.additionalInfo }
+          : null,
+      ]
+    : [
+        pricingDetail ? { title: 'Pricing breakdown', body: pricingDetail } : null,
+        destination.safetyAndConditions
+          ? { title: 'Safety & conditions', body: destination.safetyAndConditions }
+          : null,
+        destination.transportAndLogistics
+          ? { title: 'Transport & logistics', body: destination.transportAndLogistics }
+          : null,
+        destination.additionalInfo
+          ? { title: 'Good to know', body: destination.additionalInfo }
+          : null,
+      ];
+  const visiblePracticalSections = practicalSections.filter(
+    (section): section is { title: string; body: string } => Boolean(section),
+  );
 
   return (
     <article className="detail-page">
@@ -496,68 +529,43 @@ function DestinationDetailPage({ slug }: { slug: string }) {
           <h1>{destination.title}</h1>
           <p>{destination.description}</p>
           <div className="detail-badges">
-            {destination.pricing ? (
-              <span className="detail-budget">{destination.pricing}</span>
-            ) : null}
+            {pricingBadge ? <span className="detail-budget">{pricingBadge}</span> : null}
             <span>{destination.region}</span>
             <span>{isHike ? 'Hiking' : 'Budget travel'}</span>
-            {isHike && destination.hikeDifficulty && (
-              <span>{destination.hikeDifficulty.split('—')[0].trim()}</span>
-            )}
+            {isHike && hikeBadge ? <span>{hikeBadge}</span> : null}
           </div>
         </div>
       </section>
 
       <section className="section detail-layout">
         <div className="detail-content">
-          <div className="mini-gallery">
-            {destination.gallery.map((image) => (
-              <img key={image} src={image} alt="" />
-            ))}
-          </div>
-
-          <InfoBlock title="Description">{destination.description}</InfoBlock>
-
-          <div className="info-grid">
-            {isHike ? (
-              <>
-                <InfoBlock title="Hike difficulty">{destination.hikeDifficulty}</InfoBlock>
-                {destination.transportAndLogistics && (
-                  <InfoBlock title="Transport & logistics">
-                    {destination.transportAndLogistics}
-                  </InfoBlock>
-                )}
-                {destination.additionalInfo && (
-                  <InfoBlock title="Additional info">{destination.additionalInfo}</InfoBlock>
-                )}
-              </>
-            ) : (
-              <>
-                {destination.pricing && (
-                  <InfoBlock title="Pricing">{destination.pricing}</InfoBlock>
-                )}
-                {destination.safetyAndConditions && (
-                  <InfoBlock title="Safety & conditions">{destination.safetyAndConditions}</InfoBlock>
-                )}
-                {destination.transportAndLogistics && (
-                  <InfoBlock title="Transport & logistics">
-                    {destination.transportAndLogistics}
-                  </InfoBlock>
-                )}
-                {destination.additionalInfo && (
-                  <InfoBlock title="Additional info">{destination.additionalInfo}</InfoBlock>
-                )}
-              </>
-            )}
-          </div>
-
-          <InfoBlock title="Experience highlights">
-            <div className="tag-list">
-              {destination.highlights.map((highlight) => (
-                <span key={highlight}>{highlight}</span>
+          {destination.gallery.length > 0 ? (
+            <div className="mini-gallery">
+              {destination.gallery.map((image) => (
+                <img key={image} src={image} alt="" />
               ))}
             </div>
-          </InfoBlock>
+          ) : null}
+
+          {visiblePracticalSections.length > 0 ? (
+            <div className="info-grid">
+              {visiblePracticalSections.map((section) => (
+                <InfoBlock key={section.title} title={section.title}>
+                  {section.body}
+                </InfoBlock>
+              ))}
+            </div>
+          ) : null}
+
+          {destination.highlights.length > 0 ? (
+            <InfoBlock title="Experience highlights">
+              <div className="tag-list">
+                {destination.highlights.map((highlight) => (
+                  <span key={highlight}>{highlight}</span>
+                ))}
+              </div>
+            </InfoBlock>
+          ) : null}
 
           <CommunityFeed destinationSlug={destination.slug} destinationTitle={destination.title} />
 

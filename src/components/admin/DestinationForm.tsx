@@ -278,7 +278,7 @@ export function DestinationForm({ initial, onClose, onSave }: DestinationFormPro
               />
             </label>
             <label>
-              Additional info
+              Good to know
               <textarea
                 value={form.additionalInfo ?? ''}
                 onChange={(event) => update('additionalInfo', event.target.value)}
@@ -314,7 +314,7 @@ export function DestinationForm({ initial, onClose, onSave }: DestinationFormPro
               />
             </label>
             <label>
-              Additional info
+              Good to know
               <textarea
                 value={form.additionalInfo ?? ''}
                 onChange={(event) => update('additionalInfo', event.target.value)}
