@@ -181,14 +181,14 @@ function HikingCategoryPage({
           <h2>{TRAILS_FEATURE_NAME} — built in, free</h2>
           <p className="savanna-trails-lead">
             <strong>Interactive maps, elevation profiles, GPX downloads, GPS recording, and hiker reviews</strong>
-            — no subscription required. Powered by OpenStreetMap.
+            — no subscription required.
           </p>
           <div className="savanna-trails-features" aria-label="Trail features">
-            <span>Interactive maps</span>
-            <span>Elevation profiles</span>
-            <span>GPX downloads</span>
-            <span>GPS recording</span>
-            <span>Hiker reviews</span>
+            <a href="#trail/longonot-trail/map">Interactive maps</a>
+            <a href="#trail/longonot-trail/elevation">Elevation profiles</a>
+            <a href="#trail/longonot-trail/gpx">GPX downloads</a>
+            <a href="#trail/longonot-trail/gps">GPS recording</a>
+            <a href="#trail/longonot-trail/reviews">Hiker reviews</a>
           </div>
         </div>
 

@@ -3,7 +3,7 @@ import { getSavannaTrail } from '../data/savannaTrails';
 import { TRAILS_FEATURE_NAME } from '../lib/config';
 import { TrailExplorer } from './TrailExplorer';
 
-export function TrailPage({ trailId }: { trailId: string }) {
+export function TrailPage({ trailId, section }: { trailId: string; section?: string }) {
   const { getTrail, loading, error: trailsError } = useTrails();
   const trail = getTrail(trailId) ?? getSavannaTrail(trailId) ?? getSavannaTrail('longonot-trail')!;
 
@@ -47,7 +47,7 @@ export function TrailPage({ trailId }: { trailId: string }) {
             <p>{trail.description}</p>
           </div>
         </div>
-        <TrailExplorer trail={trail} />
+        <TrailExplorer section={section} trail={trail} />
       </section>
     </article>
   );

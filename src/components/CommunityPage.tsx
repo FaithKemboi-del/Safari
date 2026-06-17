@@ -369,7 +369,7 @@ export function CommunityFeedPreview() {
           <a className="primary-button" href="#community">
             Join the conversation
           </a>
-          <a className="secondary-button" href="#itineraries">
+          <a className="primary-button" href="#itineraries">
             Browse itineraries first
           </a>
         </div>

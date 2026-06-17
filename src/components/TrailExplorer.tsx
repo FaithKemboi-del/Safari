@@ -16,6 +16,15 @@ import { TrailMap } from './TrailMap';
 type TrailExplorerProps = {
   trail: SavannaTrail;
   compact?: boolean;
+  section?: string;
+};
+
+const TRAIL_SECTION_IDS: Record<string, string> = {
+  map: 'trail-section-map',
+  elevation: 'trail-section-elevation',
+  gpx: 'trail-section-gpx',
+  gps: 'trail-section-gps',
+  reviews: 'trail-section-reviews',
 };
 
 const difficultyLabels: Record<SavannaTrail['difficulty'], string> = {
@@ -25,7 +34,7 @@ const difficultyLabels: Record<SavannaTrail['difficulty'], string> = {
   expert: 'Expert',
 };
 
-export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
+export function TrailExplorer({ trail, compact = false, section }: TrailExplorerProps) {
   const { user, displayName, isConfigured } = useAuth();
   const signedIn = isConfigured ? Boolean(user) : sessionStorage.getItem('safari-signed-in') === 'true';
   const [reviews, setReviews] = useState<TrailReview[]>([]);
@@ -33,7 +42,33 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
   const [reviewMessage, setReviewMessage] = useState('');
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
-  const [showRecorder, setShowRecorder] = useState(false);
+  const [showRecorder, setShowRecorder] = useState(section === 'gps');
+
+  useEffect(() => {
+    if (!section) {
+      return;
+    }
+
+    if (section === 'gps') {
+      setShowRecorder(true);
+    }
+
+    const targetId = TRAIL_SECTION_IDS[section];
+    if (!targetId) {
+      return;
+    }
+
+    const scrollToSection = () => {
+      document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    if (section === 'gps') {
+      window.setTimeout(scrollToSection, 150);
+      return;
+    }
+
+    requestAnimationFrame(scrollToSection);
+  }, [section]);
 
   useEffect(() => {
     let active = true;
@@ -143,13 +178,17 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
         </div>
       </div>
 
-      <TrailMap
-        route={trail.coordinates}
-        waypoints={trail.waypoints}
-        height={compact ? '16rem' : '22rem'}
-      />
+      <div className="trail-explorer-map" id="trail-section-map">
+        <TrailMap
+          route={trail.coordinates}
+          waypoints={trail.waypoints}
+          height={compact ? '16rem' : '22rem'}
+        />
+      </div>
 
-      <ElevationChart profile={trail.elevationProfile} />
+      <div className="trail-explorer-elevation" id="trail-section-elevation">
+        <ElevationChart profile={trail.elevationProfile} />
+      </div>
 
       <div className="trail-waypoints">
         <h4>Waypoints</h4>
@@ -169,7 +208,8 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
           Directions to trailhead
         </a>
         <button
-          className="secondary-button"
+          className="primary-button"
+          id="trail-section-gpx"
           onClick={() =>
             downloadTextFile(
               `${trail.id}.gpx`,
@@ -184,13 +224,16 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
         <a className="ghost-link" href={`#trail/${trail.id}`}>
           Full trail page
         </a>
-        <button
-          className="secondary-button compact-button"
-          onClick={() => setShowRecorder((current) => !current)}
-          type="button"
-        >
-          {showRecorder ? 'Hide GPS recorder' : 'Record hike with GPS'}
-        </button>
+        <div className="trail-gps-section" id="trail-section-gps">
+          <button
+            className="primary-button"
+            onClick={() => setShowRecorder((current) => !current)}
+            type="button"
+          >
+            {showRecorder ? 'Hide GPS recorder' : 'Record hike with GPS'}
+          </button>
+          {showRecorder && <HikeGpsRecorder filterTrailId={trail.id} trail={trail} />}
+        </div>
       </div>
 
       {trail.tips.length > 0 && (
@@ -204,9 +247,7 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
         </div>
       )}
 
-      {showRecorder && <HikeGpsRecorder filterTrailId={trail.id} trail={trail} />}
-
-      <div className="trail-reviews">
+      <div className="trail-reviews" id="trail-section-reviews">
         <div className="trail-reviews-header">
           <h4>Trail reviews</h4>
           <span>{reviews.length} hiker{reviews.length === 1 ? '' : 's'}</span>

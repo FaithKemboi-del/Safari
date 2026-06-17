@@ -41,7 +41,7 @@ type Route =
   | { page: 'destinations' }
   | { page: 'destination'; slug: string }
   | { page: 'category'; id: string }
-  | { page: 'trail'; id: string }
+  | { page: 'trail'; id: string; section?: string }
   | { page: 'spot'; id: string }
   | { page: 'itineraries'; id?: string }
   | { page: 'community' }
@@ -61,7 +61,10 @@ const navItems: { label: string; hash: string; icon: NavIconName }[] = [
 
 function parseHashFromPath(path?: string): Route {
   const hash = (path ?? window.location.hash.replace(/^#/, '')) || 'home';
-  const [page, slug] = hash.split('/');
+  const parts = hash.split('/');
+  const page = parts[0];
+  const slug = parts[1];
+  const extra = parts[2];
 
   if (page === 'destination' && slug) {
     return { page: 'destination', slug };
@@ -72,7 +75,7 @@ function parseHashFromPath(path?: string): Route {
   }
 
   if (page === 'trail' && slug) {
-    return { page: 'trail', id: slug };
+    return { page: 'trail', id: slug, section: extra };
   }
 
   if (page === 'spot' && slug) {
@@ -115,7 +118,7 @@ function routeKey(route: Route): string {
   }
 
   if (route.page === 'trail') {
-    return `trail/${route.id}`;
+    return route.section ? `trail/${route.id}/${route.section}` : `trail/${route.id}`;
   }
 
   if (route.page === 'spot') {
@@ -179,7 +182,9 @@ function App() {
         {route.page === 'destinations' && <DestinationsPage />}
         {route.page === 'destination' && <DestinationDetailPage slug={route.slug} />}
         {route.page === 'category' && <CategoryPage categoryId={route.id} />}
-        {route.page === 'trail' && <TrailPage trailId={route.id} />}
+        {route.page === 'trail' && (
+          <TrailPage trailId={route.id} section={route.section} />
+        )}
         {route.page === 'spot' && <CategorySpotPage spotId={route.id} />}
         {route.page === 'community' && <CommunityPage />}
         {route.page === 'itineraries' && <ItinerariesPage selectedItineraryId={route.id} />}
