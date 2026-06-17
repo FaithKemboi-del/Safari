@@ -1,4 +1,5 @@
 -- Global Safiri community feed (questions, trip reports, tips)
+-- Run in Supabase SQL Editor after migrations 001 and 004.
 
 create table if not exists public.community_posts (
   id uuid primary key default gen_random_uuid(),
@@ -27,9 +28,15 @@ create trigger community_posts_updated_at
 
 alter table public.community_posts enable row level security;
 
+drop policy if exists "Published community posts are public" on public.community_posts;
+drop policy if exists "Signed-in users can post to community" on public.community_posts;
+drop policy if exists "Users can update own community posts" on public.community_posts;
+drop policy if exists "Authenticated users can moderate community posts" on public.community_posts;
+drop policy if exists "Admins can manage community posts" on public.community_posts;
+
 create policy "Published community posts are public"
   on public.community_posts for select
-  using (status = 'published' or auth.role() = 'authenticated');
+  using (status = 'published' or public.is_admin_user());
 
 create policy "Signed-in users can post to community"
   on public.community_posts for insert
@@ -37,8 +44,10 @@ create policy "Signed-in users can post to community"
 
 create policy "Users can update own community posts"
   on public.community_posts for update
-  using (auth.uid() = user_id);
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
-create policy "Authenticated users can moderate community posts"
+create policy "Admins can manage community posts"
   on public.community_posts for all
-  using (auth.role() = 'authenticated');
+  using (public.is_admin_user())
+  with check (public.is_admin_user());
