@@ -99,7 +99,7 @@ function GenericCategoryPage({
                 description={spot.description}
                 mapQuery={spot.mapQuery}
                 slug={spot.slug}
-                title={spot.title}
+                spotId={spot.id}
                 trailId={spot.trailId}
               />
             </SpotCard>
@@ -223,7 +223,7 @@ function HikingCategoryPage({
               </div>
               <div className="category-card-footer">
                 <SpotActionBar
-                  trailId={trail.id}
+                  detailsHref={`#trail/${trail.id}`}
                   mapQuery={trail.mapQuery}
                   mapsHref={trail.googleMapsUrl}
                 />
@@ -250,7 +250,7 @@ function HikingCategoryPage({
                 description={spot.description}
                 mapQuery={spot.mapQuery}
                 slug={spot.slug}
-                title={spot.title}
+                spotId={spot.id}
                 trailId={spot.trailId}
               />
             </SpotCard>
@@ -438,7 +438,7 @@ function EventsCategoryPage({
                 }
                 mapQuery={event.mapQuery ?? `${event.title} ${event.location} Kenya`}
                 slug={event.slug}
-                title={event.title}
+                spotId={event.id}
               />
             </SpotCard>
           ))}

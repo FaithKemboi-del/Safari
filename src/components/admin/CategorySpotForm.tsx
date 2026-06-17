@@ -221,7 +221,7 @@ export function CategorySpotForm({
           />
           <small className="field-help">
             Each new line becomes a bullet on the card. Visitors see the first two points, then
-            tap View details for the full list.
+            open View details for a full spot page with every point.
           </small>
         </label>
 

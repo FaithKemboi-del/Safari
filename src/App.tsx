@@ -27,6 +27,7 @@ import { CategoryIcon, CategoryPage } from './components/CategoryPage';
 import { AdminLoginPage } from './components/AdminLoginPage';
 import { AdminProtected } from './components/AdminProtected';
 import { NavIcon, ProvinceIcon, type NavIconName } from './components/SafiriIcons';
+import { CategorySpotPage } from './components/CategorySpotPage';
 import { TrailPage } from './components/TrailPage';
 import { BRAND_NAME, TRAILS_FEATURE_NAME } from './lib/config';
 
@@ -36,6 +37,7 @@ type Route =
   | { page: 'destination'; slug: string }
   | { page: 'category'; id: string }
   | { page: 'trail'; id: string }
+  | { page: 'spot'; id: string }
   | { page: 'itineraries' }
   | { page: 'plan-ai' }
   | { page: 'signin' }
@@ -64,6 +66,10 @@ function parseHashFromPath(path?: string): Route {
 
   if (page === 'trail' && slug) {
     return { page: 'trail', id: slug };
+  }
+
+  if (page === 'spot' && slug) {
+    return { page: 'spot', id: slug };
   }
 
   if (
@@ -96,6 +102,10 @@ function routeKey(route: Route): string {
 
   if (route.page === 'trail') {
     return `trail/${route.id}`;
+  }
+
+  if (route.page === 'spot') {
+    return `spot/${route.id}`;
   }
 
   return route.page;
@@ -139,7 +149,7 @@ function App() {
   const activePage =
     route.page === 'destination'
       ? 'destinations'
-      : route.page === 'category' || route.page === 'trail'
+      : route.page === 'category' || route.page === 'trail' || route.page === 'spot'
         ? 'home'
         : route.page;
 
@@ -152,6 +162,7 @@ function App() {
         {route.page === 'destination' && <DestinationDetailPage slug={route.slug} />}
         {route.page === 'category' && <CategoryPage categoryId={route.id} />}
         {route.page === 'trail' && <TrailPage trailId={route.id} />}
+        {route.page === 'spot' && <CategorySpotPage spotId={route.id} />}
         {route.page === 'itineraries' && <ItinerariesPage />}
         {route.page === 'plan-ai' && <PlanWithAIPage />}
         {route.page === 'signin' && <AuthPage mode="signin" />}
