@@ -1,15 +1,24 @@
 import { useTrails } from '../context/TrailsContext';
 import { getSavannaTrail } from '../data/savannaTrails';
+import { TRAILS_FEATURE_NAME } from '../lib/config';
 import { TrailExplorer } from './TrailExplorer';
 
-export function TrailPage({ trailId }: { trailId: string }) {
-  const { getTrail, loading } = useTrails();
+export function TrailPage({ trailId, section }: { trailId: string; section?: string }) {
+  const { getTrail, loading, error: trailsError } = useTrails();
   const trail = getTrail(trailId) ?? getSavannaTrail(trailId) ?? getSavannaTrail('longonot-trail')!;
 
   if (loading && !trail) {
     return (
       <section className="section">
         <p className="community-empty">Loading trail...</p>
+      </section>
+    );
+  }
+
+  if (trailsError) {
+    return (
+      <section className="section">
+        <p className="auth-message">{trailsError}</p>
       </section>
     );
   }
@@ -21,7 +30,8 @@ export function TrailPage({ trailId }: { trailId: string }) {
           <a className="category-back" href="#category/hiking">
             ← Back to hiking
           </a>
-          <span className="eyebrow">Savanna Trails</span>
+          <span className="eyebrow">{TRAILS_FEATURE_NAME}</span>
+          <span className="spot-budget trail-page-budget">{trail.budget}</span>
           <h1>{trail.title}</h1>
           <p>
             {trail.location} · {trail.difficultyLabel} · {trail.duration}
@@ -37,7 +47,7 @@ export function TrailPage({ trailId }: { trailId: string }) {
             <p>{trail.description}</p>
           </div>
         </div>
-        <TrailExplorer trail={trail} />
+        <TrailExplorer section={section} trail={trail} />
       </section>
     </article>
   );

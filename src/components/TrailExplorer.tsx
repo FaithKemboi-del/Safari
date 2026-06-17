@@ -7,6 +7,7 @@ import {
   type TrailReview,
 } from '../data/savannaTrails';
 import { buildGpx, downloadTextFile } from '../lib/trailUtils';
+import { readJson, writeJson } from '../lib/storage';
 import { fetchTrailReviews, postTrailReview } from '../services/trailsApi';
 import { ElevationChart } from './ElevationChart';
 import { HikeGpsRecorder } from './HikeGpsRecorder';
@@ -15,6 +16,15 @@ import { TrailMap } from './TrailMap';
 type TrailExplorerProps = {
   trail: SavannaTrail;
   compact?: boolean;
+  section?: string;
+};
+
+const TRAIL_SECTION_IDS: Record<string, string> = {
+  map: 'trail-section-map',
+  elevation: 'trail-section-elevation',
+  gpx: 'trail-section-gpx',
+  gps: 'trail-section-gps',
+  reviews: 'trail-section-reviews',
 };
 
 const difficultyLabels: Record<SavannaTrail['difficulty'], string> = {
@@ -24,28 +34,63 @@ const difficultyLabels: Record<SavannaTrail['difficulty'], string> = {
   expert: 'Expert',
 };
 
-export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
+export function TrailExplorer({ trail, compact = false, section }: TrailExplorerProps) {
   const { user, displayName, isConfigured } = useAuth();
   const signedIn = isConfigured ? Boolean(user) : sessionStorage.getItem('safari-signed-in') === 'true';
   const [reviews, setReviews] = useState<TrailReview[]>([]);
+  const [reviewsError, setReviewsError] = useState('');
+  const [reviewMessage, setReviewMessage] = useState('');
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
-  const [showRecorder, setShowRecorder] = useState(false);
+  const [showRecorder, setShowRecorder] = useState(section === 'gps');
+
+  useEffect(() => {
+    if (!section) {
+      return;
+    }
+
+    if (section === 'gps') {
+      setShowRecorder(true);
+    }
+
+    const targetId = TRAIL_SECTION_IDS[section];
+    if (!targetId) {
+      return;
+    }
+
+    const scrollToSection = () => {
+      document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    if (section === 'gps') {
+      window.setTimeout(scrollToSection, 150);
+      return;
+    }
+
+    requestAnimationFrame(scrollToSection);
+  }, [section]);
 
   useEffect(() => {
     let active = true;
+    setReviewsError('');
 
-    void fetchTrailReviews(trail.id).then((remote) => {
-      if (!active) {
-        return;
-      }
+    void fetchTrailReviews(trail.id)
+      .then((remote) => {
+        if (!active) {
+          return;
+        }
 
-      const stored = localStorage.getItem(SAVANNA_TRAILS_KEY);
-      const local = stored ? (JSON.parse(stored) as TrailReview[]) : [];
-      const seeded = seedTrailReviews.filter((review) => review.trailId === trail.id);
-      const localForTrail = local.filter((review) => review.trailId === trail.id);
-      setReviews([...remote, ...localForTrail, ...seeded]);
-    });
+        const local = readJson<TrailReview[]>(SAVANNA_TRAILS_KEY, []);
+        const seeded = seedTrailReviews.filter((review) => review.trailId === trail.id);
+        const localForTrail = local.filter((review) => review.trailId === trail.id);
+        setReviews([...remote, ...localForTrail, ...seeded]);
+      })
+      .catch((loadError) => {
+        console.error('Failed to load trail reviews:', loadError);
+        if (active) {
+          setReviewsError('Could not load reviews. Try refreshing the page.');
+        }
+      });
 
     return () => {
       active = false;
@@ -57,37 +102,51 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
       return;
     }
 
-    if (user?.id) {
-      const saved = await postTrailReview({
+    setReviewMessage('');
+
+    try {
+      if (user?.id) {
+        const saved = await postTrailReview({
+          trailId: trail.id,
+          userId: user.id,
+          authorName: displayName || 'You',
+          rating,
+          comment: comment.trim(),
+        });
+
+        if (saved) {
+          setReviews((current) => [saved, ...current]);
+          setComment('');
+          return;
+        }
+
+        setReviewMessage('Could not save your review to your account. Saved on this device instead.');
+      }
+
+      const review: TrailReview = {
+        id: `review-${Date.now()}`,
         trailId: trail.id,
-        userId: user.id,
-        authorName: displayName || 'You',
+        author: signedIn ? displayName || 'You' : 'Guest',
         rating,
         comment: comment.trim(),
-      });
+        postedAgo: 'Just now',
+      };
 
-      if (saved) {
-        setReviews((current) => [saved, ...current]);
-        setComment('');
+      const local = readJson<TrailReview[]>(SAVANNA_TRAILS_KEY, []);
+      const next = [review, ...local];
+      const writeResult = writeJson(SAVANNA_TRAILS_KEY, next);
+
+      if (!writeResult.ok) {
+        setReviewMessage(writeResult.error);
         return;
       }
+
+      setReviews((current) => [review, ...current]);
+      setComment('');
+    } catch (submitError) {
+      console.error('Failed to submit trail review:', submitError);
+      setReviewMessage('Could not save your review. Try again.');
     }
-
-    const review: TrailReview = {
-      id: `review-${Date.now()}`,
-      trailId: trail.id,
-      author: signedIn ? displayName || 'You' : 'Guest',
-      rating,
-      comment: comment.trim(),
-      postedAgo: 'Just now',
-    };
-
-    const stored = localStorage.getItem(SAVANNA_TRAILS_KEY);
-    const local = stored ? (JSON.parse(stored) as TrailReview[]) : [];
-    const next = [review, ...local];
-    localStorage.setItem(SAVANNA_TRAILS_KEY, JSON.stringify(next));
-    setReviews((current) => [review, ...current]);
-    setComment('');
   };
 
   const gpxPoints = trail.coordinates.map((point, index) => ({
@@ -119,13 +178,17 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
         </div>
       </div>
 
-      <TrailMap
-        route={trail.coordinates}
-        waypoints={trail.waypoints}
-        height={compact ? '16rem' : '22rem'}
-      />
+      <div className="trail-explorer-map" id="trail-section-map">
+        <TrailMap
+          route={trail.coordinates}
+          waypoints={trail.waypoints}
+          height={compact ? '16rem' : '22rem'}
+        />
+      </div>
 
-      <ElevationChart profile={trail.elevationProfile} />
+      <div className="trail-explorer-elevation" id="trail-section-elevation">
+        <ElevationChart profile={trail.elevationProfile} />
+      </div>
 
       <div className="trail-waypoints">
         <h4>Waypoints</h4>
@@ -145,7 +208,8 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
           Directions to trailhead
         </a>
         <button
-          className="secondary-button"
+          className="primary-button"
+          id="trail-section-gpx"
           onClick={() =>
             downloadTextFile(
               `${trail.id}.gpx`,
@@ -160,13 +224,16 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
         <a className="ghost-link" href={`#trail/${trail.id}`}>
           Full trail page
         </a>
-        <button
-          className="secondary-button compact-button"
-          onClick={() => setShowRecorder((current) => !current)}
-          type="button"
-        >
-          {showRecorder ? 'Hide GPS recorder' : 'Record hike with GPS'}
-        </button>
+        <div className="trail-gps-section" id="trail-section-gps">
+          <button
+            className="primary-button"
+            onClick={() => setShowRecorder((current) => !current)}
+            type="button"
+          >
+            {showRecorder ? 'Hide GPS recorder' : 'Record hike with GPS'}
+          </button>
+          {showRecorder && <HikeGpsRecorder filterTrailId={trail.id} trail={trail} />}
+        </div>
       </div>
 
       {trail.tips.length > 0 && (
@@ -180,13 +247,12 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
         </div>
       )}
 
-      {showRecorder && <HikeGpsRecorder filterTrailId={trail.id} trail={trail} />}
-
-      <div className="trail-reviews">
+      <div className="trail-reviews" id="trail-section-reviews">
         <div className="trail-reviews-header">
           <h4>Trail reviews</h4>
           <span>{reviews.length} hiker{reviews.length === 1 ? '' : 's'}</span>
         </div>
+        {reviewsError ? <p className="auth-message">{reviewsError}</p> : null}
         <div className="community-list">
           {reviews.map((review) => (
             <article key={review.id} className="community-card">
@@ -228,6 +294,7 @@ export function TrailExplorer({ trail, compact = false }: TrailExplorerProps) {
             <button className="primary-button" onClick={() => void submitReview()} type="button">
               Post review
             </button>
+            {reviewMessage ? <p className="auth-message">{reviewMessage}</p> : null}
             </>
           ) : (
             <div className="community-signin-prompt">

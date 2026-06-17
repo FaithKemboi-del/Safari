@@ -9,56 +9,62 @@ import {
 } from 'react';
 import {
   categories,
-  testimonials,
   trendingThisWeek,
 } from './data';
+import {
+  pickFeaturedDestinations,
+  pickFeaturedItineraries,
+  pickTrendingItems,
+} from './lib/landingContent';
 import type { CommunityUpdate, Destination } from './data';
+import {
+  destinationMatchesProvince,
+  destinationMatchesSearch,
+  KENYA_PROVINCE_FILTER_OPTIONS,
+} from './lib/kenyaProvinces';
 import { useAuth } from './context/AuthContext';
 import { useData } from './context/DataContext';
 import { fetchCommunityUpdates, postCommunityUpdate } from './services/safariApi';
+import { AdminDashboard } from './components/admin/AdminDashboard';
+import { Brand } from './components/Brand';
 import { CategoryIcon, CategoryPage } from './components/CategoryPage';
+import { AdminLoginPage } from './components/AdminLoginPage';
+import { AdminProtected } from './components/AdminProtected';
+import { NavIcon, ProvinceIcon, type NavIconName } from './components/SafiriIcons';
+import { CommunityFeedPreview, CommunityPage } from './components/CommunityPage';
+import { CategorySpotPage } from './components/CategorySpotPage';
 import { TrailPage } from './components/TrailPage';
+import { BRAND_NAME, TRAILS_FEATURE_NAME } from './lib/config';
 
 type Route =
   | { page: 'home' }
   | { page: 'destinations' }
   | { page: 'destination'; slug: string }
   | { page: 'category'; id: string }
-  | { page: 'trail'; id: string }
-  | { page: 'itineraries' }
+  | { page: 'trail'; id: string; section?: string }
+  | { page: 'spot'; id: string }
+  | { page: 'itineraries'; id?: string }
+  | { page: 'community' }
   | { page: 'plan-ai' }
   | { page: 'signin' }
   | { page: 'signup' }
+  | { page: 'admin-login' }
   | { page: 'admin' };
 
-const navItems = [
-  { label: 'Home', hash: '#home' },
-  { label: 'Destinations', hash: '#destinations' },
-  { label: 'Itineraries', hash: '#itineraries' },
-  { label: 'Plan with AI', hash: '#plan-ai' },
+const navItems: { label: string; hash: string; icon: NavIconName }[] = [
+  { label: 'Home', hash: '#home', icon: 'home' },
+  { label: 'Destinations', hash: '#destinations', icon: 'destinations' },
+  { label: 'Itineraries', hash: '#itineraries', icon: 'itineraries' },
+  { label: 'Community', hash: '#community', icon: 'community' },
+  { label: 'Plan with AI', hash: '#plan-ai', icon: 'plan' },
 ];
-
-const adminTables = {
-  Destinations: [
-    ['Maasai Mara', 'Narok', 'From $45/day', 'Published'],
-    ['Amboseli', 'Kajiado', 'From $55/day trip', 'Published'],
-    ["Hell's Gate", 'Naivasha', 'From $15 entry', 'Published'],
-  ],
-  Itineraries: [
-    ['Budget Mara Weekend', '3 days', 'From $180 pp', 'Live'],
-    ['Coast on a Shoestring', '5 days', 'From $220 pp', 'Live'],
-    ['Rift Valley Circuit', '4 days', 'From $150 pp', 'Review'],
-  ],
-  Routes: [
-    ['Nairobi -> Maasai Mara', 'Fly-in', '290 km', 'Active'],
-    ['Amboseli -> Tsavo -> Diani', 'Road + SGR', '690 km', 'Active'],
-    ['Nairobi -> Lake Nakuru -> Laikipia', 'Private 4x4', '510 km', 'Draft'],
-  ],
-};
 
 function parseHashFromPath(path?: string): Route {
   const hash = (path ?? window.location.hash.replace(/^#/, '')) || 'home';
-  const [page, slug] = hash.split('/');
+  const parts = hash.split('/');
+  const page = parts[0];
+  const slug = parts[1];
+  const extra = parts[2];
 
   if (page === 'destination' && slug) {
     return { page: 'destination', slug };
@@ -69,15 +75,27 @@ function parseHashFromPath(path?: string): Route {
   }
 
   if (page === 'trail' && slug) {
-    return { page: 'trail', id: slug };
+    return { page: 'trail', id: slug, section: extra };
+  }
+
+  if (page === 'spot' && slug) {
+    return { page: 'spot', id: slug };
+  }
+
+  if (page === 'itineraries') {
+    return slug ? { page: 'itineraries', id: slug } : { page: 'itineraries' };
+  }
+
+  if (page === 'community') {
+    return { page: 'community' };
   }
 
   if (
     page === 'destinations' ||
-    page === 'itineraries' ||
     page === 'plan-ai' ||
     page === 'signin' ||
     page === 'signup' ||
+    page === 'admin-login' ||
     page === 'admin'
   ) {
     return { page };
@@ -100,7 +118,15 @@ function routeKey(route: Route): string {
   }
 
   if (route.page === 'trail') {
-    return `trail/${route.id}`;
+    return route.section ? `trail/${route.id}/${route.section}` : `trail/${route.id}`;
+  }
+
+  if (route.page === 'spot') {
+    return `spot/${route.id}`;
+  }
+
+  if (route.page === 'itineraries') {
+    return route.id ? `itineraries/${route.id}` : 'itineraries';
   }
 
   return route.page;
@@ -144,7 +170,7 @@ function App() {
   const activePage =
     route.page === 'destination'
       ? 'destinations'
-      : route.page === 'category' || route.page === 'trail'
+      : route.page === 'category' || route.page === 'trail' || route.page === 'spot'
         ? 'home'
         : route.page;
 
@@ -156,14 +182,25 @@ function App() {
         {route.page === 'destinations' && <DestinationsPage />}
         {route.page === 'destination' && <DestinationDetailPage slug={route.slug} />}
         {route.page === 'category' && <CategoryPage categoryId={route.id} />}
-        {route.page === 'trail' && <TrailPage trailId={route.id} />}
-        {route.page === 'itineraries' && <ItinerariesPage />}
+        {route.page === 'trail' && (
+          <TrailPage trailId={route.id} section={route.section} />
+        )}
+        {route.page === 'spot' && <CategorySpotPage spotId={route.id} />}
+        {route.page === 'community' && <CommunityPage />}
+        {route.page === 'itineraries' && <ItinerariesPage selectedItineraryId={route.id} />}
         {route.page === 'plan-ai' && <PlanWithAIPage />}
         {route.page === 'signin' && <AuthPage mode="signin" />}
         {route.page === 'signup' && <AuthPage mode="signup" />}
-        {route.page === 'admin' && <AdminDashboard />}
+        {route.page === 'admin-login' && (
+          <AdminLoginPage onSuccess={() => navigate('admin')} />
+        )}
+        {route.page === 'admin' && (
+          <AdminProtected onNavigate={navigate}>
+            <AdminDashboard onSignOut={() => navigate('admin-login')} />
+          </AdminProtected>
+        )}
       </main>
-      {route.page !== 'admin' && <Footer />}
+      {route.page !== 'admin' && route.page !== 'admin-login' && <Footer />}
     </div>
   );
 }
@@ -171,13 +208,7 @@ function App() {
 function Header({ activePage }: { activePage: string }) {
   return (
     <header className="topbar">
-      <a className="brand" href="#home" aria-label="Savanna Luxe home">
-        <span className="brand-mark">SL</span>
-        <span>
-          <strong>Savanna Luxe</strong>
-          <small>Budget Kenya Travel</small>
-        </span>
-      </a>
+      <Brand />
 
       <nav className="nav-links" aria-label="Primary navigation">
         {navItems.map((item) => (
@@ -186,6 +217,7 @@ function Header({ activePage }: { activePage: string }) {
             className={activePage === item.hash.replace('#', '') ? 'active' : ''}
             href={item.hash}
           >
+            <NavIcon name={item.icon} />
             {item.label}
           </a>
         ))}
@@ -205,6 +237,15 @@ function Header({ activePage }: { activePage: string }) {
 
 function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
   const { destinations, itineraries } = useData();
+  const featuredDestinations = useMemo(
+    () => pickFeaturedDestinations(destinations),
+    [destinations],
+  );
+  const featuredItineraries = useMemo(() => pickFeaturedItineraries(itineraries), [itineraries]);
+  const trendingItems = useMemo(
+    () => pickTrendingItems(destinations, trendingThisWeek),
+    [destinations],
+  );
 
   const goToCategory = (categoryId: string) => (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -214,12 +255,7 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
   return (
     <>
       <section className="hero section-dark">
-        <img
-          className="hero-background-image"
-          src="https://images.unsplash.com/photo-1489392197799-37adffc731ad?auto=format&fit=crop&w=2200&q=90"
-          alt=""
-        />
-        <div className="hero-overlay" />
+        <div className="hero-overlay" aria-hidden="true" />
         <div className="hero-content">
           <span className="eyebrow">Affordable Kenya travel</span>
           <h1 className="hero-title-horizontal">
@@ -259,12 +295,9 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
           title="What travelers are searching right now"
           body="What budget travelers are booking this week — shared vans, SGR hops, and low-cost stays."
         />
-        <div className="trending-grid">
-          {trendingThisWeek.map((item, index) => (
-            <article
-              key={item.id}
-              className={`trending-card ${index === 0 ? 'featured' : ''}`}
-            >
+        <div className="trending-grid trending-grid--even">
+          {trendingItems.map((item) => (
+            <article key={item.id} className="trending-card">
               <img src={item.image} alt="" />
               <div className="trending-overlay" />
               <div className="trending-content">
@@ -310,8 +343,8 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
           title="Top spots that won't break the bank"
           body="Wildlife, hikes, coast, and hidden gems with honest pricing, transport options, and safety notes."
         />
-        <div className="destination-row">
-          {destinations.slice(0, 3).map((destination) => (
+        <div className="destination-row destination-row--even">
+          {featuredDestinations.map((destination) => (
             <DestinationCard key={destination.slug} destination={destination} compact />
           ))}
         </div>
@@ -323,37 +356,62 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
           title="Affordable routes that still feel epic"
           body="Day-by-day plans with public transport, shared vans, camps, and hostels where possible."
         />
-        <div className="itinerary-showcase">
-          {itineraries.map((itinerary) => (
+        <div className="itinerary-showcase itinerary-showcase--even">
+          {featuredItineraries.map((itinerary) => (
             <article key={itinerary.id} className="showcase-card">
               <img src={itinerary.image} alt="" />
-              <div>
+              <div className="showcase-card__body">
                 <span>{itinerary.duration}</span>
                 <h3>{itinerary.title}</h3>
                 <p>{itinerary.route}</p>
-                <strong>{itinerary.price}</strong>
+                <div className="showcase-card__footer">
+                  <strong>{itinerary.price}</strong>
+                  <a href={`#itineraries/${itinerary.id}`}>View details</a>
+                </div>
               </div>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="section testimonials-section">
-        <SectionIntro
-          eyebrow="Traveler stories"
-          title="Designed to capture attention and trust"
-          body="Real tips from travelers on the ground — so you know what to expect before you go."
+      <CommunityFeedPreview />
+
+      <section className="landing-cta section-dark" aria-labelledby="landing-cta-title">
+        <img
+          className="landing-cta-image"
+          src="https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1800&q=80"
+          alt=""
         />
-        <div className="testimonial-grid">
-          {testimonials.map((testimonial) => (
-            <figure key={testimonial.name} className="testimonial-card">
-              <blockquote>“{testimonial.quote}”</blockquote>
-              <figcaption>
-                <strong>{testimonial.name}</strong>
-                <span>{testimonial.role}</span>
-              </figcaption>
-            </figure>
-          ))}
+        <div className="landing-cta-overlay" />
+        <div className="landing-cta-inner">
+          <div className="landing-cta-copy">
+            <span className="eyebrow">Ready to explore?</span>
+            <h2 id="landing-cta-title">Your next Kenya adventure starts here.</h2>
+            <p>
+              Browse budget destinations, follow {TRAILS_FEATURE_NAME} with free maps, and get live tips
+              from travelers on the ground — no expensive tour packages required.
+            </p>
+            <ul className="landing-cta-points">
+              <li>Free trail maps &amp; GPS recording</li>
+              <li>Community updates from real travelers</li>
+              <li>Itineraries built for matatu, SGR &amp; camps</li>
+            </ul>
+          </div>
+          <div className="landing-cta-actions">
+            <a className="primary-button" href="#destinations">
+              Browse destinations
+            </a>
+            <a
+              className="secondary-button"
+              href="#category/hiking"
+              onClick={goToCategory('hiking')}
+            >
+              Explore hiking trails
+            </a>
+            <a className="landing-cta-link" href="#signup">
+              Create a free account →
+            </a>
+          </div>
         </div>
       </section>
     </>
@@ -363,22 +421,22 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
 function DestinationsPage() {
   const { destinations } = useData();
   const [search, setSearch] = useState('');
-  const [region, setRegion] = useState('All');
-  const regions = ['All', ...Array.from(new Set(destinations.map((destination) => destination.region)))];
+  const [province, setProvince] = useState<(typeof KENYA_PROVINCE_FILTER_OPTIONS)[number]>('All');
 
   const filteredDestinations = useMemo(() => {
     return destinations.filter((destination) => {
-      const matchesRegion = region === 'All' || destination.region === region;
-      const searchable = `${destination.title} ${destination.location} ${destination.description}`.toLowerCase();
-      return matchesRegion && searchable.includes(search.toLowerCase());
+      return (
+        destinationMatchesProvince(destination, province) &&
+        destinationMatchesSearch(destination, search)
+      );
     });
-  }, [destinations, region, search]);
+  }, [destinations, province, search]);
 
   return (
     <PageFrame
-      eyebrow="Safari destinations"
+      eyebrow="Safiri destinations"
       title="Find affordable places to explore"
-      body="Search by name, region, or vibe. Filter by budget-friendly routes and local transport options."
+      body="Search by destination, town, or county. Filter by Kenyan province to narrow results."
     >
       <div className="filter-panel">
         <label>
@@ -386,17 +444,25 @@ function DestinationsPage() {
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Try Maasai Mara, rhino, coast..."
+            placeholder="Try Eldoret, Samburu, Maasai Mara, Diani..."
           />
         </label>
-        <label>
-          Filter by region
-          <select value={region} onChange={(event) => setRegion(event.target.value)}>
-            {regions.map((regionName) => (
-              <option key={regionName}>{regionName}</option>
+        <div className="province-filter" role="group" aria-label="Filter by province">
+          <span className="province-filter-label">Filter by province</span>
+          <div className="province-filter-chips">
+            {KENYA_PROVINCE_FILTER_OPTIONS.map((provinceName) => (
+              <button
+                key={provinceName}
+                className={province === provinceName ? 'active' : ''}
+                onClick={() => setProvince(provinceName)}
+                type="button"
+              >
+                <ProvinceIcon name={provinceName} />
+                {provinceName}
+              </button>
             ))}
-          </select>
-        </label>
+          </div>
+        </div>
       </div>
       <div className="destination-grid">
         {filteredDestinations.map((destination) => (
@@ -430,6 +496,9 @@ function DestinationDetailPage({ slug }: { slug: string }) {
           <h1>{destination.title}</h1>
           <p>{destination.description}</p>
           <div className="detail-badges">
+            {destination.pricing ? (
+              <span className="detail-budget">{destination.pricing}</span>
+            ) : null}
             <span>{destination.region}</span>
             <span>{isHike ? 'Hiking' : 'Budget travel'}</span>
             {isHike && destination.hikeDifficulty && (
@@ -529,15 +598,33 @@ function DestinationDetailPage({ slug }: { slug: string }) {
   );
 }
 
-function ItinerariesPage() {
+function ItinerariesPage({ selectedItineraryId }: { selectedItineraryId?: string }) {
   const { itineraries } = useData();
   const [openItem, setOpenItem] = useState('');
 
   useEffect(() => {
-    if (itineraries[0]) {
-      setOpenItem(`${itineraries[0].id}-${itineraries[0].days[0]?.day ?? 'Day 1'}`);
+    if (!itineraries.length) {
+      return;
     }
-  }, [itineraries]);
+
+    const target =
+      itineraries.find((item) => item.id === selectedItineraryId) ?? itineraries[0];
+    if (!target) {
+      return;
+    }
+
+    const firstDay = target.days[0]?.day ?? 'Day 1';
+    setOpenItem(`${target.id}-${firstDay}`);
+
+    if (selectedItineraryId) {
+      window.requestAnimationFrame(() => {
+        document.getElementById(`itinerary-${target.id}`)?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      });
+    }
+  }, [itineraries, selectedItineraryId]);
 
   return (
     <PageFrame
@@ -547,7 +634,7 @@ function ItinerariesPage() {
     >
       <div className="timeline-list">
         {itineraries.map((itinerary) => (
-          <article key={itinerary.id} className="timeline-card">
+          <article key={itinerary.id} className="timeline-card" id={`itinerary-${itinerary.id}`}>
             <div className="timeline-media">
               <img src={itinerary.image} alt="" />
               <span>{itinerary.style}</span>
@@ -606,23 +693,28 @@ function AuthPage({ mode }: { mode: 'signin' | 'signup' }) {
     setSubmitting(true);
     setMessage('');
 
-    const result = isSignUp
-      ? await signUp(email, password, fullName)
-      : await signIn(email, password);
+    try {
+      const result = isSignUp
+        ? await signUp(email, password, fullName)
+        : await signIn(email, password);
 
-    setSubmitting(false);
+      if (result.error) {
+        setMessage(result.error);
+        return;
+      }
 
-    if (result.error) {
-      setMessage(result.error);
-      return;
+      if (isSignUp && isConfigured) {
+        setMessage('Account created. Check your email to confirm, then sign in.');
+        return;
+      }
+
+      window.location.hash = 'home';
+    } catch (authError) {
+      console.error('Auth submit failed:', authError);
+      setMessage('Something went wrong. Check your connection and try again.');
+    } finally {
+      setSubmitting(false);
     }
-
-    if (isSignUp && isConfigured) {
-      setMessage('Account created. Check your email to confirm, then sign in.');
-      return;
-    }
-
-    window.location.hash = 'home';
   };
 
   return (
@@ -642,7 +734,7 @@ function AuthPage({ mode }: { mode: 'signin' | 'signup' }) {
 
       <div className="auth-card">
         <span className="eyebrow">{isSignUp ? 'Create account' : 'Sign in'}</span>
-        <h2>{isSignUp ? 'Join Savanna Luxe' : 'Access your dashboard'}</h2>
+        <h2>{isSignUp ? `Join ${BRAND_NAME}` : 'Access your dashboard'}</h2>
         <div className="social-buttons">
           <button type="button">Continue with Google</button>
           <button type="button">Continue with Apple</button>
@@ -687,277 +779,10 @@ function AuthPage({ mode }: { mode: 'signin' | 'signup' }) {
           </button>
         </form>
         <p className="auth-switch">
-          {isSignUp ? 'Already have an account?' : 'New to Savanna Luxe?'}{' '}
+          {isSignUp ? 'Already have an account?' : `New to ${BRAND_NAME}?`}{' '}
           <a href={isSignUp ? '#signin' : '#signup'}>{isSignUp ? 'Sign in' : 'Create one'}</a>
         </p>
       </div>
-    </section>
-  );
-}
-
-function DestinationAdminModal({ onClose }: { onClose: () => void }) {
-  const [experienceType, setExperienceType] = useState<'standard' | 'hike'>('standard');
-
-  return (
-    <div className="modal-backdrop" role="presentation">
-      <div className="modal-card modal-card--wide" role="dialog" aria-modal="true" aria-labelledby="destination-modal-title">
-        <button className="modal-close" onClick={onClose} type="button">
-          x
-        </button>
-        <span className="eyebrow">Add a place</span>
-        <h2 id="destination-modal-title">Destination details</h2>
-        <p className="modal-lead">
-          Match the public destination page — pricing, safety, transport, and hike fields where
-          relevant.
-        </p>
-        <form className="form-stack">
-          <div className="form-grid">
-            <label>
-              Title
-              <input placeholder="e.g. Hell's Gate National Park" />
-            </label>
-            <label>
-              Slug
-              <input placeholder="hells-gate" />
-            </label>
-            <label>
-              Location
-              <input placeholder="Naivasha, Nakuru County" />
-            </label>
-            <label>
-              Region
-              <input placeholder="Rift Valley" />
-            </label>
-          </div>
-
-          <label>
-            Description
-            <textarea placeholder="What makes this place worth visiting on a budget?" rows={4} />
-          </label>
-
-          <div className="form-grid">
-            <label>
-              Experience type
-              <select
-                value={experienceType}
-                onChange={(event) => setExperienceType(event.target.value as 'standard' | 'hike')}
-              >
-                <option value="standard">Safari & travel</option>
-                <option value="hike">Hiking</option>
-              </select>
-            </label>
-            <label>
-              Status
-              <select defaultValue="published">
-                <option value="published">Published</option>
-                <option>Draft</option>
-                <option>Review</option>
-              </select>
-            </label>
-            <label>
-              Cover image URL
-              <input placeholder="https://images.unsplash.com/..." />
-            </label>
-            <label>
-              Map query
-              <input placeholder="Hell's Gate National Park Kenya" />
-            </label>
-          </div>
-
-          {experienceType === 'hike' ? (
-            <>
-              <label>
-                Hike difficulty
-                <textarea
-                  placeholder="Moderate — 3–4 hour loop, rocky sections, sun exposure..."
-                  rows={3}
-                />
-              </label>
-              <label>
-                Transport & logistics
-                <textarea
-                  placeholder="Matatu from Nairobi, bike rental at gate, best arrival time..."
-                  rows={3}
-                />
-              </label>
-              <label>
-                Additional info
-                <textarea placeholder="Park fees, what to pack, safety notes..." rows={3} />
-              </label>
-            </>
-          ) : (
-            <>
-              <label>
-                Pricing
-                <textarea
-                  placeholder="Budget day trip from $55 pp, camping from $20/night, park fees..."
-                  rows={3}
-                />
-              </label>
-              <label>
-                Safety & conditions
-                <textarea
-                  placeholder="Road conditions, weather, wildlife precautions..."
-                  rows={3}
-                />
-              </label>
-              <label>
-                Transport & logistics
-                <textarea
-                  placeholder="Matatu route, SGR station, shared van pick-up points..."
-                  rows={3}
-                />
-              </label>
-              <label>
-                Additional info
-                <textarea placeholder="Best season, local tips, free activities..." rows={3} />
-              </label>
-            </>
-          )}
-
-          <label>
-            Highlights (comma separated)
-            <input placeholder="Canyon hikes, Cycling trails, Geothermal vents" />
-          </label>
-
-          <button className="primary-button full-width" type="button">
-            Save destination
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-function AdminDashboard() {
-  const [activeTable, setActiveTable] = useState<keyof typeof adminTables>('Destinations');
-  const [modalOpen, setModalOpen] = useState(false);
-  const columns = activeTable === 'Routes' ? ['Route', 'Type', 'Distance', 'Status'] : ['Name', 'Location/Days', 'Tier/Price', 'Status'];
-
-  return (
-    <section className="admin-shell">
-      <aside className="admin-sidebar">
-        <a className="brand admin-brand" href="#home">
-          <span className="brand-mark">SL</span>
-          <span>
-            <strong>Travel Admin</strong>
-            <small>Operations</small>
-          </span>
-        </a>
-        {(['Destinations', 'Itineraries', 'Routes'] as const).map((item) => (
-          <button
-            key={item}
-            className={activeTable === item ? 'active' : ''}
-            onClick={() => setActiveTable(item)}
-            type="button"
-          >
-            {item}
-          </button>
-        ))}
-      </aside>
-
-      <div className="admin-main">
-        <div className="admin-topline">
-          <div>
-            <span className="eyebrow">Admin dashboard</span>
-            <h1>Manage {activeTable.toLowerCase()}</h1>
-          </div>
-          <button className="primary-button" onClick={() => setModalOpen(true)} type="button">
-            Create {activeTable.slice(0, -1)}
-          </button>
-        </div>
-
-        <div className="metric-grid">
-          <MetricCard label="Published destinations" value="12" trend="+3 this month" />
-          <MetricCard label="Active itineraries" value="08" trend="92% booking fit" />
-          <MetricCard label="Route coverage" value="24" trend="12 budget corridors" />
-        </div>
-
-        <div className="table-card">
-          <div className="table-toolbar">
-            <label>
-              Search records
-              <input placeholder={`Search ${activeTable.toLowerCase()}...`} />
-            </label>
-            <select defaultValue="all">
-              <option value="all">All statuses</option>
-              <option>Published</option>
-              <option>Draft</option>
-              <option>Review</option>
-            </select>
-          </div>
-          <div className="responsive-table">
-            <table>
-              <thead>
-                <tr>
-                  {columns.map((column) => (
-                    <th key={column}>{column}</th>
-                  ))}
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {adminTables[activeTable].map((row) => (
-                  <tr key={row.join('-')}>
-                    {row.map((cell) => (
-                      <td key={cell}>{cell}</td>
-                    ))}
-                    <td>
-                      <button type="button" onClick={() => setModalOpen(true)}>
-                        Edit
-                      </button>
-                      <button type="button">Delete</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {modalOpen && activeTable === 'Destinations' && (
-        <DestinationAdminModal onClose={() => setModalOpen(false)} />
-      )}
-
-      {modalOpen && activeTable !== 'Destinations' && (
-        <div className="modal-backdrop" role="presentation">
-          <div className="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-            <button className="modal-close" onClick={() => setModalOpen(false)} type="button">
-              x
-            </button>
-            <span className="eyebrow">Create or edit</span>
-            <h2 id="modal-title">{activeTable.slice(0, -1)} details</h2>
-            <form className="form-stack">
-              <label>
-                Title
-                <input placeholder={`Enter ${activeTable.slice(0, -1).toLowerCase()} title`} />
-              </label>
-              <label>
-                Description
-                <textarea placeholder="Add a short budget travel description" />
-              </label>
-              <div className="form-grid">
-                <label>
-                  Status
-                  <select defaultValue="published">
-                    <option value="published">Published</option>
-                    <option>Draft</option>
-                    <option>Review</option>
-                  </select>
-                </label>
-                <label>
-                  Price or distance
-                  <input placeholder="From $45/day or 290 km" />
-                </label>
-              </div>
-              <button className="primary-button full-width" type="button">
-                Save changes
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </section>
   );
 }
@@ -1040,16 +865,29 @@ function CommunityFeed({
   const [updates, setUpdates] = useState<CommunityUpdate[]>([]);
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
+  const [feedError, setFeedError] = useState('');
+  const [postError, setPostError] = useState('');
 
   useEffect(() => {
     let active = true;
     setLoading(true);
-    void fetchCommunityUpdates(destinationSlug).then((data) => {
-      if (active) {
-        setUpdates(data);
-        setLoading(false);
-      }
-    });
+    setFeedError('');
+
+    void fetchCommunityUpdates(destinationSlug)
+      .then((data) => {
+        if (active) {
+          setUpdates(data);
+          setLoading(false);
+        }
+      })
+      .catch((loadError) => {
+        console.error('Failed to load community updates:', loadError);
+        if (active) {
+          setFeedError('Could not load community updates. Try refreshing the page.');
+          setLoading(false);
+        }
+      });
+
     return () => {
       active = false;
     };
@@ -1063,21 +901,28 @@ function CommunityFeed({
     }
 
     setPosting(true);
+    setPostError('');
 
-    if (isConfigured && user) {
-      const saved = await postCommunityUpdate({
-        destinationSlug,
-        userId: user.id,
-        authorName: displayName || 'Traveler',
-        comment: comment.trim(),
-        isOnGround: onGround,
-      });
+    try {
+      if (isConfigured && user) {
+        const saved = await postCommunityUpdate({
+          destinationSlug,
+          userId: user.id,
+          authorName: displayName || 'Traveler',
+          comment: comment.trim(),
+          isOnGround: onGround,
+        });
 
-      if (saved) {
-        setUpdates((current) => [saved, ...current]);
-        setComment('');
+        if (saved) {
+          setUpdates((current) => [saved, ...current]);
+          setComment('');
+          return;
+        }
+
+        setPostError('Could not post your update right now. Try again in a moment.');
+        return;
       }
-    } else {
+
       const localUpdate: CommunityUpdate = {
         id: `local-${Date.now()}`,
         destinationSlug,
@@ -1090,9 +935,12 @@ function CommunityFeed({
       };
       setUpdates((current) => [localUpdate, ...current]);
       setComment('');
+    } catch (postFailure) {
+      console.error('Failed to post community update:', postFailure);
+      setPostError('Could not post your update. Try again.');
+    } finally {
+      setPosting(false);
     }
-
-    setPosting(false);
   };
 
   return (
@@ -1114,7 +962,8 @@ function CommunityFeed({
 
       <div className="community-list">
         {loading && <p className="community-empty">Loading community updates...</p>}
-        {!loading && updates.length === 0 && (
+        {feedError ? <p className="auth-message">{feedError}</p> : null}
+        {!loading && !feedError && updates.length === 0 && (
           <p className="community-empty">
             No updates yet. Be the first to share your experience at this destination.
           </p>
@@ -1163,6 +1012,7 @@ function CommunityFeed({
             <button className="primary-button" disabled={posting} onClick={() => void postUpdate()} type="button">
               {posting ? 'Posting...' : 'Post update'}
             </button>
+            {postError ? <p className="auth-message">{postError}</p> : null}
           </>
         ) : (
           <div className="community-signin-prompt">
@@ -1174,16 +1024,6 @@ function CommunityFeed({
         )}
       </div>
     </section>
-  );
-}
-
-function MetricCard({ label, value, trend }: { label: string; value: string; trend: string }) {
-  return (
-    <article className="metric-card">
-      <span>{label}</span>
-      <strong>{value}</strong>
-      <small>{trend}</small>
-    </article>
   );
 }
 
@@ -1221,7 +1061,7 @@ function PlanWithAIPage() {
       const wantsHike = /hike|trek|trail|waterfall/i.test(prompt) || selectedInterests.includes('Hiking');
 
       const title = wantsCoast
-        ? 'Savanna to Shore Signature Route'
+        ? 'Safiri to Shore Signature Route'
         : wantsHike
           ? 'Rift Valley Trails & Wildlife Circuit'
           : 'Classic Kenya Wildlife Luxe Loop';
@@ -1383,21 +1223,16 @@ function Footer() {
   return (
     <footer className="footer section-dark">
       <div>
-        <a className="brand" href="#home">
-          <span className="brand-mark">SL</span>
-          <span>
-            <strong>Savanna Luxe</strong>
-            <small>Budget Kenya Travel</small>
-          </span>
-        </a>
+        <Brand />
         <p>Affordable Kenya travel discovery, route planning, and community tips for budget explorers.</p>
       </div>
       <div className="footer-links">
         <a href="#destinations">Destinations</a>
         <a href="#itineraries">Itineraries</a>
+        <a href="#community">Community</a>
         <a href="#plan-ai">Plan with AI</a>
         <a href="#signin">Sign in</a>
-        <a href="#admin">Admin</a>
+        <a href="#admin-login">Admin</a>
       </div>
       <div className="footer-links">
         <a href="#home">Privacy</a>

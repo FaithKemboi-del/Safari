@@ -16,6 +16,12 @@ export type Destination = {
   gallery: string[];
   highlights: string[];
   mapQuery: string;
+  featuredOnHome?: boolean;
+  featuredSortOrder?: number;
+  trendingOnHome?: boolean;
+  trendingTag?: string;
+  trendingSearches?: string;
+  trendingSortOrder?: number;
 };
 
 export type CommunityUpdate = {
@@ -29,6 +35,20 @@ export type CommunityUpdate = {
   comment: string;
 };
 
+export type CommunityPostKind = 'question' | 'trip-report' | 'tip';
+
+export type CommunityPost = {
+  id: string;
+  author: string;
+  avatar: string;
+  message: string;
+  kind: CommunityPostKind;
+  destinationSlug?: string;
+  itineraryId?: string;
+  postedAgo: string;
+  isPinned?: boolean;
+};
+
 export type Itinerary = {
   id: string;
   title: string;
@@ -37,6 +57,8 @@ export type Itinerary = {
   price: string;
   style: string;
   image: string;
+  featuredOnHome?: boolean;
+  featuredSortOrder?: number;
   days: {
     day: string;
     title: string;
@@ -49,7 +71,7 @@ export const destinations: Destination[] = [
     slug: 'maasai-mara',
     title: 'Maasai Mara National Reserve',
     location: 'Narok County',
-    region: 'Savanna',
+    region: 'Rift Valley',
     experienceType: 'standard',
     description:
       'Kenya’s most iconic safari landscape with rolling golden plains, big cats, dramatic river crossings, and luxury tented camps that bring guests close to the action.',
@@ -70,12 +92,18 @@ export const destinations: Destination[] = [
     ],
     highlights: ['Great Migration', 'Big cats', 'Hot-air balloon safaris', 'Private conservancies'],
     mapQuery: 'Maasai Mara National Reserve Kenya',
+    featuredOnHome: true,
+    featuredSortOrder: 1,
+    trendingOnHome: true,
+    trendingTag: 'Wildlife',
+    trendingSearches: '+42% searches',
+    trendingSortOrder: 1,
   },
   {
     slug: 'amboseli',
     title: 'Amboseli National Park',
     location: 'Kajiado County',
-    region: 'Mountain views',
+    region: 'Rift Valley',
     experienceType: 'standard',
     description:
       'A cinematic safari setting known for immense elephant herds, open wetlands, and unforgettable views of Mount Kilimanjaro rising beyond the plains.',
@@ -96,12 +124,14 @@ export const destinations: Destination[] = [
     ],
     highlights: ['Elephant herds', 'Kilimanjaro views', 'Wetland birding', 'Luxury lodges'],
     mapQuery: 'Amboseli National Park Kenya',
+    featuredOnHome: true,
+    featuredSortOrder: 2,
   },
   {
     slug: 'samburu',
     title: 'Samburu National Reserve',
     location: 'Samburu County',
-    region: 'Arid wilderness',
+    region: 'Eastern',
     experienceType: 'standard',
     description:
       'A rugged northern circuit destination along the Ewaso Ngiro River, home to rare species, dramatic kopjes, and refined desert-style camps.',
@@ -148,12 +178,16 @@ export const destinations: Destination[] = [
     ],
     highlights: ['Rhino sightings', 'Flamingos', 'Rift Valley views', 'Short safari access'],
     mapQuery: 'Lake Nakuru National Park Kenya',
+    trendingOnHome: true,
+    trendingTag: 'Hiking',
+    trendingSearches: '+28% searches',
+    trendingSortOrder: 3,
   },
   {
     slug: 'tsavo',
     title: 'Tsavo East & West',
     location: 'Taita-Taveta County',
-    region: 'Wild frontier',
+    region: 'Coast',
     experienceType: 'standard',
     description:
       'A vast wilderness of red-earth elephants, lava flows, springs, baobab-studded horizons, and immersive routes between Nairobi and the coast.',
@@ -174,12 +208,16 @@ export const destinations: Destination[] = [
     ],
     highlights: ['Red elephants', 'Mzima Springs', 'Lava landscapes', 'Nairobi-to-coast route'],
     mapQuery: 'Tsavo East National Park Kenya',
+    trendingOnHome: true,
+    trendingTag: 'Coast',
+    trendingSearches: '+31% searches',
+    trendingSortOrder: 2,
   },
   {
     slug: 'laikipia',
     title: 'Laikipia Conservancies',
     location: 'Laikipia Plateau',
-    region: 'Private conservancy',
+    region: 'Rift Valley',
     experienceType: 'standard',
     description:
       'A premium conservation-led safari region with rhino tracking, horseback rides, walking safaris, and intimate owner-run lodges below Mount Kenya.',
@@ -224,6 +262,109 @@ export const destinations: Destination[] = [
     ],
     highlights: ['Canyon hikes', 'Cycling trails', 'Geothermal vents', 'Day-trip from Nairobi'],
     mapQuery: "Hell's Gate National Park Kenya",
+  },
+  {
+    slug: 'longonot',
+    title: 'Mount Longonot National Park',
+    location: 'Naivasha, Nakuru County',
+    region: 'Rift Valley',
+    experienceType: 'hike',
+    description:
+      'A dormant stratovolcano with a rewarding crater rim hike and sweeping views across the Rift Valley — one of Kenya’s most popular budget day trips from Nairobi.',
+    hikeDifficulty:
+      'Moderate — steep rim sections, 4–6 hours round trip. Start early to avoid midday heat.',
+    pricing: 'From ~$26 park entry + matatu ~$8 from Nairobi',
+    transportAndLogistics:
+      'Matatu to Naivasha (~1.5 hrs), then shared taxi to the gate. Most visitors finish as a day trip.',
+    additionalInfo:
+      'Carry 2L+ water, sun protection, and grippy shoes. Combine with Lake Naivasha boat lunch on the way back.',
+    image:
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80',
+    ],
+    highlights: ['Crater rim hike', 'Rift Valley views', 'Budget day trip', 'Safiri Trails map'],
+    mapQuery: 'Mount Longonot National Park Kenya',
+  },
+  {
+    slug: 'karura-forest',
+    title: 'Karura Forest',
+    location: 'Nairobi',
+    region: 'Nairobi',
+    experienceType: 'hike',
+    description:
+      'A lush urban forest reserve with marked walking and biking trails, waterfalls, caves, and picnic sites — the easiest nature escape in Nairobi.',
+    hikeDifficulty: 'Easy to moderate — shaded forest loops from 5 km to 15 km.',
+    pricing: 'From ~$4 entry',
+    transportAndLogistics:
+      'Uber or matatu to the Limuru Road or Sigiria gate. Safe for solo daytime visits on main trails.',
+    additionalInfo:
+      'Visit the waterfall and Mau Mau caves on the middle loop. Weekends are busier — weekday mornings are quietest.',
+    image:
+      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1600&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80',
+    ],
+    highlights: ['Forest waterfalls', 'Caves', 'City escape', 'Family-friendly'],
+    mapQuery: 'Karura Forest Nairobi',
+  },
+  {
+    slug: 'diani',
+    title: 'Diani Beach & South Coast',
+    location: 'Kwale County',
+    region: 'Coast',
+    experienceType: 'standard',
+    description:
+      'White-sand beaches, reef snorkelling, and a laid-back backpacker corridor from Diani through Shimoni — Kenya’s most accessible tropical coast on a budget.',
+    pricing:
+      'Hostels from ~$25/night. Matatu and tuk-tuk hops from $1. Snorkel trips from ~$30 pp at the jetty.',
+    safetyAndConditions:
+      'Strong sun and rip currents on open beaches — swim near flagged areas. Haggle boat trips at the beach, not through hotel desks.',
+    transportAndLogistics:
+      'SGR to Mombasa then matatu/tuk-tuk to Diani (~2 hrs total). Flights to Ukunda airstrip for faster access.',
+    additionalInfo:
+      'Combine with Shimba Hills day trip or Wasini dolphin tour. Kilifi and Watamu are easy northbound hops on the coast road.',
+    image:
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1544551763-77aef23d0ce3?auto=format&fit=crop&w=1200&q=80',
+    ],
+    highlights: ['White-sand beaches', 'Snorkelling', 'Budget hostels', 'Coast road trips'],
+    mapQuery: 'Diani Beach Kenya',
+    featuredOnHome: true,
+    featuredSortOrder: 3,
+  },
+  {
+    slug: 'nairobi-national-park',
+    title: 'Nairobi National Park',
+    location: 'Nairobi',
+    region: 'Nairobi',
+    experienceType: 'standard',
+    description:
+      'A unique skyline safari minutes from the city — lions, rhinos, and giraffes with Nairobi’s towers on the horizon.',
+    pricing:
+      'Park entry ~$43 for non-residents. Shared van day tours from ~$60 pp from city hotels.',
+    safetyAndConditions:
+      'Stay in your vehicle except at designated picnic sites. Early morning drives are coolest and best for predators.',
+    transportAndLogistics:
+      '30-minute drive from central Nairobi. Most visitors book a shared van or Uber to the main gate.',
+    additionalInfo:
+      'Half-day is enough for a first visit. Combine with Giraffe Centre or Karen Blixen Museum on the same trip.',
+    image:
+      'https://images.unsplash.com/photo-1549366021-9f761d040a94?auto=format&fit=crop&w=1600&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=1200&q=80',
+    ],
+    highlights: ['Skyline safari', 'Rhino sightings', 'Day trip from Nairobi', 'Budget shared tours'],
+    mapQuery: 'Nairobi National Park Kenya',
   },
 ];
 
@@ -304,6 +445,8 @@ export const itineraries: Itinerary[] = [
     route: 'Nairobi -> Maasai Mara -> Nairobi',
     price: 'From $3,850 pp',
     style: 'Fly-in luxury camp',
+    featuredOnHome: true,
+    featuredSortOrder: 1,
     image:
       'https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=1400&q=80',
     days: [
@@ -346,6 +489,8 @@ export const itineraries: Itinerary[] = [
     route: 'Nairobi -> Amboseli -> Tsavo -> Diani',
     price: 'From $4,940 pp',
     style: 'Safari and beach',
+    featuredOnHome: true,
+    featuredSortOrder: 2,
     image:
       'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80',
     days: [
@@ -394,6 +539,8 @@ export const itineraries: Itinerary[] = [
     route: 'Nairobi -> Lake Nakuru -> Laikipia -> Nairobi',
     price: 'From $4,250 pp',
     style: 'Conservation and scenery',
+    featuredOnHome: true,
+    featuredSortOrder: 3,
     image:
       'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1400&q=80',
     days: [
@@ -517,6 +664,58 @@ export const trendingThisWeek: TrendingItem[] = [
       'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=900&q=80',
     slug: 'tsavo',
     mapQuery: 'Watamu Marine National Park Kenya',
+  },
+];
+
+export const globalCommunityPosts: CommunityPost[] = [
+  {
+    id: 'cp-pinned-itineraries',
+    author: 'Safiri team',
+    avatar: 'SF',
+    message:
+      'Before asking for a full route plan, check our Itineraries page and Plan with AI — many classic Kenya routes are already mapped with day-by-day budgets.',
+    kind: 'tip',
+    postedAgo: 'Pinned',
+    isPinned: true,
+  },
+  {
+    id: 'cp-1',
+    author: 'Brian O.',
+    avatar: 'BO',
+    message:
+      'Best matatu stop for Naivasha from Nairobi CBD? Trying to do Hell\'s Gate + Lake Naivasha on one budget day.',
+    kind: 'question',
+    destinationSlug: 'hells-gate',
+    postedAgo: '18 min ago',
+  },
+  {
+    id: 'cp-2',
+    author: 'Zawadi M.',
+    avatar: 'ZM',
+    message:
+      'Just finished Nairobi → Diani on SGR + tuk-tuk. Total transport about $18 each. Stayed at a hostel near the beach — happy to share the breakdown.',
+    kind: 'trip-report',
+    destinationSlug: 'diani',
+    postedAgo: '1 hr ago',
+  },
+  {
+    id: 'cp-3',
+    author: 'Leo K.',
+    avatar: 'LK',
+    message:
+      'Tip: book SGR coast tickets mid-week for the cheapest fares. I saved almost $6 vs Friday travel.',
+    kind: 'tip',
+    postedAgo: '3 hr ago',
+  },
+  {
+    id: 'cp-4',
+    author: 'Nia P.',
+    avatar: 'NP',
+    message:
+      'Is Amboseli doable as a solo day trip from Nairobi without a tour company? Looking for shared van options.',
+    kind: 'question',
+    destinationSlug: 'amboseli',
+    postedAgo: '5 hr ago',
   },
 ];
 

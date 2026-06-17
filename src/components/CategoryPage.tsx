@@ -3,20 +3,26 @@ import { categories } from '../data';
 import type { Category } from '../data';
 import {
   categoryMeta,
-  categorySpots,
+  categorySpotToEvent,
   eventChatKey,
   HIKE_RECORDS_KEY,
-  kenyaEvents,
   seedEventChat,
   type EventChatMessage,
   type EventStatus,
   type HikeRecord,
+  type CategorySpot,
+  type KenyaEvent,
 } from '../categoryContent';
 import { useAuth } from '../context/AuthContext';
+import { useData } from '../context/DataContext';
+import { TRAILS_FEATURE_NAME } from '../lib/config';
 import { useTrails } from '../context/TrailsContext';
-import { CategorySpotActions } from './CategorySpotActions';
+import { readJson, writeJson } from '../lib/storage';
+import { CategorySpotCardContent } from './CategorySpotCardContent';
+import { SpotActionBar } from './CategorySpotActions';
 import { CreateTrailForm } from './CreateTrailForm';
 import { HikeGpsRecorder } from './HikeGpsRecorder';
+import { SpotCard } from './SpotCard';
 
 function CategoryIcon({ icon }: { icon: Category['icon'] }) {
   const paths: Record<Category['icon'], string> = {
@@ -40,6 +46,7 @@ function CategoryIcon({ icon }: { icon: Category['icon'] }) {
 }
 
 export function CategoryPage({ categoryId }: { categoryId: string }) {
+  const { categorySpots } = useData();
   const category = categories.find((item) => item.id === categoryId) ?? categories[0];
   const meta = categoryMeta[category.id] ?? categoryMeta.hiking;
   const spots = categorySpots.filter((spot) => spot.categoryId === category.id);
@@ -49,7 +56,7 @@ export function CategoryPage({ categoryId }: { categoryId: string }) {
   }
 
   if (category.id === 'events') {
-    return <EventsCategoryPage category={category} meta={meta} />;
+    return <EventsCategoryPage category={category} meta={meta} spots={spots} />;
   }
 
   return <GenericCategoryPage category={category} meta={meta} spots={spots} />;
@@ -62,7 +69,7 @@ function GenericCategoryPage({
 }: {
   category: Category;
   meta: { title: string; subtitle: string; eyebrow: string };
-  spots: typeof categorySpots;
+  spots: CategorySpot[];
 }) {
   return (
     <div className={`category-page category-page--${category.theme}`}>
@@ -84,16 +91,18 @@ function GenericCategoryPage({
         </div>
         <div className="category-spot-grid">
           {spots.map((spot) => (
-            <article key={spot.id} className="category-spot-card">
-              <img src={spot.image} alt="" />
-              <div>
-                <span className="spot-budget">{spot.budget}</span>
-                <h3>{spot.title}</h3>
-                <p className="spot-location">{spot.location}</p>
-                <p>{spot.description}</p>
-                <CategorySpotActions spot={spot} />
-              </div>
-            </article>
+            <SpotCard key={spot.id} image={spot.image}>
+              <span className="spot-budget">{spot.budget}</span>
+              <h3>{spot.title}</h3>
+              <p className="spot-location">{spot.location}</p>
+              <CategorySpotCardContent
+                description={spot.description}
+                mapQuery={spot.mapQuery}
+                slug={spot.slug}
+                spotId={spot.id}
+                trailId={spot.trailId}
+              />
+            </SpotCard>
           ))}
         </div>
       </section>
@@ -108,10 +117,11 @@ function HikingCategoryPage({
 }: {
   category: Category;
   meta: { title: string; subtitle: string; eyebrow: string };
-  spots: typeof categorySpots;
+  spots: CategorySpot[];
 }) {
-  const { trails, loading: trailsLoading } = useTrails();
+  const { trails, loading: trailsLoading, error: trailsError } = useTrails();
   const [records, setRecords] = useState<HikeRecord[]>([]);
+  const [hikeMessage, setHikeMessage] = useState('');
   const [trailName, setTrailName] = useState('Mount Kenya — Naromoru Route');
   const [date, setDate] = useState('');
   const [duration, setDuration] = useState('');
@@ -119,14 +129,12 @@ function HikingCategoryPage({
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
-    const stored = localStorage.getItem(HIKE_RECORDS_KEY);
-    if (stored) {
-      setRecords(JSON.parse(stored) as HikeRecord[]);
-    }
+    setRecords(readJson<HikeRecord[]>(HIKE_RECORDS_KEY, []));
   }, []);
 
   const saveHike = () => {
     if (!trailName.trim() || !date) {
+      setHikeMessage('Add a trail name and date before saving your hike log.');
       return;
     }
 
@@ -141,8 +149,15 @@ function HikingCategoryPage({
     };
 
     const next = [record, ...records];
+    const writeResult = writeJson(HIKE_RECORDS_KEY, next);
+
+    if (!writeResult.ok) {
+      setHikeMessage(writeResult.error);
+      return;
+    }
+
     setRecords(next);
-    localStorage.setItem(HIKE_RECORDS_KEY, JSON.stringify(next));
+    setHikeMessage('Hike log saved on this device.');
     setDuration('');
     setDistance('');
     setNotes('');
@@ -161,62 +176,62 @@ function HikingCategoryPage({
         </div>
       </section>
 
-      <section className="section">
+      <section className="section hiking-trails-section">
         <div className="section-intro">
-          <h2>Savanna Trails — built in, free</h2>
-          <p>
-            Interactive maps, elevation profiles, GPX downloads, GPS recording, and hiker reviews —
-            no subscription required. Powered by OpenStreetMap.
+          <h2>{TRAILS_FEATURE_NAME} — built in, free</h2>
+          <p className="savanna-trails-lead">
+            <strong>Interactive maps, elevation profiles, GPX downloads, GPS recording, and hiker reviews</strong>
+            — no subscription required.
           </p>
+          <div className="savanna-trails-features" aria-label="Trail features">
+            <a href="#trail/longonot-trail/map">Interactive maps</a>
+            <a href="#trail/longonot-trail/elevation">Elevation profiles</a>
+            <a href="#trail/longonot-trail/gpx">GPX downloads</a>
+            <a href="#trail/longonot-trail/gps">GPS recording</a>
+            <a href="#trail/longonot-trail/reviews">Hiker reviews</a>
+          </div>
         </div>
 
         <div className="trail-map-guide glass-panel savanna-trails-banner">
           <div>
-            <span className="eyebrow">Your AllTrails alternative</span>
-            <h3>Follow every route on our platform</h3>
+            <span className="eyebrow">Get the full trail map</span>
+            <h3>Follow every route on {TRAILS_FEATURE_NAME}</h3>
             <p>
-              <strong>Savanna Trails</strong> gives you trail maps, waypoint markers, elevation
-              charts, and live GPS tracking — all integrated here. Download GPX files or record your
-              hike directly from your phone.
+              Open waypoint markers, elevation charts, and live GPS tracking — all on this site.
+              Download GPX files or record your hike directly from your phone.
             </p>
           </div>
           <a className="primary-button" href="#trail/longonot-trail">
-            Try Mount Longonot trail
+            Get the full trail map
           </a>
         </div>
 
-        <div className="trail-list">
+        <div className="category-spot-grid">
           {trailsLoading && <p className="community-empty">Loading trails...</p>}
+          {trailsError ? <p className="auth-message">{trailsError}</p> : null}
           {trails.map((trail) => (
-            <article key={trail.id} className="trail-card trail-card--explorer">
-              <img src={trail.image} alt="" />
-              <div className="trail-content">
-                <span className="spot-budget">{trail.budget}</span>
-                <h3>{trail.title}</h3>
-                <p className="spot-location">{trail.location}</p>
-                <p>{trail.description}</p>
-                <div className="trail-meta">
-                  <span>{trail.difficultyLabel}</span>
-                  <span>{trail.duration}</span>
-                  <span>{trail.distanceKm} km</span>
-                  <span>{trail.elevationGainM} m gain</span>
-                </div>
-                <div className="trail-actions">
-                  <a className="primary-button" href={`#trail/${trail.id}`}>
-                    Open interactive trail map
-                  </a>
-                  <a
-                    className="secondary-button compact-button"
-                    href={trail.googleMapsUrl}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    Directions to trailhead
-                  </a>
-                  {trail.slug && <a href={`#destination/${trail.slug}`}>Destination page</a>}
-                </div>
+            <SpotCard key={trail.id} className="category-spot-card--trail" image={trail.image}>
+              <span className="spot-budget">{trail.budget}</span>
+              <h3>{trail.title}</h3>
+              <p className="spot-location">{trail.location}</p>
+              <p>{trail.description}</p>
+              <div className="trail-meta">
+                <span>{trail.difficultyLabel}</span>
+                <span>{trail.duration}</span>
+                <span>{trail.distanceKm} km</span>
+                <span>{trail.elevationGainM} m gain</span>
               </div>
-            </article>
+              <div className="category-card-footer">
+                <SpotActionBar
+                  detailsHref={`#trail/${trail.id}`}
+                  mapQuery={trail.mapQuery}
+                  mapsHref={trail.googleMapsUrl}
+                />
+                <a className="trail-map-link" href={`#trail/${trail.id}`}>
+                  Open interactive trail map →
+                </a>
+              </div>
+            </SpotCard>
           ))}
         </div>
       </section>
@@ -227,16 +242,18 @@ function HikingCategoryPage({
         </div>
         <div className="category-spot-grid">
           {spots.map((spot) => (
-            <article key={spot.id} className="category-spot-card">
-              <img src={spot.image} alt="" />
-              <div>
-                <span className="spot-budget">{spot.budget}</span>
-                <h3>{spot.title}</h3>
-                <p className="spot-location">{spot.location}</p>
-                <p>{spot.description}</p>
-                <CategorySpotActions spot={spot} />
-              </div>
-            </article>
+            <SpotCard key={spot.id} image={spot.image}>
+              <span className="spot-budget">{spot.budget}</span>
+              <h3>{spot.title}</h3>
+              <p className="spot-location">{spot.location}</p>
+              <CategorySpotCardContent
+                description={spot.description}
+                mapQuery={spot.mapQuery}
+                slug={spot.slug}
+                spotId={spot.id}
+                trailId={spot.trailId}
+              />
+            </SpotCard>
           ))}
         </div>
       </section>
@@ -304,6 +321,7 @@ function HikingCategoryPage({
             <button className="primary-button" type="submit">
               Save hike record
             </button>
+            {hikeMessage ? <p className="auth-message">{hikeMessage}</p> : null}
           </form>
 
           <div className="hike-record-list">
@@ -330,19 +348,26 @@ function HikingCategoryPage({
 function EventsCategoryPage({
   category,
   meta,
+  spots,
 }: {
   category: Category;
   meta: { title: string; subtitle: string; eyebrow: string };
+  spots: CategorySpot[];
 }) {
   const [filter, setFilter] = useState<EventStatus>('happening-now');
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
-  const filtered = useMemo(
-    () => kenyaEvents.filter((event) => event.status === filter),
-    [filter],
+  const events = useMemo(
+    () =>
+      spots
+        .map((spot) => categorySpotToEvent(spot))
+        .filter((event): event is NonNullable<typeof event> => Boolean(event)),
+    [spots],
   );
 
-  const liveEvents = kenyaEvents.filter((event) => event.status === 'happening-now');
+  const filtered = useMemo(() => events.filter((event) => event.status === filter), [events, filter]);
+
+  const liveEvents = events.filter((event) => event.status === 'happening-now');
 
   useEffect(() => {
     if (filter === 'happening-now' && liveEvents[0] && !selectedEventId) {
@@ -385,32 +410,37 @@ function EventsCategoryPage({
 
         <div className="category-spot-grid">
           {filtered.map((event) => (
-            <article
+            <SpotCard
               key={event.id}
-              className={`category-spot-card event-card ${selectedEventId === event.id ? 'selected' : ''}`}
+              className={`event-card ${selectedEventId === event.id ? 'selected' : ''}`}
+              image={event.image}
             >
-              <img src={event.image} alt="" />
-              <div>
-                <span className={`event-status event-status--${event.status}`}>
-                  {event.status.replace('-', ' ')}
-                </span>
-                <span className="spot-budget">{event.budget}</span>
-                <h3>{event.title}</h3>
-                <p className="spot-location">
-                  {event.location} · {event.dateLabel}
-                </p>
-                <p>{event.description}</p>
-                {event.status === 'happening-now' && (
-                  <button
-                    className="secondary-button compact-button"
-                    onClick={() => setSelectedEventId(event.id)}
-                    type="button"
-                  >
-                    Join live chat
-                  </button>
-                )}
-              </div>
-            </article>
+              <span className={`event-status event-status--${event.status}`}>
+                {event.status.replace('-', ' ')}
+              </span>
+              <span className="spot-budget">{event.budget}</span>
+              <h3>{event.title}</h3>
+              <p className="spot-location">
+                {event.location} · {event.dateLabel}
+              </p>
+              <CategorySpotCardContent
+                description={event.description}
+                footerExtra={
+                  event.status === 'happening-now' ? (
+                    <button
+                      className="secondary-button compact-button"
+                      onClick={() => setSelectedEventId(event.id)}
+                      type="button"
+                    >
+                      Join live chat
+                    </button>
+                  ) : null
+                }
+                mapQuery={event.mapQuery ?? `${event.title} ${event.location} Kenya`}
+                slug={event.slug}
+                spotId={event.id}
+              />
+            </SpotCard>
           ))}
         </div>
       </section>
@@ -418,7 +448,7 @@ function EventsCategoryPage({
       {filter === 'happening-now' && selectedEventId && (
         <section className="section">
           <EventLiveChat
-            event={kenyaEvents.find((item) => item.id === selectedEventId)!}
+            event={events.find((item) => item.id === selectedEventId)!}
             onClose={() => setSelectedEventId(null)}
           />
         </section>
@@ -431,19 +461,19 @@ function EventLiveChat({
   event,
   onClose,
 }: {
-  event: (typeof kenyaEvents)[0];
+  event: KenyaEvent;
   onClose: () => void;
 }) {
   const { user, displayName, isConfigured } = useAuth();
   const signedIn = isConfigured ? Boolean(user) : sessionStorage.getItem('safari-signed-in') === 'true';
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<EventChatMessage[]>([]);
+  const [chatError, setChatError] = useState('');
 
   useEffect(() => {
     const key = eventChatKey(event.id);
-    const stored = localStorage.getItem(key);
+    const local = readJson<EventChatMessage[]>(key, []);
     const seeded = seedEventChat.filter((item) => item.eventId === event.id);
-    const local = stored ? (JSON.parse(stored) as EventChatMessage[]) : [];
     setMessages([...local, ...seeded]);
   }, [event.id]);
 
@@ -462,10 +492,16 @@ function EventLiveChat({
     };
 
     const key = eventChatKey(event.id);
-    const stored = localStorage.getItem(key);
-    const local = stored ? (JSON.parse(stored) as EventChatMessage[]) : [];
+    const local = readJson<EventChatMessage[]>(key, []);
     const nextLocal = [newMessage, ...local];
-    localStorage.setItem(key, JSON.stringify(nextLocal));
+    const writeResult = writeJson(key, nextLocal);
+
+    if (!writeResult.ok) {
+      setChatError(writeResult.error);
+      return;
+    }
+
+    setChatError('');
     setMessages((current) => [newMessage, ...current]);
     setMessage('');
   };
@@ -519,6 +555,7 @@ function EventLiveChat({
             <button className="primary-button" onClick={postMessage} type="button">
               Post live update
             </button>
+            {chatError ? <p className="auth-message">{chatError}</p> : null}
           </>
         ) : (
           <div className="community-signin-prompt">

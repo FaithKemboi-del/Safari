@@ -5,8 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "setup:env": "cp .env.example .env.local",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "vercel-build": "npm run build",
+    "preview": "vite preview",
+    "seed:admin": "node scripts/seed-admin-user.mjs"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "repository": {
     "type": "git",

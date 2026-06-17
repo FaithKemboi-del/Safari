@@ -14,6 +14,7 @@ import { useAuth } from './AuthContext';
 type TrailsContextValue = {
   trails: SavannaTrail[];
   loading: boolean;
+  error: string | null;
   dataSource: 'supabase' | 'local';
   refreshTrails: () => Promise<void>;
   getTrail: (id: string) => SavannaTrail | undefined;
@@ -24,13 +25,22 @@ const TrailsContext = createContext<TrailsContextValue | null>(null);
 export function TrailsProvider({ children }: { children: ReactNode }) {
   const [trails, setTrails] = useState<SavannaTrail[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
   const refreshTrails = useCallback(async () => {
     setLoading(true);
-    const data = await fetchTrails();
-    setTrails(data);
-    setLoading(false);
+    setError(null);
+
+    try {
+      const data = await fetchTrails();
+      setTrails(data);
+    } catch (loadError) {
+      console.error('Failed to load trails:', loadError);
+      setError('Could not load trails. Try refreshing the page.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -41,11 +51,12 @@ export function TrailsProvider({ children }: { children: ReactNode }) {
     () => ({
       trails,
       loading,
+      error,
       dataSource: trailsDataSourceLabel(),
       refreshTrails,
       getTrail: (id: string) => trails.find((trail) => trail.id === id),
     }),
-    [trails, loading, refreshTrails],
+    [trails, loading, error, refreshTrails],
   );
 
   return <TrailsContext.Provider value={value}>{children}</TrailsContext.Provider>;

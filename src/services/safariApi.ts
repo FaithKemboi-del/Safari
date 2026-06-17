@@ -1,5 +1,7 @@
 import type { CommunityUpdate, Destination, Itinerary } from '../data';
 import { communityUpdates as localCommunity, destinations as localDestinations, itineraries as localItineraries } from '../data';
+import type { CategorySpot } from '../categoryContent';
+import { getAllLocalCategoryCards } from '../categoryContent';
 import { formatPostedAgo, isLiveUpdate } from '../lib/format';
 import { isSupabaseConfigured } from '../lib/config';
 import { getSupabase } from '../lib/supabase';
@@ -9,6 +11,24 @@ type DestinationRow = Database['public']['Tables']['destinations']['Row'];
 type ItineraryRow = Database['public']['Tables']['itineraries']['Row'];
 type ItineraryDayRow = Database['public']['Tables']['itinerary_days']['Row'];
 type CommunityRow = Database['public']['Tables']['community_updates']['Row'];
+type CategorySpotRow = Database['public']['Tables']['category_spots']['Row'];
+
+function mapCategorySpot(row: CategorySpotRow): CategorySpot {
+  return {
+    id: row.id,
+    categoryId: row.category_id,
+    title: row.title,
+    location: row.location,
+    budget: row.budget,
+    description: row.description,
+    image: row.image,
+    slug: row.slug ?? undefined,
+    trailId: row.trail_id ?? undefined,
+    mapQuery: row.map_query ?? undefined,
+    dateLabel: row.date_label ?? undefined,
+    eventStatus: row.event_status ?? undefined,
+  };
+}
 
 function mapDestination(row: DestinationRow): Destination {
   return {
@@ -27,6 +47,12 @@ function mapDestination(row: DestinationRow): Destination {
     gallery: row.gallery,
     highlights: row.highlights,
     mapQuery: row.map_query,
+    featuredOnHome: row.featured_on_home ?? false,
+    featuredSortOrder: row.featured_sort_order ?? 0,
+    trendingOnHome: row.trending_on_home ?? false,
+    trendingTag: row.trending_tag ?? undefined,
+    trendingSearches: row.trending_searches ?? undefined,
+    trendingSortOrder: row.trending_sort_order ?? 0,
   };
 }
 
@@ -39,6 +65,8 @@ function mapItinerary(row: ItineraryRow, days: ItineraryDayRow[]): Itinerary {
     price: row.price,
     style: row.style,
     image: row.image,
+    featuredOnHome: row.featured_on_home ?? false,
+    featuredSortOrder: row.featured_sort_order ?? 0,
     days: days
       .filter((day) => day.itinerary_id === row.id)
       .sort((a, b) => a.day_order - b.day_order)
@@ -128,6 +156,30 @@ export async function fetchItineraries(): Promise<Itinerary[]> {
   return itineraries.map((row) => mapItinerary(row, days ?? []));
 }
 
+export async function fetchCategorySpots(): Promise<CategorySpot[]> {
+  const supabase = getSupabase();
+  if (!supabase) {
+    return getAllLocalCategoryCards();
+  }
+
+  const { data, error } = await supabase
+    .from('category_spots')
+    .select('*')
+    .eq('status', 'published')
+    .order('category_id')
+    .order('sort_order')
+    .order('title');
+
+  const rows = data as CategorySpotRow[] | null;
+
+  if (error || !rows?.length) {
+    console.warn('Supabase category spots fallback:', error?.message);
+    return getAllLocalCategoryCards();
+  }
+
+  return rows.map(mapCategorySpot);
+}
+
 export async function fetchCommunityUpdates(destinationSlug: string): Promise<CommunityUpdate[]> {
   const supabase = getSupabase();
   if (!supabase) {
@@ -159,6 +211,7 @@ export async function postCommunityUpdate(input: {
 }): Promise<CommunityUpdate | null> {
   const supabase = getSupabase();
   if (!supabase) {
+    console.warn('Failed to post community update: Supabase client not configured.');
     return null;
   }
 

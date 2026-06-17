@@ -28,6 +28,12 @@ export type Database = {
           highlights: string[];
           map_query: string;
           status: 'published' | 'draft' | 'review';
+          featured_on_home: boolean;
+          featured_sort_order: number;
+          trending_on_home: boolean;
+          trending_tag: string | null;
+          trending_searches: string | null;
+          trending_sort_order: number;
           created_at: string;
           updated_at: string;
         }>;
@@ -40,6 +46,8 @@ export type Database = {
           style: string;
           image: string;
           status: 'live' | 'review' | 'draft';
+          featured_on_home: boolean;
+          featured_sort_order: number;
           created_at: string;
           updated_at: string;
         }>;
@@ -71,10 +79,24 @@ export type Database = {
           created_at?: string;
         }
       >;
+      community_posts: TableDef<{
+          id: string;
+          user_id: string | null;
+          author_name: string;
+          message: string;
+          kind: 'question' | 'trip-report' | 'tip';
+          destination_slug: string | null;
+          itinerary_id: string | null;
+          is_pinned: boolean;
+          status: 'published' | 'hidden';
+          created_at: string;
+          updated_at: string;
+        }>;
       profiles: TableDef<{
           id: string;
           full_name: string | null;
           avatar_initials: string | null;
+          is_admin: boolean;
           created_at: string;
           updated_at: string;
         }>;
@@ -84,6 +106,24 @@ export type Database = {
           route_type: string;
           distance: string;
           status: 'active' | 'draft';
+          created_at: string;
+          updated_at: string;
+        }>;
+      category_spots: TableDef<{
+          id: string;
+          category_id: string;
+          title: string;
+          location: string;
+          budget: string;
+          description: string;
+          image: string;
+          slug: string | null;
+          trail_id: string | null;
+          map_query: string | null;
+          date_label: string | null;
+          event_status: 'happening-now' | 'upcoming' | 'past' | null;
+          status: 'published' | 'draft' | 'review';
+          sort_order: number;
           created_at: string;
           updated_at: string;
         }>;
