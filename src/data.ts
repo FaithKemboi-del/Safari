@@ -16,6 +16,12 @@ export type Destination = {
   gallery: string[];
   highlights: string[];
   mapQuery: string;
+  featuredOnHome?: boolean;
+  featuredSortOrder?: number;
+  trendingOnHome?: boolean;
+  trendingTag?: string;
+  trendingSearches?: string;
+  trendingSortOrder?: number;
 };
 
 export type CommunityUpdate = {
@@ -37,6 +43,8 @@ export type Itinerary = {
   price: string;
   style: string;
   image: string;
+  featuredOnHome?: boolean;
+  featuredSortOrder?: number;
   days: {
     day: string;
     title: string;
@@ -70,6 +78,12 @@ export const destinations: Destination[] = [
     ],
     highlights: ['Great Migration', 'Big cats', 'Hot-air balloon safaris', 'Private conservancies'],
     mapQuery: 'Maasai Mara National Reserve Kenya',
+    featuredOnHome: true,
+    featuredSortOrder: 1,
+    trendingOnHome: true,
+    trendingTag: 'Wildlife',
+    trendingSearches: '+42% searches',
+    trendingSortOrder: 1,
   },
   {
     slug: 'amboseli',
@@ -96,6 +110,8 @@ export const destinations: Destination[] = [
     ],
     highlights: ['Elephant herds', 'Kilimanjaro views', 'Wetland birding', 'Luxury lodges'],
     mapQuery: 'Amboseli National Park Kenya',
+    featuredOnHome: true,
+    featuredSortOrder: 2,
   },
   {
     slug: 'samburu',
@@ -148,6 +164,10 @@ export const destinations: Destination[] = [
     ],
     highlights: ['Rhino sightings', 'Flamingos', 'Rift Valley views', 'Short safari access'],
     mapQuery: 'Lake Nakuru National Park Kenya',
+    trendingOnHome: true,
+    trendingTag: 'Hiking',
+    trendingSearches: '+28% searches',
+    trendingSortOrder: 3,
   },
   {
     slug: 'tsavo',
@@ -174,6 +194,10 @@ export const destinations: Destination[] = [
     ],
     highlights: ['Red elephants', 'Mzima Springs', 'Lava landscapes', 'Nairobi-to-coast route'],
     mapQuery: 'Tsavo East National Park Kenya',
+    trendingOnHome: true,
+    trendingTag: 'Coast',
+    trendingSearches: '+31% searches',
+    trendingSortOrder: 2,
   },
   {
     slug: 'laikipia',
@@ -299,6 +323,8 @@ export const destinations: Destination[] = [
     ],
     highlights: ['White-sand beaches', 'Snorkelling', 'Budget hostels', 'Coast road trips'],
     mapQuery: 'Diani Beach Kenya',
+    featuredOnHome: true,
+    featuredSortOrder: 3,
   },
   {
     slug: 'nairobi-national-park',
@@ -405,6 +431,8 @@ export const itineraries: Itinerary[] = [
     route: 'Nairobi -> Maasai Mara -> Nairobi',
     price: 'From $3,850 pp',
     style: 'Fly-in luxury camp',
+    featuredOnHome: true,
+    featuredSortOrder: 1,
     image:
       'https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=1400&q=80',
     days: [
@@ -447,6 +475,8 @@ export const itineraries: Itinerary[] = [
     route: 'Nairobi -> Amboseli -> Tsavo -> Diani',
     price: 'From $4,940 pp',
     style: 'Safari and beach',
+    featuredOnHome: true,
+    featuredSortOrder: 2,
     image:
       'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80',
     days: [
@@ -495,6 +525,8 @@ export const itineraries: Itinerary[] = [
     route: 'Nairobi -> Lake Nakuru -> Laikipia -> Nairobi',
     price: 'From $4,250 pp',
     style: 'Conservation and scenery',
+    featuredOnHome: true,
+    featuredSortOrder: 3,
     image:
       'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1400&q=80',
     days: [

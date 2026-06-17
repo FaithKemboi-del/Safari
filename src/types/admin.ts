@@ -22,6 +22,12 @@ export type AdminDestination = {
   highlights: string[];
   mapQuery: string;
   status: ContentStatus;
+  featuredOnHome: boolean;
+  featuredSortOrder: number;
+  trendingOnHome: boolean;
+  trendingTag?: string;
+  trendingSearches?: string;
+  trendingSortOrder: number;
   updatedAt: string;
 };
 
@@ -40,6 +46,8 @@ export type AdminItinerary = {
   style: string;
   image: string;
   status: ItineraryStatus;
+  featuredOnHome: boolean;
+  featuredSortOrder: number;
   days: AdminItineraryDay[];
   updatedAt: string;
 };

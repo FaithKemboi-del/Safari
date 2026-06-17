@@ -12,6 +12,11 @@ import {
   testimonials,
   trendingThisWeek,
 } from './data';
+import {
+  pickFeaturedDestinations,
+  pickFeaturedItineraries,
+  pickTrendingItems,
+} from './lib/landingContent';
 import type { CommunityUpdate, Destination } from './data';
 import {
   destinationMatchesProvince,
@@ -38,7 +43,7 @@ type Route =
   | { page: 'category'; id: string }
   | { page: 'trail'; id: string }
   | { page: 'spot'; id: string }
-  | { page: 'itineraries' }
+  | { page: 'itineraries'; id?: string }
   | { page: 'plan-ai' }
   | { page: 'signin' }
   | { page: 'signup' }
@@ -72,9 +77,12 @@ function parseHashFromPath(path?: string): Route {
     return { page: 'spot', id: slug };
   }
 
+  if (page === 'itineraries') {
+    return slug ? { page: 'itineraries', id: slug } : { page: 'itineraries' };
+  }
+
   if (
     page === 'destinations' ||
-    page === 'itineraries' ||
     page === 'plan-ai' ||
     page === 'signin' ||
     page === 'signup' ||
@@ -106,6 +114,10 @@ function routeKey(route: Route): string {
 
   if (route.page === 'spot') {
     return `spot/${route.id}`;
+  }
+
+  if (route.page === 'itineraries') {
+    return route.id ? `itineraries/${route.id}` : 'itineraries';
   }
 
   return route.page;
@@ -163,7 +175,7 @@ function App() {
         {route.page === 'category' && <CategoryPage categoryId={route.id} />}
         {route.page === 'trail' && <TrailPage trailId={route.id} />}
         {route.page === 'spot' && <CategorySpotPage spotId={route.id} />}
-        {route.page === 'itineraries' && <ItinerariesPage />}
+        {route.page === 'itineraries' && <ItinerariesPage selectedItineraryId={route.id} />}
         {route.page === 'plan-ai' && <PlanWithAIPage />}
         {route.page === 'signin' && <AuthPage mode="signin" />}
         {route.page === 'signup' && <AuthPage mode="signup" />}
@@ -213,6 +225,15 @@ function Header({ activePage }: { activePage: string }) {
 
 function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
   const { destinations, itineraries } = useData();
+  const featuredDestinations = useMemo(
+    () => pickFeaturedDestinations(destinations),
+    [destinations],
+  );
+  const featuredItineraries = useMemo(() => pickFeaturedItineraries(itineraries), [itineraries]);
+  const trendingItems = useMemo(
+    () => pickTrendingItems(destinations, trendingThisWeek),
+    [destinations],
+  );
 
   const goToCategory = (categoryId: string) => (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -262,12 +283,9 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
           title="What travelers are searching right now"
           body="What budget travelers are booking this week — shared vans, SGR hops, and low-cost stays."
         />
-        <div className="trending-grid">
-          {trendingThisWeek.map((item, index) => (
-            <article
-              key={item.id}
-              className={`trending-card ${index === 0 ? 'featured' : ''}`}
-            >
+        <div className="trending-grid trending-grid--even">
+          {trendingItems.map((item) => (
+            <article key={item.id} className="trending-card">
               <img src={item.image} alt="" />
               <div className="trending-overlay" />
               <div className="trending-content">
@@ -313,8 +331,8 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
           title="Top spots that won't break the bank"
           body="Wildlife, hikes, coast, and hidden gems with honest pricing, transport options, and safety notes."
         />
-        <div className="destination-row">
-          {destinations.slice(0, 3).map((destination) => (
+        <div className="destination-row destination-row--even">
+          {featuredDestinations.map((destination) => (
             <DestinationCard key={destination.slug} destination={destination} compact />
           ))}
         </div>
@@ -326,15 +344,18 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
           title="Affordable routes that still feel epic"
           body="Day-by-day plans with public transport, shared vans, camps, and hostels where possible."
         />
-        <div className="itinerary-showcase">
-          {itineraries.map((itinerary) => (
+        <div className="itinerary-showcase itinerary-showcase--even">
+          {featuredItineraries.map((itinerary) => (
             <article key={itinerary.id} className="showcase-card">
               <img src={itinerary.image} alt="" />
-              <div>
+              <div className="showcase-card__body">
                 <span>{itinerary.duration}</span>
                 <h3>{itinerary.title}</h3>
                 <p>{itinerary.route}</p>
-                <strong>{itinerary.price}</strong>
+                <div className="showcase-card__footer">
+                  <strong>{itinerary.price}</strong>
+                  <a href={`#itineraries/${itinerary.id}`}>View details</a>
+                </div>
               </div>
             </article>
           ))}
@@ -582,15 +603,33 @@ function DestinationDetailPage({ slug }: { slug: string }) {
   );
 }
 
-function ItinerariesPage() {
+function ItinerariesPage({ selectedItineraryId }: { selectedItineraryId?: string }) {
   const { itineraries } = useData();
   const [openItem, setOpenItem] = useState('');
 
   useEffect(() => {
-    if (itineraries[0]) {
-      setOpenItem(`${itineraries[0].id}-${itineraries[0].days[0]?.day ?? 'Day 1'}`);
+    if (!itineraries.length) {
+      return;
     }
-  }, [itineraries]);
+
+    const target =
+      itineraries.find((item) => item.id === selectedItineraryId) ?? itineraries[0];
+    if (!target) {
+      return;
+    }
+
+    const firstDay = target.days[0]?.day ?? 'Day 1';
+    setOpenItem(`${target.id}-${firstDay}`);
+
+    if (selectedItineraryId) {
+      window.requestAnimationFrame(() => {
+        document.getElementById(`itinerary-${target.id}`)?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      });
+    }
+  }, [itineraries, selectedItineraryId]);
 
   return (
     <PageFrame
@@ -600,7 +639,7 @@ function ItinerariesPage() {
     >
       <div className="timeline-list">
         {itineraries.map((itinerary) => (
-          <article key={itinerary.id} className="timeline-card">
+          <article key={itinerary.id} className="timeline-card" id={`itinerary-${itinerary.id}`}>
             <div className="timeline-media">
               <img src={itinerary.image} alt="" />
               <span>{itinerary.style}</span>

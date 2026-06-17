@@ -27,6 +27,10 @@ const emptyDestination = (): DestinationInput => ({
   highlights: [],
   mapQuery: '',
   status: 'draft',
+  featuredOnHome: false,
+  featuredSortOrder: 0,
+  trendingOnHome: false,
+  trendingSortOrder: 0,
 });
 
 export function DestinationForm({ initial, onClose, onSave }: DestinationFormProps) {
@@ -193,6 +197,65 @@ export function DestinationForm({ initial, onClose, onSave }: DestinationFormPro
               placeholder="Hell's Gate National Park Kenya"
             />
           </label>
+        </div>
+
+        <div className="category-form-links">
+          <h3>Homepage placement</h3>
+          <div className="form-grid">
+            <label className="checkbox-field">
+              <input
+                checked={form.featuredOnHome}
+                onChange={(event) => update('featuredOnHome', event.target.checked)}
+                type="checkbox"
+              />
+              Featured destination on landing page
+            </label>
+            <label>
+              Featured sort order
+              <input
+                min={0}
+                type="number"
+                value={form.featuredSortOrder}
+                onChange={(event) => update('featuredSortOrder', Number(event.target.value) || 0)}
+              />
+            </label>
+            <label className="checkbox-field">
+              <input
+                checked={form.trendingOnHome}
+                onChange={(event) => update('trendingOnHome', event.target.checked)}
+                type="checkbox"
+              />
+              Show in Trending this week
+            </label>
+            <label>
+              Trending sort order
+              <input
+                min={0}
+                type="number"
+                value={form.trendingSortOrder}
+                onChange={(event) => update('trendingSortOrder', Number(event.target.value) || 0)}
+              />
+            </label>
+            <label>
+              Trending tag
+              <input
+                value={form.trendingTag ?? ''}
+                onChange={(event) => update('trendingTag', event.target.value)}
+                placeholder="Wildlife"
+              />
+            </label>
+            <label>
+              Trending searches label
+              <input
+                value={form.trendingSearches ?? ''}
+                onChange={(event) => update('trendingSearches', event.target.value)}
+                placeholder="+42% searches"
+              />
+            </label>
+          </div>
+          <small className="field-help">
+            Up to three featured destinations and three trending cards appear on the homepage.
+          </small>
         </div>
 
         {form.experienceType === 'hike' ? (

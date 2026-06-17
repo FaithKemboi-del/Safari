@@ -24,6 +24,8 @@ const emptyItinerary = (): ItineraryInput => ({
   style: '',
   image: '',
   status: 'draft',
+  featuredOnHome: false,
+  featuredSortOrder: 0,
   days: [emptyDay()],
 });
 
@@ -195,6 +197,23 @@ export function ItineraryForm({ initial, onClose, onSave }: ItineraryFormProps) 
               onChange={(event) => update('image', event.target.value)}
               placeholder="https://images.unsplash.com/..."
               required
+            />
+          </label>
+          <label className="checkbox-field">
+            <input
+              checked={form.featuredOnHome}
+              onChange={(event) => update('featuredOnHome', event.target.checked)}
+              type="checkbox"
+            />
+            Featured on Popular itineraries (homepage)
+          </label>
+          <label>
+            Featured sort order
+            <input
+              min={0}
+              type="number"
+              value={form.featuredSortOrder}
+              onChange={(event) => update('featuredSortOrder', Number(event.target.value) || 0)}
             />
           </label>
         </div>

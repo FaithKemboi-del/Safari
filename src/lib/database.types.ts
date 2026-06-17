@@ -28,6 +28,12 @@ export type Database = {
           highlights: string[];
           map_query: string;
           status: 'published' | 'draft' | 'review';
+          featured_on_home: boolean;
+          featured_sort_order: number;
+          trending_on_home: boolean;
+          trending_tag: string | null;
+          trending_searches: string | null;
+          trending_sort_order: number;
           created_at: string;
           updated_at: string;
         }>;
@@ -40,6 +46,8 @@ export type Database = {
           style: string;
           image: string;
           status: 'live' | 'review' | 'draft';
+          featured_on_home: boolean;
+          featured_sort_order: number;
           created_at: string;
           updated_at: string;
         }>;

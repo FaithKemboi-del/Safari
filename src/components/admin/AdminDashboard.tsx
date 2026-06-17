@@ -180,6 +180,58 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     }
   };
 
+  const destinationInputFromAdmin = (item: AdminDestination): DestinationInput => {
+    const { id: _id, updatedAt: _updatedAt, ...rest } = item;
+    return rest;
+  };
+
+  const itineraryInputFromAdmin = (item: AdminItinerary): ItineraryInput => {
+    const { updatedAt: _updatedAt, ...rest } = item;
+    return rest;
+  };
+
+  const toggleDestinationFeatured = async (item: AdminDestination) => {
+    try {
+      await updateDestination(item.id, {
+        ...destinationInputFromAdmin(item),
+        featuredOnHome: !item.featuredOnHome,
+      });
+      await afterMutation(
+        item.featuredOnHome ? 'Removed from featured destinations.' : 'Added to featured destinations.',
+      );
+    } catch (toggleError) {
+      setError(toggleError instanceof Error ? toggleError.message : 'Could not update featured status.');
+    }
+  };
+
+  const toggleDestinationTrending = async (item: AdminDestination) => {
+    try {
+      await updateDestination(item.id, {
+        ...destinationInputFromAdmin(item),
+        trendingOnHome: !item.trendingOnHome,
+      });
+      await afterMutation(
+        item.trendingOnHome ? 'Removed from trending this week.' : 'Added to trending this week.',
+      );
+    } catch (toggleError) {
+      setError(toggleError instanceof Error ? toggleError.message : 'Could not update trending status.');
+    }
+  };
+
+  const toggleItineraryFeatured = async (item: AdminItinerary) => {
+    try {
+      await updateItinerary({
+        ...itineraryInputFromAdmin(item),
+        featuredOnHome: !item.featuredOnHome,
+      });
+      await afterMutation(
+        item.featuredOnHome ? 'Removed from popular itineraries.' : 'Added to popular itineraries.',
+      );
+    } catch (toggleError) {
+      setError(toggleError instanceof Error ? toggleError.message : 'Could not update featured status.');
+    }
+  };
+
   const filteredDestinations = useMemo(() => {
     return destinations.filter((item) => {
       const matchesSearch =
@@ -368,13 +420,14 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
                     <th>Location</th>
                     <th>Type</th>
                     <th>Status</th>
+                    <th>Landing page</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredDestinations.length === 0 ? (
                     <tr>
-                      <td colSpan={5}>No destinations found.</td>
+                      <td colSpan={6}>No destinations found.</td>
                     </tr>
                   ) : (
                     filteredDestinations.map((item) => (
@@ -390,6 +443,24 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
                         <td>{item.experienceType}</td>
                         <td>
                           <span className={`admin-status admin-status--${item.status}`}>{item.status}</span>
+                        </td>
+                        <td className="admin-landing-toggles">
+                          <button
+                            className={`admin-feature-toggle ${item.featuredOnHome ? 'active' : ''}`}
+                            disabled={!isSupabaseConfigured()}
+                            onClick={() => void toggleDestinationFeatured(item)}
+                            type="button"
+                          >
+                            {item.featuredOnHome ? 'Featured ✓' : 'Feature'}
+                          </button>
+                          <button
+                            className={`admin-feature-toggle ${item.trendingOnHome ? 'active' : ''}`}
+                            disabled={!isSupabaseConfigured()}
+                            onClick={() => void toggleDestinationTrending(item)}
+                            type="button"
+                          >
+                            {item.trendingOnHome ? 'Trending ✓' : 'Trending'}
+                          </button>
                         </td>
                         <td className="admin-actions">
                           <button onClick={() => openEditDestination(item)} type="button">
@@ -417,13 +488,14 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
                     <th>Route</th>
                     <th>Price</th>
                     <th>Status</th>
+                    <th>Landing page</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredItineraries.length === 0 ? (
                     <tr>
-                      <td colSpan={5}>No itineraries found.</td>
+                      <td colSpan={6}>No itineraries found.</td>
                     </tr>
                   ) : (
                     filteredItineraries.map((item) => (
@@ -438,6 +510,16 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
                         <td>{item.price}</td>
                         <td>
                           <span className={`admin-status admin-status--${item.status}`}>{item.status}</span>
+                        </td>
+                        <td className="admin-landing-toggles">
+                          <button
+                            className={`admin-feature-toggle ${item.featuredOnHome ? 'active' : ''}`}
+                            disabled={!isSupabaseConfigured()}
+                            onClick={() => void toggleItineraryFeatured(item)}
+                            type="button"
+                          >
+                            {item.featuredOnHome ? 'Featured ✓' : 'Feature'}
+                          </button>
                         </td>
                         <td className="admin-actions">
                           <button onClick={() => openEditItinerary(item)} type="button">

@@ -46,6 +46,12 @@ function mapAdminDestination(row: DestinationRow): AdminDestination {
     highlights: row.highlights ?? [],
     mapQuery: row.map_query,
     status: row.status,
+    featuredOnHome: row.featured_on_home ?? false,
+    featuredSortOrder: row.featured_sort_order ?? 0,
+    trendingOnHome: row.trending_on_home ?? false,
+    trendingTag: row.trending_tag ?? undefined,
+    trendingSearches: row.trending_searches ?? undefined,
+    trendingSortOrder: row.trending_sort_order ?? 0,
     updatedAt: row.updated_at,
   };
 }
@@ -60,6 +66,8 @@ function mapAdminItinerary(row: ItineraryRow, days: ItineraryDayRow[]): AdminIti
     style: row.style,
     image: row.image,
     status: row.status,
+    featuredOnHome: row.featured_on_home ?? false,
+    featuredSortOrder: row.featured_sort_order ?? 0,
     updatedAt: row.updated_at,
     days: days
       .filter((day) => day.itinerary_id === row.id)
@@ -101,6 +109,12 @@ function destinationToRow(input: DestinationInput) {
     highlights: input.highlights,
     map_query: input.mapQuery,
     status: input.status,
+    featured_on_home: input.featuredOnHome,
+    featured_sort_order: input.featuredSortOrder,
+    trending_on_home: input.trendingOnHome,
+    trending_tag: input.trendingTag ?? null,
+    trending_searches: input.trendingSearches ?? null,
+    trending_sort_order: input.trendingSortOrder,
   };
 }
 
@@ -114,6 +128,8 @@ function itineraryHeaderToRow(input: ItineraryInput) {
     style: input.style,
     image: input.image,
     status: input.status,
+    featured_on_home: input.featuredOnHome,
+    featured_sort_order: input.featuredSortOrder,
   };
 }
 

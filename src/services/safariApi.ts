@@ -47,6 +47,12 @@ function mapDestination(row: DestinationRow): Destination {
     gallery: row.gallery,
     highlights: row.highlights,
     mapQuery: row.map_query,
+    featuredOnHome: row.featured_on_home ?? false,
+    featuredSortOrder: row.featured_sort_order ?? 0,
+    trendingOnHome: row.trending_on_home ?? false,
+    trendingTag: row.trending_tag ?? undefined,
+    trendingSearches: row.trending_searches ?? undefined,
+    trendingSortOrder: row.trending_sort_order ?? 0,
   };
 }
 
@@ -59,6 +65,8 @@ function mapItinerary(row: ItineraryRow, days: ItineraryDayRow[]): Itinerary {
     price: row.price,
     style: row.style,
     image: row.image,
+    featuredOnHome: row.featured_on_home ?? false,
+    featuredSortOrder: row.featured_sort_order ?? 0,
     days: days
       .filter((day) => day.itinerary_id === row.id)
       .sort((a, b) => a.day_order - b.day_order)
