@@ -35,6 +35,20 @@ export type CommunityUpdate = {
   comment: string;
 };
 
+export type CommunityPostKind = 'question' | 'trip-report' | 'tip';
+
+export type CommunityPost = {
+  id: string;
+  author: string;
+  avatar: string;
+  message: string;
+  kind: CommunityPostKind;
+  destinationSlug?: string;
+  itineraryId?: string;
+  postedAgo: string;
+  isPinned?: boolean;
+};
+
 export type Itinerary = {
   id: string;
   title: string;
@@ -650,6 +664,58 @@ export const trendingThisWeek: TrendingItem[] = [
       'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=900&q=80',
     slug: 'tsavo',
     mapQuery: 'Watamu Marine National Park Kenya',
+  },
+];
+
+export const globalCommunityPosts: CommunityPost[] = [
+  {
+    id: 'cp-pinned-itineraries',
+    author: 'Safiri team',
+    avatar: 'SF',
+    message:
+      'Before asking for a full route plan, check our Itineraries page and Plan with AI — many classic Kenya routes are already mapped with day-by-day budgets.',
+    kind: 'tip',
+    postedAgo: 'Pinned',
+    isPinned: true,
+  },
+  {
+    id: 'cp-1',
+    author: 'Brian O.',
+    avatar: 'BO',
+    message:
+      'Best matatu stop for Naivasha from Nairobi CBD? Trying to do Hell\'s Gate + Lake Naivasha on one budget day.',
+    kind: 'question',
+    destinationSlug: 'hells-gate',
+    postedAgo: '18 min ago',
+  },
+  {
+    id: 'cp-2',
+    author: 'Zawadi M.',
+    avatar: 'ZM',
+    message:
+      'Just finished Nairobi → Diani on SGR + tuk-tuk. Total transport about $18 each. Stayed at a hostel near the beach — happy to share the breakdown.',
+    kind: 'trip-report',
+    destinationSlug: 'diani',
+    postedAgo: '1 hr ago',
+  },
+  {
+    id: 'cp-3',
+    author: 'Leo K.',
+    avatar: 'LK',
+    message:
+      'Tip: book SGR coast tickets mid-week for the cheapest fares. I saved almost $6 vs Friday travel.',
+    kind: 'tip',
+    postedAgo: '3 hr ago',
+  },
+  {
+    id: 'cp-4',
+    author: 'Nia P.',
+    avatar: 'NP',
+    message:
+      'Is Amboseli doable as a solo day trip from Nairobi without a tour company? Looking for shared van options.',
+    kind: 'question',
+    destinationSlug: 'amboseli',
+    postedAgo: '5 hr ago',
   },
 ];
 

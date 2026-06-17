@@ -1,4 +1,5 @@
 import type { DestinationExperienceType } from '../data';
+import type { CommunityPostKind } from '../data';
 
 export type ContentStatus = 'published' | 'draft' | 'review';
 export type ItineraryStatus = 'live' | 'draft' | 'review';
@@ -84,6 +85,18 @@ export type AdminCategorySpot = {
   eventStatus?: 'happening-now' | 'upcoming' | 'past';
   status: ContentStatus;
   sortOrder: number;
+  updatedAt: string;
+};
+
+export type AdminCommunityPost = {
+  id: string;
+  authorName: string;
+  message: string;
+  kind: CommunityPostKind;
+  destinationSlug?: string;
+  itineraryId?: string;
+  isPinned: boolean;
+  status: 'published' | 'hidden';
   updatedAt: string;
 };
 

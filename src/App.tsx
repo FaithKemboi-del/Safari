@@ -9,7 +9,6 @@ import {
 } from 'react';
 import {
   categories,
-  testimonials,
   trendingThisWeek,
 } from './data';
 import {
@@ -32,6 +31,7 @@ import { CategoryIcon, CategoryPage } from './components/CategoryPage';
 import { AdminLoginPage } from './components/AdminLoginPage';
 import { AdminProtected } from './components/AdminProtected';
 import { NavIcon, ProvinceIcon, type NavIconName } from './components/SafiriIcons';
+import { CommunityFeedPreview, CommunityPage } from './components/CommunityPage';
 import { CategorySpotPage } from './components/CategorySpotPage';
 import { TrailPage } from './components/TrailPage';
 import { BRAND_NAME, TRAILS_FEATURE_NAME } from './lib/config';
@@ -44,6 +44,7 @@ type Route =
   | { page: 'trail'; id: string }
   | { page: 'spot'; id: string }
   | { page: 'itineraries'; id?: string }
+  | { page: 'community' }
   | { page: 'plan-ai' }
   | { page: 'signin' }
   | { page: 'signup' }
@@ -54,6 +55,7 @@ const navItems: { label: string; hash: string; icon: NavIconName }[] = [
   { label: 'Home', hash: '#home', icon: 'home' },
   { label: 'Destinations', hash: '#destinations', icon: 'destinations' },
   { label: 'Itineraries', hash: '#itineraries', icon: 'itineraries' },
+  { label: 'Community', hash: '#community', icon: 'community' },
   { label: 'Plan with AI', hash: '#plan-ai', icon: 'plan' },
 ];
 
@@ -79,6 +81,10 @@ function parseHashFromPath(path?: string): Route {
 
   if (page === 'itineraries') {
     return slug ? { page: 'itineraries', id: slug } : { page: 'itineraries' };
+  }
+
+  if (page === 'community') {
+    return { page: 'community' };
   }
 
   if (
@@ -175,6 +181,7 @@ function App() {
         {route.page === 'category' && <CategoryPage categoryId={route.id} />}
         {route.page === 'trail' && <TrailPage trailId={route.id} />}
         {route.page === 'spot' && <CategorySpotPage spotId={route.id} />}
+        {route.page === 'community' && <CommunityPage />}
         {route.page === 'itineraries' && <ItinerariesPage selectedItineraryId={route.id} />}
         {route.page === 'plan-ai' && <PlanWithAIPage />}
         {route.page === 'signin' && <AuthPage mode="signin" />}
@@ -362,24 +369,7 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
         </div>
       </section>
 
-      <section className="section testimonials-section">
-        <SectionIntro
-          eyebrow="Traveler stories"
-          title="Designed to capture attention and trust"
-          body="Real tips from travelers on the ground — so you know what to expect before you go."
-        />
-        <div className="testimonial-grid">
-          {testimonials.map((testimonial) => (
-            <figure key={testimonial.name} className="testimonial-card">
-              <blockquote>“{testimonial.quote}”</blockquote>
-              <figcaption>
-                <strong>{testimonial.name}</strong>
-                <span>{testimonial.role}</span>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </section>
+      <CommunityFeedPreview />
 
       <section className="landing-cta section-dark" aria-labelledby="landing-cta-title">
         <img
@@ -1234,6 +1224,7 @@ function Footer() {
       <div className="footer-links">
         <a href="#destinations">Destinations</a>
         <a href="#itineraries">Itineraries</a>
+        <a href="#community">Community</a>
         <a href="#plan-ai">Plan with AI</a>
         <a href="#signin">Sign in</a>
         <a href="#admin-login">Admin</a>

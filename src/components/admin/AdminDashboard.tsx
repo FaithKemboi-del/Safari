@@ -10,22 +10,26 @@ import {
   createItinerary,
   createRoute,
   deleteCategorySpot,
+  deleteCommunityPost,
   deleteDestination,
   deleteItinerary,
   deleteRoute,
   fetchAdminCategorySpots,
+  fetchAdminCommunityPosts,
   fetchAdminDestinations,
   fetchAdminItineraries,
   fetchAdminMetrics,
   fetchAdminRoutes,
   importDemoCategorySpots,
   updateCategorySpot,
+  updateCommunityPostModeration,
   updateDestination,
   updateItinerary,
   updateRoute,
 } from '../../services/adminApi';
 import type {
   AdminCategorySpot,
+  AdminCommunityPost,
   AdminDestination,
   AdminItinerary,
   AdminMetrics,
@@ -40,7 +44,7 @@ import { DestinationForm } from './DestinationForm';
 import { ItineraryForm } from './ItineraryForm';
 import { RouteForm } from './RouteForm';
 
-type AdminTab = 'Destinations' | 'Itineraries' | 'Routes' | 'Category cards';
+type AdminTab = 'Destinations' | 'Itineraries' | 'Routes' | 'Category cards' | 'Community';
 
 type AdminDashboardProps = {
   onSignOut: () => void;
@@ -64,6 +68,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
   const [itineraries, setItineraries] = useState<AdminItinerary[]>([]);
   const [routes, setRoutes] = useState<AdminRoute[]>([]);
   const [categoryCards, setCategoryCards] = useState<AdminCategorySpot[]>([]);
+  const [communityPosts, setCommunityPosts] = useState<AdminCommunityPost[]>([]);
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
@@ -88,12 +93,13 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     setError('');
 
     try {
-      const [nextDestinations, nextItineraries, nextRoutes, nextCategoryCards, nextMetrics] =
+      const [nextDestinations, nextItineraries, nextRoutes, nextCategoryCards, nextCommunityPosts, nextMetrics] =
         await Promise.all([
         fetchAdminDestinations(),
         fetchAdminItineraries(),
         fetchAdminRoutes(),
         fetchAdminCategorySpots(),
+        fetchAdminCommunityPosts(),
         fetchAdminMetrics(),
       ]);
 
@@ -101,6 +107,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
       setItineraries(nextItineraries);
       setRoutes(nextRoutes);
       setCategoryCards(nextCategoryCards);
+      setCommunityPosts(nextCommunityPosts);
       setMetrics(nextMetrics);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Could not load admin data.');
@@ -232,6 +239,26 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     }
   };
 
+  const toggleCommunityPin = async (item: AdminCommunityPost) => {
+    try {
+      await updateCommunityPostModeration(item.id, { isPinned: !item.isPinned });
+      await afterMutation(item.isPinned ? 'Post unpinned.' : 'Post pinned.');
+    } catch (toggleError) {
+      setError(toggleError instanceof Error ? toggleError.message : 'Could not update pin status.');
+    }
+  };
+
+  const toggleCommunityVisibility = async (item: AdminCommunityPost) => {
+    try {
+      await updateCommunityPostModeration(item.id, {
+        status: item.status === 'published' ? 'hidden' : 'published',
+      });
+      await afterMutation(item.status === 'published' ? 'Post hidden.' : 'Post published.');
+    } catch (toggleError) {
+      setError(toggleError instanceof Error ? toggleError.message : 'Could not update post status.');
+    }
+  };
+
   const filteredDestinations = useMemo(() => {
     return destinations.filter((item) => {
       const matchesSearch =
@@ -276,12 +303,24 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     });
   }, [categoryCards, search, statusFilter, categoryFilter]);
 
+  const filteredCommunityPosts = useMemo(() => {
+    return communityPosts.filter((item) => {
+      const matchesSearch =
+        !search ||
+        [item.authorName, item.message, item.kind].join(' ').toLowerCase().includes(search.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [communityPosts, search, statusFilter]);
+
   const statusOptions =
     activeTab === 'Itineraries'
       ? ['all', 'live', 'draft', 'review']
       : activeTab === 'Routes'
         ? ['all', 'active', 'draft']
-        : ['all', 'published', 'draft', 'review'];
+        : activeTab === 'Community'
+          ? ['all', 'published', 'hidden']
+          : ['all', 'published', 'draft', 'review'];
 
   const createLabel =
     activeTab === 'Category cards' ? 'card' : activeTab.slice(0, -1).toLowerCase();
@@ -295,7 +334,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     <section className="admin-shell">
       <aside className="admin-sidebar">
         <Brand className="brand admin-brand" />
-        {(['Destinations', 'Itineraries', 'Routes', 'Category cards'] as const).map((item) => (
+        {(['Destinations', 'Itineraries', 'Routes', 'Category cards', 'Community'] as const).map((item) => (
           <button
             key={item}
             className={activeTab === item ? 'active' : ''}
@@ -342,8 +381,13 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
                 Import demo cards
               </button>
             ) : null}
-            <button className="primary-button" disabled={!isSupabaseConfigured()} onClick={openCreate} type="button">
-              Create {createLabel}
+            <button
+              className="primary-button"
+              disabled={!isSupabaseConfigured()}
+              onClick={() => (activeTab === 'Community' ? void loadAll() : openCreate())}
+              type="button"
+            >
+              {activeTab === 'Community' ? 'Refresh feed' : `Create ${createLabel}`}
             </button>
           </div>
         </div>
@@ -572,6 +616,68 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
                           </button>
                           <button
                             onClick={() => void handleDelete(item.name, () => deleteRoute(item.id))}
+                            type="button"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          ) : activeTab === 'Community' ? (
+            <div className="responsive-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Author</th>
+                    <th>Message</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Moderation</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredCommunityPosts.length === 0 ? (
+                    <tr>
+                      <td colSpan={6}>No community posts found.</td>
+                    </tr>
+                  ) : (
+                    filteredCommunityPosts.map((item) => (
+                      <tr key={item.id}>
+                        <td>
+                          <strong>{item.authorName}</strong>
+                          {item.isPinned ? <small>Pinned</small> : null}
+                        </td>
+                        <td>{item.message}</td>
+                        <td>{item.kind}</td>
+                        <td>
+                          <span className={`admin-status admin-status--${item.status}`}>{item.status}</span>
+                        </td>
+                        <td className="admin-landing-toggles">
+                          <button
+                            className={`admin-feature-toggle ${item.isPinned ? 'active' : ''}`}
+                            disabled={!isSupabaseConfigured()}
+                            onClick={() => void toggleCommunityPin(item)}
+                            type="button"
+                          >
+                            {item.isPinned ? 'Pinned ✓' : 'Pin'}
+                          </button>
+                          <button
+                            className={`admin-feature-toggle ${item.status === 'hidden' ? 'active' : ''}`}
+                            disabled={!isSupabaseConfigured()}
+                            onClick={() => void toggleCommunityVisibility(item)}
+                            type="button"
+                          >
+                            {item.status === 'hidden' ? 'Hidden ✓' : 'Hide'}
+                          </button>
+                        </td>
+                        <td className="admin-actions">
+                          <button
+                            onClick={() => void handleDelete(item.authorName, () => deleteCommunityPost(item.id))}
                             type="button"
                           >
                             Delete

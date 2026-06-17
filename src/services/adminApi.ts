@@ -522,3 +522,64 @@ export async function importDemoCategorySpots(): Promise<number> {
 
   return imported;
 }
+
+type CommunityPostRow = Database['public']['Tables']['community_posts']['Row'];
+
+function mapAdminCommunityPost(row: CommunityPostRow) {
+  return {
+    id: row.id,
+    authorName: row.author_name,
+    message: row.message,
+    kind: row.kind,
+    destinationSlug: row.destination_slug ?? undefined,
+    itineraryId: row.itinerary_id ?? undefined,
+    isPinned: row.is_pinned,
+    status: row.status,
+    updatedAt: row.updated_at,
+  };
+}
+
+export async function fetchAdminCommunityPosts() {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase
+    .from('community_posts')
+    .select('*')
+    .order('is_pinned', { ascending: false })
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return ((data as CommunityPostRow[] | null) ?? []).map(mapAdminCommunityPost);
+}
+
+export async function updateCommunityPostModeration(
+  id: string,
+  input: { status?: 'published' | 'hidden'; isPinned?: boolean },
+) {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase
+    .from('community_posts')
+    .update({
+      status: input.status,
+      is_pinned: input.isPinned,
+    })
+    .eq('id', id)
+    .select('*')
+    .single();
+
+  if (error || !data) {
+    throw new Error(error?.message ?? 'Could not update community post.');
+  }
+
+  return mapAdminCommunityPost(data as CommunityPostRow);
+}
+
+export async function deleteCommunityPost(id: string): Promise<void> {
+  const supabase = requireSupabase();
+  const { error } = await supabase.from('community_posts').delete().eq('id', id);
+  if (error) {
+    throw new Error(error.message);
+  }
+}

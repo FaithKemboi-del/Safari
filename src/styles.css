@@ -1675,6 +1675,105 @@ textarea:focus {
   line-height: 1.6;
 }
 
+.community-page-hero {
+  max-width: 760px;
+}
+
+.community-page-layout {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.community-compose--page {
+  padding: 1.35rem;
+  border: 1px solid var(--line);
+  border-radius: 1.5rem;
+  background: var(--white-soft);
+  box-shadow: 0 16px 45px rgba(58, 38, 26, 0.08);
+}
+
+.community-kind-badge,
+.community-pin-badge {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 179, 71, 0.16);
+  color: var(--gold-dark);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.community-card--pinned {
+  border: 1px solid rgba(255, 179, 71, 0.35);
+  background: rgba(255, 250, 241, 0.92);
+}
+
+.community-post-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.55rem;
+}
+
+.community-post-links a {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--gold-dark);
+}
+
+.community-suggestions {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.community-suggestion-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.community-suggestion-links a {
+  font-weight: 800;
+  color: var(--gold-dark);
+}
+
+.community-suggestion-list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.community-suggestion-list a {
+  color: var(--earth-deep);
+  font-weight: 700;
+}
+
+.community-check-field {
+  margin-top: 0.35rem;
+}
+
+.community-preview-section {
+  padding-bottom: 3rem;
+}
+
+.community-preview-layout {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.community-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+@media (min-width: 860px) {
+  .community-page-layout {
+    grid-template-columns: 0.95fr 1.05fr;
+    align-items: start;
+  }
+}
+
 .booking-panel {
   position: sticky;
   top: 6.2rem;

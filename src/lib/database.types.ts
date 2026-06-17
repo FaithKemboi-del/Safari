@@ -79,6 +79,19 @@ export type Database = {
           created_at?: string;
         }
       >;
+      community_posts: TableDef<{
+          id: string;
+          user_id: string | null;
+          author_name: string;
+          message: string;
+          kind: 'question' | 'trip-report' | 'tip';
+          destination_slug: string | null;
+          itinerary_id: string | null;
+          is_pinned: boolean;
+          status: 'published' | 'hidden';
+          created_at: string;
+          updated_at: string;
+        }>;
       profiles: TableDef<{
           id: string;
           full_name: string | null;
