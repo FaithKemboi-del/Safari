@@ -15,18 +15,36 @@ const kindLabels: Record<CommunityPostKind, string> = {
   tip: 'Tip',
 };
 
-function CommunityPostCard({ post }: { post: CommunityPost }) {
+const kindOptions: { value: CommunityPostKind; label: string }[] = [
+  { value: 'question', label: 'Question' },
+  { value: 'trip-report', label: 'Trip report' },
+  { value: 'tip', label: 'Tip' },
+];
+
+function CommunityPostCard({ post, feed = false }: { post: CommunityPost; feed?: boolean }) {
   return (
-    <article className={`community-card ${post.isPinned ? 'community-card--pinned' : ''}`}>
-      <div className="community-avatar">{post.avatar}</div>
-      <div className="community-body">
-        <div className="community-meta">
+    <article
+      className={[
+        feed ? 'community-feed-card' : 'community-card',
+        post.isPinned ? 'community-feed-card--pinned' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      <div className="community-feed-card__header">
+        <div className="community-avatar community-avatar--feed">{post.avatar}</div>
+        <div className="community-feed-card__identity">
           <strong>{post.author}</strong>
-          <span>{post.postedAgo}</span>
-          <span className="community-kind-badge">{kindLabels[post.kind]}</span>
-          {post.isPinned ? <span className="community-pin-badge">Pinned</span> : null}
+          <span>
+            {post.postedAgo}
+            {' · '}
+            {kindLabels[post.kind]}
+          </span>
         </div>
-        <p>{post.message}</p>
+        {post.isPinned ? <span className="community-pin-badge">Pinned</span> : null}
+      </div>
+      <p className="community-feed-card__message">{post.message}</p>
+      {post.itineraryId || post.destinationSlug ? (
         <div className="community-post-links">
           {post.itineraryId ? (
             <a href={`#itineraries/${post.itineraryId}`}>Related itinerary →</a>
@@ -35,7 +53,7 @@ function CommunityPostCard({ post }: { post: CommunityPost }) {
             <a href={`#destination/${post.destinationSlug}`}>Related destination →</a>
           ) : null}
         </div>
-      </div>
+      ) : null}
     </article>
   );
 }
@@ -67,14 +85,11 @@ function ItinerarySuggestionPanel({
   }
 
   return (
-    <div className="community-suggestions glass-panel">
+    <div className="community-suggestions">
       <strong>We might already have what you need</strong>
-      <p>
-        Check these before posting a new route question — most classic Kenya trips are already on
-        Safiri.
-      </p>
+      <p>Check these before asking for a new route plan.</p>
       <div className="community-suggestion-links">
-        <a href="#itineraries">Browse all itineraries</a>
+        <a href="#itineraries">Browse itineraries</a>
         <a href="#plan-ai">Plan with AI</a>
       </div>
       {suggestedItineraries.length > 0 ? (
@@ -82,7 +97,7 @@ function ItinerarySuggestionPanel({
           {suggestedItineraries.map((itinerary) => (
             <li key={itinerary.id}>
               <a href={`#itineraries/${itinerary.id}`}>
-                {itinerary.title} · {itinerary.duration} · {itinerary.price}
+                {itinerary.title} · {itinerary.duration}
               </a>
             </li>
           ))}
@@ -106,7 +121,7 @@ function ItinerarySuggestionPanel({
             onChange={(event) => onCheckedChange(event.target.checked)}
             type="checkbox"
           />
-          I checked existing itineraries and still need community help
+          I checked existing itineraries and still need help
         </label>
       ) : null}
     </div>
@@ -118,11 +133,13 @@ export function CommunityFeedList({
   loading,
   error,
   emptyMessage = 'No posts yet. Be the first to ask or share a tip.',
+  feed = false,
 }: {
   posts: CommunityPost[];
   loading?: boolean;
   error?: string;
   emptyMessage?: string;
+  feed?: boolean;
 }) {
   if (loading) {
     return <p className="community-empty">Loading community posts...</p>;
@@ -137,20 +154,21 @@ export function CommunityFeedList({
   }
 
   return (
-    <div className="community-list">
+    <div className={feed ? 'community-feed-stream' : 'community-list'}>
       {posts.map((post) => (
-        <CommunityPostCard key={post.id} post={post} />
+        <CommunityPostCard key={post.id} feed={feed} post={post} />
       ))}
     </div>
   );
 }
 
-export function CommunityPage() {
-  const { user, displayName, isConfigured } = useAuth();
+function CommunityComposer({
+  onPosted,
+}: {
+  onPosted: (post: CommunityPost) => void;
+}) {
+  const { user, displayName, avatarInitials, isConfigured } = useAuth();
   const signedIn = isConfigured ? Boolean(user) : sessionStorage.getItem('safari-signed-in') === 'true';
-  const [posts, setPosts] = useState<CommunityPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [feedError, setFeedError] = useState('');
   const [message, setMessage] = useState('');
   const [kind, setKind] = useState<CommunityPostKind>('question');
   const [checkedItineraries, setCheckedItineraries] = useState(false);
@@ -160,6 +178,107 @@ export function CommunityPage() {
   const needsItineraryAck = looksLikeItineraryQuestion(message, kind);
   const canPost =
     message.trim().length > 0 && (!needsItineraryAck || checkedItineraries) && !posting;
+
+  const submitPost = async () => {
+    if (!canPost) {
+      return;
+    }
+
+    setPosting(true);
+    setPostError('');
+
+    try {
+      const saved = await postGlobalCommunityPost({
+        userId: user?.id,
+        authorName: signedIn ? displayName || 'Traveler' : 'Guest',
+        message: message.trim(),
+        kind,
+      });
+
+      if (!saved) {
+        setPostError('Could not post right now. Try again in a moment.');
+        return;
+      }
+
+      onPosted(saved);
+      setMessage('');
+      setCheckedItineraries(false);
+    } catch {
+      setPostError('Could not post right now. Try again.');
+    } finally {
+      setPosting(false);
+    }
+  };
+
+  if (!signedIn) {
+    return (
+      <div className="community-composer-card community-composer-card--guest">
+        <div className="community-composer-top">
+          <div className="community-avatar community-avatar--feed">?</div>
+          <p className="community-composer-placeholder">Sign in to ask questions and share trip updates.</p>
+        </div>
+        <div className="community-composer-footer">
+          <a className="primary-button" href="#signin">
+            Sign in to post
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  const initials = avatarInitials || displayName?.slice(0, 2).toUpperCase() || 'YO';
+
+  return (
+    <div className="community-composer-card">
+      <div className="community-composer-top">
+        <div className="community-avatar community-avatar--feed">{initials}</div>
+        <label className="community-composer-field">
+          <span className="sr-only">Write a community post</span>
+          <textarea
+            onChange={(event) => setMessage(event.target.value)}
+            placeholder={`What's on your mind, ${displayName || 'traveler'}?`}
+            rows={3}
+            value={message}
+          />
+        </label>
+      </div>
+
+      <div className="community-kind-picker" role="group" aria-label="Post type">
+        {kindOptions.map((option) => (
+          <button
+            key={option.value}
+            className={kind === option.value ? 'active' : ''}
+            onClick={() => setKind(option.value)}
+            type="button"
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+
+      <ItinerarySuggestionPanel
+        checkedItineraries={checkedItineraries}
+        kind={kind}
+        message={message}
+        onCheckedChange={setCheckedItineraries}
+      />
+
+      <div className="community-composer-footer">
+        <p className="community-composer-hint">Posting as {displayName || 'Traveler'}</p>
+        <button className="primary-button" disabled={!canPost} onClick={() => void submitPost()} type="button">
+          {posting ? 'Posting...' : 'Post'}
+        </button>
+      </div>
+
+      {postError ? <p className="auth-message">{postError}</p> : null}
+    </div>
+  );
+}
+
+export function CommunityPage() {
+  const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [feedError, setFeedError] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -185,94 +304,32 @@ export function CommunityPage() {
     };
   }, []);
 
-  const submitPost = async () => {
-    if (!canPost) {
-      return;
-    }
-
-    setPosting(true);
-    setPostError('');
-
-    try {
-      const saved = await postGlobalCommunityPost({
-        userId: user?.id,
-        authorName: signedIn ? displayName || 'Traveler' : 'Guest',
-        message: message.trim(),
-        kind,
-      });
-
-      if (!saved) {
-        setPostError('Could not post right now. Try again in a moment.');
-        return;
-      }
-
-      setPosts((current) => {
-        const withoutDuplicate = current.filter((post) => post.id !== saved.id);
-        return [saved, ...withoutDuplicate];
-      });
-      setMessage('');
-      setCheckedItineraries(false);
-    } catch {
-      setPostError('Could not post right now. Try again.');
-    } finally {
-      setPosting(false);
-    }
+  const handlePosted = (post: CommunityPost) => {
+    setPosts((current) => {
+      const withoutDuplicate = current.filter((item) => item.id !== post.id);
+      return [post, ...withoutDuplicate];
+    });
   };
 
   return (
     <div className="community-page">
-      <section className="page-hero community-page-hero">
-        <span className="eyebrow">Safiri community</span>
-        <h1>Ask travelers, share trips, swap budget tips</h1>
-        <p>
-          Open to everyone to read. Sign in to post questions, recent travel stories, and on-the-ground
-          advice. For ready-made routes, start with our itineraries — you do not need to wait for admin.
-        </p>
+      <section className="community-hero">
+        <div className="community-hero-overlay" aria-hidden="true" />
+        <div className="community-hero-inner">
+          <span className="eyebrow">Safiri community</span>
+          <h1>Ask travelers. Share trips. Swap budget tips.</h1>
+          <p>
+            A live feed for Kenya budget travel — questions, trip reports, and advice from people on
+            the road right now.
+          </p>
+        </div>
       </section>
 
-      <section className="section community-page-layout">
-        <div className="community-compose community-compose--page">
-          {signedIn ? (
-            <>
-              <label>
-                Post type
-                <select value={kind} onChange={(event) => setKind(event.target.value as CommunityPostKind)}>
-                  <option value="question">Question</option>
-                  <option value="trip-report">Trip report</option>
-                  <option value="tip">Tip</option>
-                </select>
-              </label>
-              <label>
-                Your message
-                <textarea
-                  onChange={(event) => setMessage(event.target.value)}
-                  placeholder="Ask about transport, share what you spent, or post a recent travel update..."
-                  rows={4}
-                  value={message}
-                />
-              </label>
-              <ItinerarySuggestionPanel
-                checkedItineraries={checkedItineraries}
-                kind={kind}
-                message={message}
-                onCheckedChange={setCheckedItineraries}
-              />
-              <button className="primary-button" disabled={!canPost} onClick={() => void submitPost()} type="button">
-                {posting ? 'Posting...' : 'Post to community'}
-              </button>
-              {postError ? <p className="auth-message">{postError}</p> : null}
-            </>
-          ) : (
-            <div className="community-signin-prompt">
-              <p>Sign in to post questions and travel updates.</p>
-              <a className="primary-button" href="#signin">
-                Sign in
-              </a>
-            </div>
-          )}
+      <section className="community-feed-shell">
+        <div className="community-feed-column">
+          <CommunityComposer onPosted={handlePosted} />
+          <CommunityFeedList error={feedError} feed loading={loading} posts={posts} />
         </div>
-
-        <CommunityFeedList error={feedError} loading={loading} posts={posts} />
       </section>
     </div>
   );
@@ -300,17 +357,10 @@ export function CommunityFeedPreview() {
       <div className="section-intro">
         <span className="eyebrow">Ask the community</span>
         <h2>Latest posts from travelers</h2>
-        <p>
-          Questions, trip reports, and budget tips from people exploring Kenya right now — no tour
-          package required.
-        </p>
+        <p>Questions, trip reports, and budget tips from people exploring Kenya right now.</p>
       </div>
       <div className="community-preview-layout">
-        <CommunityFeedList
-          emptyMessage="No posts yet."
-          loading={loading}
-          posts={posts}
-        />
+        <CommunityFeedList emptyMessage="No posts yet." feed loading={loading} posts={posts} />
         <div className="community-preview-actions">
           <a className="primary-button" href="#community">
             Join the conversation
