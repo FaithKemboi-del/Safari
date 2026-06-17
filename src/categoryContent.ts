@@ -119,7 +119,8 @@ export const categorySpots: CategorySpot[] = [
     location: 'Naivasha',
     budget: 'From $15 park entry + $15 bike hire',
     description: `Canyon loop with geothermal steam and Fischer's Tower
-easy matatu day trip from Nairobi.`,
+Easy matatu day trip from Nairobi
+Bike hire available at the park gate`,
     image: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80',
     slug: 'hells-gate',
     mapQuery: "Hell's Gate National Park Kenya",
@@ -131,7 +132,8 @@ easy matatu day trip from Nairobi.`,
     location: 'Naivasha',
     budget: 'From $26 entry + matatu ~$8',
     description: `Steep but rewarding crater rim hike
-start early to beat the heat.`,
+Start early to beat the heat
+Rim views over the Rift Valley`,
     image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
     slug: 'longonot',
     mapQuery: 'Mount Longonot National Park Kenya',
