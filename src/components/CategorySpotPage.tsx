@@ -7,6 +7,7 @@ import {
 import { useData } from '../context/DataContext';
 import { parseDescriptionPoints } from '../lib/descriptionPoints';
 import { buildMapsHref } from './CategorySpotActions';
+import { SpotInquiryPanel } from './SpotInquiryPanel';
 
 function spotMapQuery(spot: CategorySpot): string {
   return spot.mapQuery ?? `${spot.title} ${spot.location} Kenya`;
@@ -56,10 +57,21 @@ export function CategorySpotPage({ spotId }: { spotId: string }) {
         </div>
       </section>
 
-      <section className="section">
-        <div className="trail-page-layout">
-          <img alt="" className="trail-page-cover" src={spot.image} />
-          <div className="category-spot-page__content">
+      <section className="section category-spot-page__main">
+        <div className="category-spot-page__layout">
+          <div className="category-spot-page__media">
+            <img alt="" className="category-spot-page__cover" src={spot.image} />
+            <div className="category-spot-page__quick-actions spot-actions">
+              <a href={mapsUrl} rel="noreferrer" target="_blank">
+                Open in Maps
+              </a>
+              {spot.trailId ? (
+                <a href={`#trail/${spot.trailId}`}>Open interactive trail map</a>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="category-spot-page__content glass-panel">
             <span className="eyebrow">Spot details</span>
             <h2>About this spot</h2>
             {points.length > 0 ? (
@@ -71,19 +83,10 @@ export function CategorySpotPage({ spotId }: { spotId: string }) {
             ) : (
               <p className="spot-description-empty">No description points added yet.</p>
             )}
-            <div className="spot-actions category-spot-page__actions">
-              <a href={mapsUrl} rel="noreferrer" target="_blank">
-                Open in Maps
-              </a>
-              {spot.slug ? (
-                <a href={`#destination/${spot.slug}`}>Full destination guide →</a>
-              ) : null}
-              {spot.trailId ? (
-                <a href={`#trail/${spot.trailId}`}>Open interactive trail map →</a>
-              ) : null}
-            </div>
           </div>
         </div>
+
+        <SpotInquiryPanel categoryId={spot.categoryId} spotId={spot.id} spotTitle={spot.title} />
       </section>
     </article>
   );

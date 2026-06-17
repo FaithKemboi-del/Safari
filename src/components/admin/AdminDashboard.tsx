@@ -14,18 +14,22 @@ import {
   deleteDestination,
   deleteItinerary,
   deleteRoute,
+  deleteSpotInquiry,
   fetchAdminCategorySpots,
   fetchAdminCommunityPosts,
   fetchAdminDestinations,
   fetchAdminItineraries,
   fetchAdminMetrics,
   fetchAdminRoutes,
+  fetchAdminSpotInquiries,
   importDemoCategorySpots,
+  markSpotInquirySeen,
   updateCategorySpot,
   updateCommunityPostModeration,
   updateDestination,
   updateItinerary,
   updateRoute,
+  updateSpotInquiryStatus,
 } from '../../services/adminApi';
 import type {
   AdminCategorySpot,
@@ -34,6 +38,7 @@ import type {
   AdminItinerary,
   AdminMetrics,
   AdminRoute,
+  AdminSpotInquiry,
   CategorySpotInput,
   DestinationInput,
   ItineraryInput,
@@ -44,7 +49,13 @@ import { DestinationForm } from './DestinationForm';
 import { ItineraryForm } from './ItineraryForm';
 import { RouteForm } from './RouteForm';
 
-type AdminTab = 'Destinations' | 'Itineraries' | 'Routes' | 'Category cards' | 'Community';
+type AdminTab =
+  | 'Destinations'
+  | 'Itineraries'
+  | 'Routes'
+  | 'Category cards'
+  | 'Community'
+  | 'Inquiries';
 
 type AdminDashboardProps = {
   onSignOut: () => void;
@@ -69,6 +80,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
   const [routes, setRoutes] = useState<AdminRoute[]>([]);
   const [categoryCards, setCategoryCards] = useState<AdminCategorySpot[]>([]);
   const [communityPosts, setCommunityPosts] = useState<AdminCommunityPost[]>([]);
+  const [spotInquiries, setSpotInquiries] = useState<AdminSpotInquiry[]>([]);
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
@@ -95,19 +107,27 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     try {
       const [nextDestinations, nextItineraries, nextRoutes, nextCategoryCards, nextCommunityPosts, nextMetrics] =
         await Promise.all([
-        fetchAdminDestinations(),
-        fetchAdminItineraries(),
-        fetchAdminRoutes(),
-        fetchAdminCategorySpots(),
-        fetchAdminCommunityPosts(),
-        fetchAdminMetrics(),
-      ]);
+          fetchAdminDestinations(),
+          fetchAdminItineraries(),
+          fetchAdminRoutes(),
+          fetchAdminCategorySpots(),
+          fetchAdminCommunityPosts(),
+          fetchAdminMetrics(),
+        ]);
+
+      let nextSpotInquiries: AdminSpotInquiry[] = [];
+      try {
+        nextSpotInquiries = await fetchAdminSpotInquiries();
+      } catch (inquiryLoadError) {
+        console.warn('Spot inquiries unavailable:', inquiryLoadError);
+      }
 
       setDestinations(nextDestinations);
       setItineraries(nextItineraries);
       setRoutes(nextRoutes);
       setCategoryCards(nextCategoryCards);
       setCommunityPosts(nextCommunityPosts);
+      setSpotInquiries(nextSpotInquiries);
       setMetrics(nextMetrics);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Could not load admin data.');
@@ -259,6 +279,28 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     }
   };
 
+  const markInquirySeen = async (item: AdminSpotInquiry) => {
+    if (item.adminSeen) {
+      return;
+    }
+
+    try {
+      await markSpotInquirySeen(item.id);
+      await afterMutation('Inquiry marked as seen.');
+    } catch (toggleError) {
+      setError(toggleError instanceof Error ? toggleError.message : 'Could not mark inquiry as seen.');
+    }
+  };
+
+  const toggleInquiryVisibility = async (item: AdminSpotInquiry) => {
+    try {
+      await updateSpotInquiryStatus(item.id, item.status === 'published' ? 'hidden' : 'published');
+      await afterMutation(item.status === 'published' ? 'Inquiry hidden.' : 'Inquiry published.');
+    } catch (toggleError) {
+      setError(toggleError instanceof Error ? toggleError.message : 'Could not update inquiry.');
+    }
+  };
+
   const filteredDestinations = useMemo(() => {
     return destinations.filter((item) => {
       const matchesSearch =
@@ -313,6 +355,23 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     });
   }, [communityPosts, search, statusFilter]);
 
+  const filteredSpotInquiries = useMemo(() => {
+    return spotInquiries.filter((item) => {
+      const matchesSearch =
+        !search ||
+        [item.authorName, item.message, item.spotTitle, item.categoryId, item.spotId]
+          .join(' ')
+          .toLowerCase()
+          .includes(search.toLowerCase());
+      const matchesStatus =
+        statusFilter === 'all' ||
+        (statusFilter === 'unseen' ? !item.adminSeen : item.status === statusFilter);
+      return matchesSearch && matchesStatus;
+    });
+  }, [spotInquiries, search, statusFilter]);
+
+  const unseenInquiryCount = metrics?.unseenSpotInquiries ?? spotInquiries.filter((item) => !item.adminSeen).length;
+
   const statusOptions =
     activeTab === 'Itineraries'
       ? ['all', 'live', 'draft', 'review']
@@ -320,7 +379,9 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
         ? ['all', 'active', 'draft']
         : activeTab === 'Community'
           ? ['all', 'published', 'hidden']
-          : ['all', 'published', 'draft', 'review'];
+          : activeTab === 'Inquiries'
+            ? ['all', 'unseen', 'published', 'hidden']
+            : ['all', 'published', 'draft', 'review'];
 
   const createLabel =
     activeTab === 'Category cards' ? 'card' : activeTab.slice(0, -1).toLowerCase();
@@ -334,19 +395,22 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     <section className="admin-shell">
       <aside className="admin-sidebar">
         <Brand className="brand admin-brand" />
-        {(['Destinations', 'Itineraries', 'Routes', 'Category cards', 'Community'] as const).map((item) => (
+        {(['Destinations', 'Itineraries', 'Routes', 'Category cards', 'Community', 'Inquiries'] as const).map((item) => (
           <button
             key={item}
             className={activeTab === item ? 'active' : ''}
             onClick={() => {
               setActiveTab(item);
               setSearch('');
-              setStatusFilter('all');
+              setStatusFilter(item === 'Inquiries' && unseenInquiryCount > 0 ? 'unseen' : 'all');
               setCategoryFilter('all');
             }}
             type="button"
           >
             {item}
+            {item === 'Inquiries' && unseenInquiryCount > 0 ? (
+              <span className="admin-nav-badge">{unseenInquiryCount}</span>
+            ) : null}
           </button>
         ))}
         <button className="admin-signout" onClick={handleSignOut} type="button">
@@ -384,16 +448,24 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
             <button
               className="primary-button"
               disabled={!isSupabaseConfigured()}
-              onClick={() => (activeTab === 'Community' ? void loadAll() : openCreate())}
+              onClick={() =>
+                activeTab === 'Community' || activeTab === 'Inquiries' ? void loadAll() : openCreate()
+              }
               type="button"
             >
-              {activeTab === 'Community' ? 'Refresh feed' : `Create ${createLabel}`}
+              {activeTab === 'Community' || activeTab === 'Inquiries' ? 'Refresh' : `Create ${createLabel}`}
             </button>
           </div>
         </div>
 
         {message ? <p className="admin-banner admin-banner--success">{message}</p> : null}
         {error ? <p className="admin-banner admin-banner--error">{error}</p> : null}
+        {unseenInquiryCount > 0 ? (
+          <p className="admin-banner admin-banner--prompt">
+            {unseenInquiryCount} new spot inquir{unseenInquiryCount === 1 ? 'y' : 'ies'} waiting in the
+            Inquiries tab.
+          </p>
+        ) : null}
 
         <div className="metric-grid">
           <MetricCard
@@ -412,9 +484,9 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
             value={String(metrics?.publishedCategoryCards ?? 0).padStart(2, '0')}
           />
           <MetricCard
-            label="Active routes"
-            trend={`${routes.length} total`}
-            value={String(metrics?.activeRoutes ?? 0).padStart(2, '0')}
+            label="New inquiries"
+            trend={`${spotInquiries.length} total`}
+            value={String(unseenInquiryCount).padStart(2, '0')}
           />
         </div>
 
@@ -689,7 +761,72 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
                 </tbody>
               </table>
             </div>
-          ) : (
+          ) : activeTab === 'Inquiries' ? (
+            <div className="responsive-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Spot</th>
+                    <th>Author</th>
+                    <th>Question</th>
+                    <th>Answers</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredSpotInquiries.length === 0 ? (
+                    <tr>
+                      <td colSpan={6}>No spot inquiries found.</td>
+                    </tr>
+                  ) : (
+                    filteredSpotInquiries.map((item) => (
+                      <tr key={item.id} className={!item.adminSeen ? 'admin-row--highlight' : ''}>
+                        <td>
+                          <strong>{item.spotTitle}</strong>
+                          <small>
+                            {item.categoryId} · {item.spotId}
+                          </small>
+                          <a
+                            href={
+                              item.categoryId === 'hiking' && item.spotId.includes('trail')
+                                ? `#trail/${item.spotId}`
+                                : `#spot/${item.spotId}`
+                            }
+                          >
+                            View spot
+                          </a>
+                        </td>
+                        <td>{item.authorName}</td>
+                        <td>{item.message}</td>
+                        <td>{item.replyCount}</td>
+                        <td>
+                          <span className={`admin-status admin-status--${item.status}`}>{item.status}</span>
+                          {!item.adminSeen ? <small>New</small> : null}
+                        </td>
+                        <td className="admin-actions">
+                          {!item.adminSeen ? (
+                            <button onClick={() => void markInquirySeen(item)} type="button">
+                              Mark seen
+                            </button>
+                          ) : null}
+                          <button onClick={() => void toggleInquiryVisibility(item)} type="button">
+                            {item.status === 'hidden' ? 'Publish' : 'Hide'}
+                          </button>
+                          <button
+                            onClick={() => void handleDelete(item.spotTitle, () => deleteSpotInquiry(item.id))}
+                            type="button"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          ) : activeTab === 'Category cards' ? (
             <div className="responsive-table">
               <table>
                 <thead>
@@ -740,7 +877,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
                 </tbody>
               </table>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 

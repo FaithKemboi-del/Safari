@@ -39,7 +39,7 @@ const genericConfig = (
   previewLines: [
     'Budget badge at top of card',
     'Title and location',
-    'First two description bullets (one per line you enter)',
+    'First two description bullets plus ...more when more points exist',
     'View details opens a full spot page with every bullet point',
     'Open in Maps stays on the category card',
   ],
@@ -49,7 +49,7 @@ const genericConfig = (
   showEventFields: false,
   destinationSlugLabel: 'Destination slug (View details link)',
   destinationSlugPlaceholder: 'hells-gate',
-  destinationSlugHelp: 'Shown on the spot detail page as a link to the full destination guide.',
+  destinationSlugHelp: 'Optional. Link a destination from the destinations list if you maintain one separately.',
   trailIdLabel: 'Trail ID (View details link)',
   trailIdPlaceholder: 'longonot-trail',
   trailIdHelp: 'View details opens the interactive trail map instead of the spot page.',
@@ -128,7 +128,7 @@ export const CATEGORY_CARD_CONFIG: Record<string, CategoryCardFieldConfig> = {
     showTrailId: false,
     destinationSlugLabel: 'Destination slug (optional View details link)',
     destinationSlugPlaceholder: 'diani',
-    destinationSlugHelp: 'Optional link for travelers who want a full destination write-up.',
+    destinationSlugHelp: 'Optional internal reference slug. Not shown on the public spot page.',
     mapQueryPlaceholder: 'Lamu Old Town Kenya',
   }),
 };
