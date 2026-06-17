@@ -118,7 +118,8 @@ export const categorySpots: CategorySpot[] = [
     title: "Hell's Gate Gorge",
     location: 'Naivasha',
     budget: 'From $15 park entry + $15 bike hire',
-    description: 'Canyon loop with geothermal steam and Fischer\'s Tower — easy matatu day trip from Nairobi.',
+    description: `Canyon loop with geothermal steam and Fischer's Tower
+easy matatu day trip from Nairobi.`,
     image: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80',
     slug: 'hells-gate',
     mapQuery: "Hell's Gate National Park Kenya",
@@ -129,7 +130,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Mount Longonot crater rim',
     location: 'Naivasha',
     budget: 'From $26 entry + matatu ~$8',
-    description: 'Steep but rewarding crater rim hike — start early to beat the heat.',
+    description: `Steep but rewarding crater rim hike
+start early to beat the heat.`,
     image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
     slug: 'longonot',
     mapQuery: 'Mount Longonot National Park Kenya',
@@ -140,7 +142,10 @@ export const categorySpots: CategorySpot[] = [
     title: 'Karura Forest trails',
     location: 'Nairobi',
     budget: 'From $4 entry',
-    description: 'Shaded city forest walks, waterfalls, and caves — perfect budget escape in Nairobi.',
+    description: `Shaded city forest walks
+waterfalls
+caves
+perfect budget escape in Nairobi.`,
     image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80',
     slug: 'karura-forest',
     mapQuery: 'Karura Forest Nairobi',
@@ -151,7 +156,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Thomson\'s Falls',
     location: 'Nyahururu',
     budget: 'From $3 entry',
-    description: '74m waterfall on the Ewaso Narok River — budget stop on a Rift Valley route.',
+    description: `74m waterfall on the Ewaso Narok River
+budget stop on a Rift Valley route.`,
     image: 'https://images.unsplash.com/photo-1432405972613-c60ab874ab1d?auto=format&fit=crop&w=900&q=80',
     slug: 'lake-nakuru',
     mapQuery: 'Thomson Falls Nyahururu Kenya',
@@ -162,7 +168,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Karura Waterfall loop',
     location: 'Nairobi',
     budget: 'From $4 forest entry',
-    description: 'Short forest trail to a waterfall inside Karura — cheapest waterfall fix near the city.',
+    description: `Short forest trail to a waterfall inside Karura
+cheapest waterfall fix near the city.`,
     image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=900&q=80',
     slug: 'karura-forest',
     mapQuery: 'Karura Forest waterfall Nairobi',
@@ -173,7 +180,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Chaka Ranch falls',
     location: 'Nyeri',
     budget: 'From $5 day visit',
-    description: 'Hidden cascade on the slopes near Nyeri — combine with local food stops.',
+    description: `Hidden cascade on the slopes near Nyeri
+combine with local food stops.`,
     image: 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=900&q=80',
     slug: 'laikipia',
     mapQuery: 'Chaka Ranch Nyeri Kenya',
@@ -184,7 +192,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Hell\'s Gate campsites',
     location: 'Naivasha',
     budget: 'From $20/night camping',
-    description: 'Budget public campsite near the gorge — bring your own tent or rent locally.',
+    description: `Budget public campsite near the gorge
+bring your own tent or rent locally.`,
     image: 'https://images.unsplash.com/photo-1504851149312-7a075b496cc7?auto=format&fit=crop&w=900&q=80',
     slug: 'hells-gate',
     mapQuery: "Hell's Gate National Park Kenya",
@@ -195,7 +204,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Lake Elementaita community camp',
     location: 'Elementaita',
     budget: 'From $18/night',
-    description: 'Simple lakeside camping with flamingo views — quieter than Naivasha.',
+    description: `Simple lakeside camping with flamingo views
+quieter than Naivasha.`,
     image: 'https://images.unsplash.com/photo-1478131143081-80f7f84b84c7?auto=format&fit=crop&w=900&q=80',
     slug: 'lake-nakuru',
     mapQuery: 'Lake Elementaita Kenya',
@@ -217,7 +227,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Nairobi → Mombasa via SGR',
     location: 'Nairobi to Coast',
     budget: 'From $12 SGR economy',
-    description: 'Fast budget hop to the coast — book early for cheapest fares.',
+    description: `Fast budget hop to the coast
+book early for cheapest fares.`,
     image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=900&q=80',
     slug: 'tsavo',
     mapQuery: 'Nairobi SGR Terminus',
@@ -228,7 +239,9 @@ export const categorySpots: CategorySpot[] = [
     title: 'Great Rift Valley loop',
     location: 'Nairobi → Naivasha → Nakuru',
     budget: 'From $25 shared van day',
-    description: 'Matatu and shared van circuit through viewpoints, lakes, and camps.',
+    description: `Matatu and shared van circuit through viewpoints
+lakes
+camps`,
     image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=900&q=80',
     slug: 'hells-gate',
     mapQuery: 'Great Rift Valley Viewpoint Kenya',
@@ -239,7 +252,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Tsavo to Diani overland',
     location: 'Voi → Coast',
     budget: 'From $18 bus + $6 tuk-tuk',
-    description: 'Budget wildlife stop then bus to the beach — classic backpacker corridor.',
+    description: `Budget wildlife stop then bus to the beach
+classic backpacker corridor.`,
     image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80',
     slug: 'tsavo',
   },
@@ -249,7 +263,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Samburu river bends',
     location: 'Northern Kenya',
     budget: 'From $40/day budget camp',
-    description: 'Rare species and dramatic kopjes — less crowded than southern parks.',
+    description: `Rare species and dramatic kopjes
+less crowded than southern parks.`,
     image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
     slug: 'samburu',
   },
@@ -259,7 +274,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Kerio Valley viewpoints',
     location: 'Elgeyo-Marakwet',
     budget: 'From $10 local guide tip',
-    description: 'Stunning valley escarpments and running trails — bring cash for village guides.',
+    description: `Stunning valley escarpments and running trails
+bring cash for village guides.`,
     image: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80',
     slug: 'laikipia',
     mapQuery: 'Kerio Valley Kenya',
@@ -270,7 +286,10 @@ export const categorySpots: CategorySpot[] = [
     title: 'Lamu Old Town lanes',
     location: 'Lamu Archipelago',
     budget: 'From $35/night guesthouse',
-    description: 'UNESCO stone town, dhow culture, and no cars — slow travel at its best.',
+    description: `UNESCO stone town
+dhow culture
+no cars
+slow travel at its best.`,
     image: 'https://images.unsplash.com/photo-1544551763-77aef23d0ce3?auto=format&fit=crop&w=900&q=80',
     slug: 'diani',
     mapQuery: 'Lamu Old Town Kenya',
@@ -281,7 +300,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Lake Nakuru rhino drive',
     location: 'Nakuru',
     budget: 'From $70 park + $35 shared van',
-    description: 'Compact park — great half-day rhino and flamingo trip from Nairobi.',
+    description: `Compact park
+great half-day rhino and flamingo trip from Nairobi.`,
     image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80',
     slug: 'lake-nakuru',
   },
@@ -291,7 +311,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Nairobi National Park day trip',
     location: 'Nairobi',
     budget: 'From $43 entry + $60 shared tour',
-    description: 'Skyline safari minutes from the city — book shared vans to split costs.',
+    description: `Skyline safari minutes from the city
+book shared vans to split costs.`,
     image: 'https://images.unsplash.com/photo-1549366021-9f761d040a94?auto=format&fit=crop&w=900&q=80',
     slug: 'nairobi-national-park',
     mapQuery: 'Nairobi National Park Kenya',
@@ -302,7 +323,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Amboseli elephant day',
     location: 'Kajiado',
     budget: 'From $55 day trip',
-    description: 'Shared van from Nairobi with Kilimanjaro views — go dry season for clear skies.',
+    description: `Shared van from Nairobi with Kilimanjaro views
+go dry season for clear skies.`,
     image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=900&q=80',
     slug: 'amboseli',
   },
@@ -312,7 +334,10 @@ export const categorySpots: CategorySpot[] = [
     title: 'Diani public beach',
     location: 'Kwale',
     budget: 'From $25/night hostel',
-    description: 'White sand, tuk-tuk hops, and street food — peak budget coast base.',
+    description: `White sand
+tuk-tuk hops
+street food
+peak budget coast base.`,
     image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80',
     slug: 'diani',
     mapQuery: 'Diani Beach Kenya',
@@ -323,7 +348,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Kilifi creek dhows',
     location: 'Kilifi',
     budget: 'From $20/night camping',
-    description: 'Laid-back creek town — cheaper than Diani with great swimming holes.',
+    description: `Laid-back creek town
+cheaper than Diani with great swimming holes.`,
     image: 'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=900&q=80',
     slug: 'diani',
     mapQuery: 'Kilifi Creek Kenya',
@@ -334,7 +360,8 @@ export const categorySpots: CategorySpot[] = [
     title: 'Watamu snorkel bay',
     location: 'Kilifi County',
     budget: 'From $30 snorkel trip',
-    description: 'Budget boat snorkel trips in the marine park — haggle at the beach jetty.',
+    description: `Budget boat snorkel trips in the marine park
+haggle at the beach jetty.`,
     image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=900&q=80',
     slug: 'diani',
     mapQuery: 'Watamu Marine National Park',
@@ -364,7 +391,8 @@ export const hikingTrails: HikingTrail[] = [
     difficulty: 'Moderate to challenging — gentler ascent than Naromoru',
     duration: '3 days typical for Lenana',
     budget: 'From ~$130 pp with community guides',
-    description: 'Gradual trail through montane forest — popular with budget trekking groups from Nanyuki.',
+    description: `Gradual trail through montane forest
+popular with budget trekking groups from Nanyuki.`,
     image: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=1200&q=80',
     mapQuery: 'Mount Kenya Sirimon Gate Kenya',
     googleMapsUrl:
@@ -378,7 +406,8 @@ export const hikingTrails: HikingTrail[] = [
     difficulty: 'Moderate — steep sections, 3–4 hours up',
     duration: 'Half day',
     budget: 'Under $35 total from Nairobi',
-    description: 'Rim hike with Rift Valley views — matatu to Naivasha then taxi to gate.',
+    description: `Rim hike with Rift Valley views
+matatu to Naivasha then taxi to gate.`,
     image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
     mapQuery: 'Mount Longonot National Park Kenya',
     googleMapsUrl:
@@ -396,7 +425,9 @@ export const kenyaEvents: KenyaEvent[] = [
     dateLabel: 'Happening this week',
     status: 'happening-now',
     budget: 'Free street events / from $35 guesthouse',
-    description: 'Dhow races, Swahili poetry, and night markets in the old town alleys.',
+    description: `Dhow races
+Swahili poetry
+night markets in the old town alleys`,
     image: 'https://images.unsplash.com/photo-1544551763-77aef23d0ce3?auto=format&fit=crop&w=900&q=80',
     slug: 'diani',
     mapQuery: 'Lamu Old Town Kenya',
@@ -408,7 +439,10 @@ export const kenyaEvents: KenyaEvent[] = [
     dateLabel: 'Tonight · 6pm',
     status: 'happening-now',
     budget: 'Street food from $2',
-    description: 'Live DJs, street food stalls, and local makers — pay as you go.',
+    description: `Live DJs
+street food stalls
+local makers
+pay as you go.`,
     image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80',
     slug: 'karura-forest',
     mapQuery: 'Westlands Nairobi Kenya',
@@ -420,7 +454,8 @@ export const kenyaEvents: KenyaEvent[] = [
     dateLabel: 'Next Saturday',
     status: 'upcoming',
     budget: 'From $5 entry',
-    description: 'Lakefront acoustic sets and campfire stories — bring a blanket.',
+    description: `Lakefront acoustic sets and campfire stories
+bring a blanket.`,
     image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=900&q=80',
     slug: 'hells-gate',
     mapQuery: 'Lake Naivasha Kenya',
@@ -432,7 +467,8 @@ export const kenyaEvents: KenyaEvent[] = [
     dateLabel: '12 July',
     status: 'upcoming',
     budget: 'From $10 registration',
-    description: 'Conservation run with local guides — proceeds support schools.',
+    description: `Conservation run with local guides
+proceeds support schools.`,
     image: 'https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=900&q=80',
     slug: 'maasai-mara',
     mapQuery: 'Maasai Mara National Reserve Kenya',
@@ -456,7 +492,9 @@ export const kenyaEvents: KenyaEvent[] = [
     dateLabel: 'March 2026',
     status: 'past',
     budget: 'From $8 entry',
-    description: 'Forest loops, repair workshops, and budget gear swap stalls.',
+    description: `Forest loops
+repair workshops
+budget gear swap stalls`,
     image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80',
     slug: 'karura-forest',
     mapQuery: 'Karura Forest Nairobi',
