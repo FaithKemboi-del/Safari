@@ -1675,28 +1675,16 @@ textarea:focus {
   line-height: 1.6;
 }
 
-.community-page-hero {
-  max-width: 760px;
-}
-
-.community-page-layout {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.community-compose--page {
-  padding: 1.35rem;
-  border: 1px solid var(--line);
-  border-radius: 1.5rem;
-  background: var(--white-soft);
-  box-shadow: 0 16px 45px rgba(58, 38, 26, 0.08);
+.community-page {
+  --community-content-width: min(880px, calc(100% - 2rem));
+  background: var(--dune);
 }
 
 .community-hero {
   position: relative;
   overflow: hidden;
   width: 100%;
-  padding: 7.5rem max(1rem, calc((100vw - 1160px) / 2)) 3.5rem;
+  padding: 7.5rem 1rem 4rem;
   color: #fff;
   background:
     linear-gradient(135deg, rgba(58, 38, 26, 0.72), rgba(58, 38, 26, 0.42)),
@@ -1707,14 +1695,14 @@ textarea:focus {
 .community-hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(58, 38, 26, 0.15) 0%, rgba(58, 38, 26, 0.82) 100%);
+  background: linear-gradient(180deg, rgba(58, 38, 26, 0.15) 0%, rgba(58, 38, 26, 0.88) 100%);
   pointer-events: none;
 }
 
 .community-hero-inner {
   position: relative;
   z-index: 1;
-  width: min(1060px, 100%);
+  width: var(--community-content-width);
   margin: 0 auto;
 }
 
@@ -1724,33 +1712,31 @@ textarea:focus {
 
 .community-hero h1 {
   margin: 0.65rem 0 0.85rem;
-  max-width: 14ch;
-  font-size: clamp(2.4rem, 7vw, 4.5rem);
-  line-height: 1.02;
+  font-size: clamp(2.1rem, 5.5vw, 3.4rem);
+  line-height: 1.08;
 }
 
 .community-hero p {
-  max-width: 38rem;
+  max-width: 42rem;
   margin: 0;
   color: rgba(255, 245, 233, 0.86);
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   line-height: 1.7;
 }
 
 .community-feed-shell {
-  padding: 0 max(1rem, calc((100vw - 1160px) / 2)) 4rem;
-  margin-top: -2rem;
+  padding: 1.25rem 1rem 4rem;
 }
 
 .community-feed-column {
   display: grid;
   gap: 1rem;
-  width: min(720px, 100%);
+  width: var(--community-content-width);
   margin: 0 auto;
 }
 
 .community-composer-card {
-  padding: 1rem 1rem 0.9rem;
+  padding: 1.1rem 1.15rem 1rem;
   border: 1px solid var(--line);
   border-radius: 1.25rem;
   background: #fff;
@@ -1771,23 +1757,27 @@ textarea:focus {
   grid-template-columns: auto 1fr;
   gap: 0.85rem;
   align-items: start;
+  width: 100%;
 }
 
 .community-composer-field {
   display: block;
+  min-width: 0;
 }
 
 .community-composer-field textarea {
+  display: block;
   width: 100%;
-  min-height: 5.5rem;
-  padding: 0.9rem 1rem;
-  border: 1px solid rgba(92, 61, 40, 0.12);
-  border-radius: 1.1rem;
+  min-height: 4.75rem;
+  padding: 0.95rem 1.05rem;
+  border: 1px solid rgba(92, 61, 40, 0.14);
+  border-radius: 1rem;
   background: rgba(250, 240, 228, 0.55);
   color: var(--charcoal);
   font: inherit;
   line-height: 1.55;
   resize: vertical;
+  box-sizing: border-box;
   transition:
     border-color var(--transition-fast),
     background var(--transition-fast);
@@ -1921,18 +1911,36 @@ textarea:focus {
   border: 0;
 }
 
+.community-feed-heading {
+  margin-top: 0.35rem;
+}
+
+.community-feed-heading h2 {
+  margin: 0;
+  color: var(--earth-deep);
+  font-size: 1.2rem;
+}
+
+.community-feed-heading p {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
 .community-preview-layout .community-feed-stream {
-  max-width: 720px;
+  width: var(--community-content-width, min(880px, calc(100% - 2rem)));
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 @media (min-width: 860px) {
   .community-hero {
-    padding-top: 8.5rem;
-    padding-bottom: 4.5rem;
+    padding-top: 8.25rem;
+    padding-bottom: 4.25rem;
   }
 
-  .community-hero h1 {
-    max-width: none;
+  .community-feed-shell {
+    padding-top: 1.5rem;
   }
 }
 

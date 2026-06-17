@@ -328,6 +328,10 @@ export function CommunityPage() {
       <section className="community-feed-shell">
         <div className="community-feed-column">
           <CommunityComposer onPosted={handlePosted} />
+          <div className="community-feed-heading">
+            <h2>Recent posts</h2>
+            <p>Latest questions and updates from the Safiri community.</p>
+          </div>
           <CommunityFeedList error={feedError} feed loading={loading} posts={posts} />
         </div>
       </section>
