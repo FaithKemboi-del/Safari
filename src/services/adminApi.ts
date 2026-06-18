@@ -7,6 +7,7 @@ import type {
   AdminItinerary,
   AdminMetrics,
   AdminRoute,
+  AdminSpotInquiry,
   CategorySpotInput,
   DestinationInput,
   ItineraryInput,
@@ -372,6 +373,10 @@ export async function fetchAdminMetrics(): Promise<AdminMetrics> {
     supabase.from('routes').select('status'),
     supabase.from('category_spots').select('status'),
   ]);
+  const { count: unseenSpotInquiries, error: inquiryCountError } = await supabase
+    .from('spot_inquiries')
+    .select('id', { count: 'exact', head: true })
+    .eq('admin_seen', false);
 
   if (destinations.error || itineraries.error || routes.error || categorySpots.error) {
     throw new Error(
@@ -394,6 +399,7 @@ export async function fetchAdminMetrics(): Promise<AdminMetrics> {
     liveItineraries: itineraryRows.filter((row) => row.status === 'live').length,
     activeRoutes: routeRows.filter((row) => row.status === 'active').length,
     publishedCategoryCards: categoryRows.filter((row) => row.status === 'published').length,
+    unseenSpotInquiries: unseenSpotInquiries ?? 0,
   };
 }
 
@@ -579,6 +585,103 @@ export async function updateCommunityPostModeration(
 export async function deleteCommunityPost(id: string): Promise<void> {
   const supabase = requireSupabase();
   const { error } = await supabase.from('community_posts').delete().eq('id', id);
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+type SpotInquiryRow = Database['public']['Tables']['spot_inquiries']['Row'];
+type SpotInquiryReplyRow = Database['public']['Tables']['spot_inquiry_replies']['Row'];
+
+function mapAdminSpotInquiry(row: SpotInquiryRow, replyCount: number) {
+  return {
+    id: row.id,
+    spotId: row.spot_id,
+    spotTitle: row.spot_title,
+    categoryId: row.category_id,
+    authorName: row.author_name,
+    message: row.message,
+    adminSeen: row.admin_seen,
+    status: row.status,
+    replyCount,
+    updatedAt: row.updated_at,
+  };
+}
+
+export async function fetchAdminSpotInquiries() {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase
+    .from('spot_inquiries')
+    .select('*')
+    .order('admin_seen', { ascending: true })
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const rows = (data as SpotInquiryRow[] | null) ?? [];
+  if (rows.length === 0) {
+    return [];
+  }
+
+  const inquiryIds = rows.map((row) => row.id);
+  const { data: replyRows, error: replyError } = await supabase
+    .from('spot_inquiry_replies')
+    .select('inquiry_id')
+    .in('inquiry_id', inquiryIds);
+
+  if (replyError) {
+    throw new Error(replyError.message);
+  }
+
+  const replyCounts = ((replyRows as Pick<SpotInquiryReplyRow, 'inquiry_id'>[] | null) ?? []).reduce<
+    Record<string, number>
+  >((counts, row) => {
+    counts[row.inquiry_id] = (counts[row.inquiry_id] ?? 0) + 1;
+    return counts;
+  }, {});
+
+  return rows.map((row) => mapAdminSpotInquiry(row, replyCounts[row.id] ?? 0));
+}
+
+export async function markSpotInquirySeen(id: string) {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase
+    .from('spot_inquiries')
+    .update({ admin_seen: true })
+    .eq('id', id)
+    .select('*')
+    .single();
+
+  if (error || !data) {
+    throw new Error(error?.message ?? 'Could not mark inquiry as seen.');
+  }
+
+  const row = data as SpotInquiryRow;
+  return mapAdminSpotInquiry(row, 0);
+}
+
+export async function updateSpotInquiryStatus(id: string, status: 'published' | 'hidden') {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase
+    .from('spot_inquiries')
+    .update({ status, admin_seen: true })
+    .eq('id', id)
+    .select('*')
+    .single();
+
+  if (error || !data) {
+    throw new Error(error?.message ?? 'Could not update inquiry.');
+  }
+
+  const row = data as SpotInquiryRow;
+  return mapAdminSpotInquiry(row, 0);
+}
+
+export async function deleteSpotInquiry(id: string): Promise<void> {
+  const supabase = requireSupabase();
+  const { error } = await supabase.from('spot_inquiries').delete().eq('id', id);
   if (error) {
     throw new Error(error.message);
   }

@@ -127,6 +127,27 @@ export type Database = {
           created_at: string;
           updated_at: string;
         }>;
+      spot_inquiries: TableDef<{
+          id: string;
+          spot_id: string;
+          spot_title: string;
+          category_id: string;
+          user_id: string | null;
+          author_name: string;
+          message: string;
+          status: 'published' | 'hidden';
+          admin_seen: boolean;
+          created_at: string;
+          updated_at: string;
+        }>;
+      spot_inquiry_replies: TableDef<{
+          id: string;
+          inquiry_id: string;
+          user_id: string | null;
+          author_name: string;
+          message: string;
+          created_at: string;
+        }>;
       trails: TableDef<
         {
           id: string;

@@ -1,6 +1,7 @@
 import { useTrails } from '../context/TrailsContext';
 import { getSavannaTrail } from '../data/savannaTrails';
 import { TRAILS_FEATURE_NAME } from '../lib/config';
+import { SpotInquiryPanel } from './SpotInquiryPanel';
 import { TrailExplorer } from './TrailExplorer';
 
 export function TrailPage({ trailId, section }: { trailId: string; section?: string }) {
@@ -48,6 +49,7 @@ export function TrailPage({ trailId, section }: { trailId: string; section?: str
           </div>
         </div>
         <TrailExplorer section={section} trail={trail} />
+        <SpotInquiryPanel categoryId="hiking" spotId={trail.id} spotTitle={trail.title} />
       </section>
     </article>
   );

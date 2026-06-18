@@ -21,17 +21,10 @@ export function CategorySpotCardContent({
   mapsHref,
   footerExtra,
 }: CategorySpotCardContentProps) {
-  const previewPoints = parseDescriptionPoints(description).slice(0, 2);
+  const allPoints = parseDescriptionPoints(description);
+  const previewPoints = allPoints.slice(0, 2);
+  const hasMore = allPoints.length > 2;
   const detailsHref = getCategorySpotDetailsHref({ id: spotId, slug, trailId });
-
-  const bulletList =
-    previewPoints.length > 0 ? (
-      <ul className="spot-bullet-list spot-bullet-list--preview" aria-label="Highlights">
-        {previewPoints.map((point, index) => (
-          <li key={`${index}-${point}`}>{point}</li>
-        ))}
-      </ul>
-    ) : null;
 
   const actions = (
     <SpotActionBar
@@ -41,22 +34,32 @@ export function CategorySpotCardContent({
     />
   );
 
+  const previewBlock = (
+    <div className="category-card-preview-block">
+      {previewPoints.length > 0 ? (
+        <ul className="spot-bullet-list spot-bullet-list--preview" aria-label="Highlights">
+          {previewPoints.map((point, index) => (
+            <li key={`${index}-${point}`}>{point}</li>
+          ))}
+          {hasMore ? (
+            <li className="spot-bullet-more">
+              <a href={detailsHref}>...more</a>
+            </li>
+          ) : null}
+        </ul>
+      ) : null}
+      {actions}
+    </div>
+  );
+
   if (footerExtra) {
     return (
       <>
-        {bulletList}
-        <div className="category-card-footer">
-          {actions}
-          <div className="category-card-extra">{footerExtra}</div>
-        </div>
+        {previewBlock}
+        <div className="category-card-extra">{footerExtra}</div>
       </>
     );
   }
 
-  return (
-    <>
-      {bulletList}
-      {actions}
-    </>
-  );
+  return previewBlock;
 }

@@ -68,6 +68,7 @@ export type AdminMetrics = {
   liveItineraries: number;
   activeRoutes: number;
   publishedCategoryCards: number;
+  unseenSpotInquiries: number;
 };
 
 export type AdminCategorySpot = {
@@ -97,6 +98,19 @@ export type AdminCommunityPost = {
   itineraryId?: string;
   isPinned: boolean;
   status: 'published' | 'hidden';
+  updatedAt: string;
+};
+
+export type AdminSpotInquiry = {
+  id: string;
+  spotId: string;
+  spotTitle: string;
+  categoryId: string;
+  authorName: string;
+  message: string;
+  adminSeen: boolean;
+  status: 'published' | 'hidden';
+  replyCount: number;
   updatedAt: string;
 };
 
