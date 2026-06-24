@@ -33,6 +33,7 @@ function CategoryIcon({ icon }: { icon: Category['icon'] }) {
     gem: 'm12 3 7 7-7 11L5 10l7-7Zm0 4.2L8.3 10 12 16.3 15.7 10 12 7.2Z',
     wildlife: 'M6 8c0-2 1.5-3 3-3s3 1 3 3-1.5 3-3 3-3-1-3-3Zm6 0c0-2 1.5-3 3-3s3 1 3 3-1.5 3-3 3-3-1-3-3ZM4 14c2 2 5 3 8 3s6-1 8-3c-1 3-4 5-8 5s-7-2-8-5Z',
     coast: 'M3 14c2 1 4 1 6 0s4-1 6 0 4 1 6 0v3H3v-3Zm0-3c2 1 4 1 6 0s4-1 6 0 4 1 6 0v2H3v-2Z',
+    staycations: 'M4 20V9l8-5 8 5v11H4Zm2-2h12v-7.5l-6-3.75-6 3.75V18Zm5-5h2v3h-2v-3Z',
     events: 'M7 3v2H5v16h14V5h-2V3h-2v2H9V3H7Zm12 8H5v8h14v-8ZM7 13h2v2H7v-2Zm4 0h2v2h-2v-2Zm4 0h2v2h-2v-2Z',
   };
 

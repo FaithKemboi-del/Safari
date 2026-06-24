@@ -1,8 +1,10 @@
-import type { CommunityUpdate, Destination, Itinerary } from '../data';
+import type { CommunityUpdate, Itinerary } from '../data';
+import type { Destination } from '../types/destination';
 import { communityUpdates as localCommunity, destinations as localDestinations, itineraries as localItineraries } from '../data';
 import type { CategorySpot } from '../categoryContent';
 import { getAllLocalCategoryCards } from '../categoryContent';
 import { formatPostedAgo, isLiveUpdate } from '../lib/format';
+import { mapDestinationRow } from '../lib/destinationMapper';
 import { isSupabaseConfigured } from '../lib/config';
 import { getSupabase } from '../lib/supabase';
 import type { Database } from '../lib/database.types';
@@ -31,29 +33,7 @@ function mapCategorySpot(row: CategorySpotRow): CategorySpot {
 }
 
 function mapDestination(row: DestinationRow): Destination {
-  return {
-    slug: row.slug,
-    title: row.title,
-    location: row.location,
-    region: row.region,
-    experienceType: row.experience_type,
-    description: row.description,
-    pricing: row.pricing ?? undefined,
-    safetyAndConditions: row.safety_and_conditions ?? undefined,
-    transportAndLogistics: row.transport_and_logistics ?? undefined,
-    additionalInfo: row.additional_info ?? undefined,
-    hikeDifficulty: row.hike_difficulty ?? undefined,
-    image: row.image,
-    gallery: row.gallery,
-    highlights: row.highlights,
-    mapQuery: row.map_query,
-    featuredOnHome: row.featured_on_home ?? false,
-    featuredSortOrder: row.featured_sort_order ?? 0,
-    trendingOnHome: row.trending_on_home ?? false,
-    trendingTag: row.trending_tag ?? undefined,
-    trendingSearches: row.trending_searches ?? undefined,
-    trendingSortOrder: row.trending_sort_order ?? 0,
-  };
+  return mapDestinationRow(row);
 }
 
 function mapItinerary(row: ItineraryRow, days: ItineraryDayRow[]): Itinerary {

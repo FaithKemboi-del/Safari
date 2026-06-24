@@ -1,11 +1,15 @@
-export type DestinationExperienceType = 'hike' | 'standard';
+export type { Destination, DestinationCategoryId } from './types/destination';
+export type { DestinationExperienceType } from './types/destination';
 
-export type Destination = {
+import { mapLegacyDestination } from './lib/destinationMapper';
+import type { Destination } from './types/destination';
+
+type LegacyDestinationSeed = {
   slug: string;
   title: string;
   location: string;
   region: string;
-  experienceType: DestinationExperienceType;
+  experienceType: 'hike' | 'standard';
   description: string;
   pricing?: string;
   safetyAndConditions?: string;
@@ -22,6 +26,15 @@ export type Destination = {
   trendingTag?: string;
   trendingSearches?: string;
   trendingSortOrder?: number;
+  category?: Destination['category'];
+  county?: string;
+  nearestTown?: string;
+  distanceFromNairobiKm?: number;
+  travelTimeFromNairobi?: string;
+  bestTimeToVisit?: string;
+  familyFriendly?: boolean;
+  categoryFields?: Record<string, string>;
+  budget?: Destination['budget'];
 };
 
 export type CommunityUpdate = {
@@ -66,7 +79,7 @@ export type Itinerary = {
   }[];
 };
 
-export const destinations: Destination[] = [
+const legacyDestinations: LegacyDestinationSeed[] = [
   {
     slug: 'maasai-mara',
     title: 'Maasai Mara National Reserve',
@@ -368,6 +381,8 @@ export const destinations: Destination[] = [
   },
 ];
 
+export const destinations: Destination[] = legacyDestinations.map((item) => mapLegacyDestination(item));
+
 export const communityUpdates: CommunityUpdate[] = [
   {
     id: 'mara-1',
@@ -587,7 +602,7 @@ export const itineraries: Itinerary[] = [
 export type Category = {
   id: string;
   label: string;
-  icon: 'hiking' | 'waterfall' | 'camping' | 'roadtrip' | 'gem' | 'wildlife' | 'coast' | 'events';
+  icon: 'hiking' | 'waterfall' | 'camping' | 'roadtrip' | 'gem' | 'wildlife' | 'coast' | 'events' | 'staycations';
   theme: string;
 };
 
@@ -610,6 +625,7 @@ export const categories: Category[] = [
   { id: 'hidden-gems', label: 'Hidden gems', icon: 'gem', theme: 'hidden-gems' },
   { id: 'wildlife', label: 'Wildlife', icon: 'wildlife', theme: 'wildlife' },
   { id: 'coast', label: 'Coast', icon: 'coast', theme: 'coast' },
+  { id: 'staycations', label: 'Staycations', icon: 'staycations', theme: 'staycations' },
   { id: 'events', label: 'Events', icon: 'events', theme: 'events' },
 ];
 
