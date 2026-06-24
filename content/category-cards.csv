@@ -1,0 +1,370 @@
+id,categoryId,title,location,budget,description,image,map_query,slug,trail_id,status,sort_order
+hiking-hells-gate,hiking,Hell's Gate Gorge,Naivasha,"From KES 4,950 day trip · KES 2,500/night","Canyon loop with geothermal steam
+Easy matatu day trip from Nairobi
+Bike hire at the gate
+Combine with Lake Naivasha",https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80,Hell's Gate National Park Kenya,hells-gate,,published,1
+hiking-longonot,hiking,Mount Longonot Crater Rim,Naivasha,"From KES 1,850 day trip","Steep crater rim with Rift views
+Start early to beat heat
+Under KES 3,000 from Nairobi
+KWS marked trail",https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80,Mount Longonot National Park Kenya,longonot,longonot-trail,published,2
+hiking-karura-forest,hiking,Karura Forest Trails,Nairobi,"From KES 1,000 day trip","Shaded city forest walks
+Waterfall and caves on loop
+Cheapest nature fix in Nairobi
+Family friendly",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Karura Forest Nairobi Kenya,karura-forest,,published,3
+hiking-ngong-hills,hiking,Ngong Hills,Ngong,"From KES 1,500 day trip","Ridge walk
+City views
+Community guides
+Tip community guides KES 500+. Clear mornings best for photos.",https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80,Ngong Hills Kenya,ngong-hills,,published,4
+hiking-mount-kenya-naromoru,hiking,Mount Kenya — Naromoru Route,Naro Moru,"From KES 12,200 day trip · KES 3,500/night","Point Lenana summit
+Multi-day trek
+Mountain bunkhouses
+Budget 3–4 days for Lenana via Naromoru. Book bunkhouses ahead in peak season.",https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80,Mount Kenya Naromoru Gate Kenya,mount-kenya-naromoru,mt-kenya-naromoru,published,5
+hiking-mount-kenya-sirimon,hiking,Mount Kenya — Sirimon Route,Nanyuki,"From KES 11,900 day trip · KES 3,500/night","Gradual ascent
+Old Moses camp
+Budget group treks
+Sirimon is less steep than Naromoru — good first high-altitude trek.",https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80,Mount Kenya Sirimon Gate Kenya,mount-kenya-sirimon,mt-kenya-sirimon,published,6
+hiking-menengai-crater,hiking,Menengai Crater,Nakuru,"From KES 1,700 day trip · KES 2,000/night","Caldera views
+Short steep hike
+Budget access
+Combine with Lake Nakuru budget day if time allows.",https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80,Menengai Crater Nakuru Kenya,menengai-crater,,published,7
+hiking-kakamega-forest,hiking,Kakamega Forest Trails,Kakamega,"From KES 4,100 day trip · KES 2,500/night","Rainforest walks
+Birding
+Primate spotting
+Stay in Kakamega town guesthouses for cheapest beds. Morning bird activity is best.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Kakamega Forest National Reserve Kenya,kakamega-forest,,published,8
+hiking-lake-chala,hiking,Lake Chala Crater Lake,Taveta,"From KES 4,100 day trip · KES 3,000/night","Crater lake swim
+Border views
+Steep descent
+Camp overnight for sunset and early swim before day-trippers arrive.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Lake Chala Kenya,lake-chala,,published,9
+hiking-chyulu-hills,hiking,Chyulu Hills,Kibwezi,"From KES 4,550 day trip · KES 3,000/night","Hill traverses
+Lava tubes
+Open views
+Combine with budget Amboseli side trip if sharing transport.",https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80,Chyulu Hills National Park Kenya,chyulu-hills,,published,10
+hiking-elephant-hill,hiking,Elephant Hill (Aberdares),Nyeri,"From KES 3,750 day trip · KES 3,000/night","Moorland trek
+Bamboo forest
+Aberdare views
+Start early; cloud often rolls in by afternoon.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Elephant Hill Aberdare National Park Kenya,elephant-hill,,published,11
+hiking-loroghi-hills,hiking,Loroghi Hills,Maralal,"From KES 5,000 day trip · KES 2,500/night","Northern Kenya views
+Community guides
+Low crowds
+Pair with Maralal Camel Derby dates for cheapest shared transport.",https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80,Loroghi Hills Maralal Kenya,loroghi-hills,,published,12
+hiking-homa-hills,hiking,Homa Hills,Homa Bay,"From KES 2,700 day trip · KES 2,000/night","Lake Victoria views
+Short hike
+Budget lakeside base
+Combine with Rusinga or Mfangano island trips on a lakeside budget loop.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Homa Hills Homa Bay Kenya,homa-hills,,published,13
+hiking-lukenya-hills,hiking,Lukenya Hills,Athi River,"From KES 2,000 day trip","Boulder scrambling
+Climbing routes
+Close to Nairobi
+Join weekend climbing groups to split transport from Nairobi.",https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80,Lukenya Hills Kenya,lukenya-hills,,published,14
+hiking-mount-ololokwe,hiking,Mount Ololokwe,Archers Post,"From KES 7,200 day trip · KES 2,000/night","Plateau camp
+Sunrise views
+Samburu landscape
+Budget overnight: camp on plateau, descend next morning.",https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80,Mount Ololokwe Kenya,mount-ololokwe,,published,15
+waterfalls-thomsons-falls,waterfalls,Thomson's Falls,Nyahururu,"From KES 1,600 day trip · KES 2,000/night","74 m drop
+Viewpoint walk
+Nyahururu stopover
+Visit early morning for photos without crowds.",https://images.unsplash.com/photo-1432405972613-c60ab874ab1d?auto=format&fit=crop&w=900&q=80,Thomson Falls Nyahururu Kenya,thomsons-falls,,published,1
+waterfalls-karura-waterfall,waterfalls,Karura Waterfall,Nairobi,From KES 900 day trip,"Urban waterfall
+Forest shade
+Low entry fee
+Combine with caves loop on same ticket.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Karura Forest waterfall Nairobi Kenya,karura-waterfall,,published,2
+waterfalls-zaina-falls,waterfalls,Zaina Falls,Nyeri,"From KES 3,000 day trip · KES 2,500/night","Forest hike
+Tiered falls
+Cool climate
+Go after rains for best flow.",https://images.unsplash.com/photo-1432405972613-c60ab874ab1d?auto=format&fit=crop&w=900&q=80,Zaina Falls Aberdare Kenya,zaina-falls,,published,3
+waterfalls-karuru-falls,waterfalls,Karuru Falls,Nyeri,"From KES 4,350 day trip · KES 3,500/night","Three-tier falls
+Aberdare forest
+KWS guide required
+Book KWS guide at gate; no self-drive to falls viewpoint.",https://images.unsplash.com/photo-1432405972613-c60ab874ab1d?auto=format&fit=crop&w=900&q=80,Karuru Falls Aberdare National Park Kenya,karuru-falls,,published,4
+waterfalls-fourteen-falls,waterfalls,Fourteen Falls,Thika,"From KES 2,500 day trip","Wide river falls
+Boat option
+Picnic spot
+Negotiate boat price before boarding; KES 500–800 pp typical.",https://images.unsplash.com/photo-1432405972613-c60ab874ab1d?auto=format&fit=crop&w=900&q=80,Fourteen Falls Thika Kenya,fourteen-falls,,published,5
+waterfalls-chania-falls,waterfalls,Chania Falls,Thika,"From KES 1,250 day trip","Gorge waterfall
+Short walk
+Low cost
+Tip local guide KES 300–500.",https://images.unsplash.com/photo-1432405972613-c60ab874ab1d?auto=format&fit=crop&w=900&q=80,Chania Falls Thika Kenya,chania-falls,,published,6
+waterfalls-sheldrick-falls,waterfalls,Sheldrick Falls,Kwale,"From KES 4,350 day trip · KES 3,000/night","Coastal rainforest
+Shimba Hills hike
+Swim pool below falls
+Budget night in Kwale town before early park entry.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Sheldrick Falls Shimba Hills Kenya,sheldrick-falls,,published,7
+waterfalls-ragia-cascade,waterfalls,Ragia Forest Cascade,Lari,"From KES 1,500 day trip","Bamboo forest
+Low crowds
+Community forest
+Weekday visits quietest.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Ragia Forest Waterfall Kenya,ragia-cascade,,published,8
+waterfalls-magura-falls,waterfalls,Magura Falls,Keroka,"From KES 2,600 day trip · KES 2,000/night","Western Kenya gem
+Forest walk
+Low tourist traffic
+Ask at Keroka market for latest trail conditions.",https://images.unsplash.com/photo-1432405972613-c60ab874ab1d?auto=format&fit=crop&w=900&q=80,Magura Falls Nyamira Kenya,magura-falls,,published,9
+waterfalls-gura-falls,waterfalls,Gura Falls Viewpoint,Nyeri,"From KES 3,700 day trip · KES 3,000/night","Deep gorge views
+Aberdare ecosystem
+Ranger walks
+Pair with Zaina or Karuru same trip if multi-day.",https://images.unsplash.com/photo-1432405972613-c60ab874ab1d?auto=format&fit=crop&w=900&q=80,Gura Falls Aberdare Kenya,gura-falls,,published,10
+camping-hells-gate-camping,camping,Hell's Gate Campsites,Naivasha,"From KES 3,650 day trip · KES 1,500/night","KWS public camp
+Bike mornings
+Gorge access
+Rent tent near Naivasha town if needed — KES 800–1,500/night.",https://images.unsplash.com/photo-1504851149312-7a075b496cc7?auto=format&fit=crop&w=900&q=80,Hell's Gate National Park camping Kenya,hells-gate-camping,,published,1
+camping-elementaita-camp,camping,Lake Elementaita Community Camp,Elementaita,"From KES 2,400 day trip · KES 1,800/night","Flamingo views
+Community camp
+Stargazing
+Ask camp host for latest flamingo viewing spots.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Lake Elementaita camping Kenya,elementaita-camp,,published,2
+camping-kedong-ranch-camp,camping,Kedong Ranch Camp,Naivasha,"From KES 1,750 day trip · KES 1,200/night","Open plains
+Cyclist friendly
+Group camping
+Popular weekends — arrive Friday to secure spot.",https://images.unsplash.com/photo-1504851149312-7a075b496cc7?auto=format&fit=crop&w=900&q=80,Kedong Ranch Naivasha Kenya,kedong-ranch-camp,,published,3
+camping-oloiden-camp,camping,Oloiden Campsite,Naivasha,"From KES 2,850 day trip · KES 2,000/night","Hippo lagoon
+Birding
+Budget camp
+Kayak hire KES 1,000/hr negotiable.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Lake Oloiden camping Kenya,oloiden-camp,,published,4
+camping-ndunda-camp,camping,Camp Ndunda Falls,Embu,"From KES 2,300 day trip · KES 1,500/night","Waterfall swim
+Riverside tents
+Forest shade
+Weekends busy with Nairobi campers — book ahead.",https://images.unsplash.com/photo-1504851149312-7a075b496cc7?auto=format&fit=crop&w=900&q=80,Ndunda Falls Embu Kenya,ndunda-camp,,published,5
+camping-bogoria-camp,camping,Lake Bogoria Public Campsite,Marigat,"From KES 2,550 day trip · KES 1,500/night","Hot springs
+Flamingos
+KWS camp
+Morning flamingo viewing best before wind picks up.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Lake Bogoria National Reserve camping Kenya,bogoria-camp,,published,6
+camping-sirimon-bandas,camping,Mount Kenya Bandas — Sirimon,Nanyuki,"From KES 11,900 day trip · KES 2,500/night","Trek start point
+Mountain bandas
+Budget overnight
+Book bandas via KWS when registering trek.",https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80,Sirimon Gate Mount Kenya bandas Kenya,sirimon-bandas,,published,7
+camping-oloolua-camp,camping,Oloolua Nature Trail Camp,Karen,"From KES 1,250 day trip · KES 1,200/night","Forest camp
+Nature trail
+Near Nairobi
+Book camp spot at gate on arrival.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Oloolua Nature Trail Nairobi Kenya,oloolua-camp,,published,8
+camping-kijabe-camp,camping,Kijabe Forest Camp,Kijabe,"From KES 1,300 day trip · KES 1,500/night","Escarpment views
+Cool climate
+Forest trails
+Combine with Rift viewpoint day hike.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Kijabe Forest Kenya,kijabe-camp,,published,9
+camping-lake-chala-camp,camping,Lake Chala Camp,Taveta,"From KES 4,300 day trip · KES 2,500/night","Crater swim
+Border views
+Budget tents
+Camp fee often includes guide for descent.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Lake Chala Camp Kenya,lake-chala-camp,,published,10
+wildlife-nairobi-national-park,wildlife,Nairobi National Park,Nairobi,"From KES 5,100 day trip","City skyline safari
+Black rhino
+Budget shared tours
+Join 6am shared van to split costs — book via hostel or Facebook groups.",https://images.unsplash.com/photo-1549366021-9f761d040a94?auto=format&fit=crop&w=900&q=80,Nairobi National Park Kenya,nairobi-national-park,,published,1
+wildlife-lake-nakuru,wildlife,Lake Nakuru National Park,Nakuru,"From KES 5,000 day trip · KES 2,500/night","Rhino sanctuary
+Flamingo shores
+Compact drives
+Flamingo numbers vary with water — rhinos reliable year-round.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Lake Nakuru National Park Kenya,lake-nakuru,,published,2
+wildlife-amboseli,wildlife,Amboseli National Park,Kimana,"From KES 6,800 day trip · KES 3,500/night","Elephant herds
+Kilimanjaro views
+Wetland birds
+Clear mornings best for Kilimanjaro photos — Jun–Oct.",https://images.unsplash.com/photo-1549366021-9f761d040a94?auto=format&fit=crop&w=900&q=80,Amboseli National Park Kenya,amboseli,,published,3
+wildlife-tsavo-east,wildlife,Tsavo East National Park,Voi,"From KES 2,700 day trip · KES 3,000/night","Red elephants
+Vast wilderness
+SGR access via Voi
+Aruba Dam area good for dry-season elephant viewing.",https://images.unsplash.com/photo-1549366021-9f761d040a94?auto=format&fit=crop&w=900&q=80,Tsavo East National Park Kenya,tsavo-east,,published,4
+wildlife-haller-park,wildlife,Haller Park,Mombasa,"From KES 3,000 day trip · KES 3,000/night","Hippo feeding
+City sanctuary
+Cycling paths
+4pm feeding session most popular — arrive early.",https://images.unsplash.com/photo-1549366021-9f761d040a94?auto=format&fit=crop&w=900&q=80,Haller Park Mombasa Kenya,haller-park,,published,5
+wildlife-crescent-island,wildlife,Crescent Island,Naivasha,"From KES 4,600 day trip · KES 2,500/night","Walking safari
+Boat ride
+Giraffe close-ups
+Combine with Hell's Gate same weekend.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Crescent Island Lake Naivasha Kenya,crescent-island,,published,6
+wildlife-shimba-hills,wildlife,Shimba Hills National Reserve,Kwale,"From KES 4,350 day trip · KES 3,000/night","Sable antelope
+Coastal forest
+Sheldrick Falls hike
+Sheldrick Falls trail inside park same ticket day.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Shimba Hills National Reserve Kenya,shimba-hills,,published,7
+wildlife-saiwa-swamp,wildlife,Saiwa Swamp National Park,Kitale,"From KES 3,300 day trip · KES 2,000/night","Sitatunga antelope
+Boardwalks
+Birding
+Dawn best for sitatunga on swamp edge.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Saiwa Swamp National Park Kenya,saiwa-swamp,,published,8
+wildlife-bogoria-wildlife,wildlife,Lake Bogoria Flamingos,Marigat,"From KES 2,150 day trip · KES 2,000/night","Flamingo flocks
+Hot springs
+Geothermal steam
+Morning light for pink shoreline photos.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Lake Bogoria National Reserve Kenya,bogoria-wildlife,,published,9
+wildlife-maasai-mara,wildlife,Maasai Mara — Budget Gate,Narok,"From KES 10,500 day trip · KES 4,000/night","Big cats
+Migration season
+Budget camps
+Budget 3-day/2-night packages from Narok town start ~KES 18,000 pp.",https://images.unsplash.com/photo-1549366021-9f761d040a94?auto=format&fit=crop&w=900&q=80,Maasai Mara National Reserve Kenya,maasai-mara,,published,10
+hidden-kerio-valley,hidden-gems,Kerio Valley Viewpoints,Iten,"From KES 2,600 day trip · KES 2,000/night","Escarpment panoramas
+Runner culture
+Low costs
+Iten guesthouses cheapest base.",https://images.unsplash.com/photo-1544551763-77aef23d0ce3?auto=format&fit=crop&w=900&q=80,Kerio Valley Viewpoint Kenya,kerio-valley,,published,1
+hidden-lamu-old-town,hidden-gems,Lamu Old Town,Lamu,"From KES 7,000 day trip · KES 3,500/night","UNESCO old town
+Dhow harbour
+No vehicles
+Guesthouses from KES 2,500 — ask for fan rooms.",https://images.unsplash.com/photo-1544551763-77aef23d0ce3?auto=format&fit=crop&w=900&q=80,Lamu Old Town Kenya,lamu-old-town,,published,2
+hidden-kit-mikayi,hidden-gems,Kit Mikayi,Kisumu,"From KES 2,700 day trip · KES 2,000/night","Sacred rock
+Luo heritage
+Lake Victoria views
+Combine with Kisumu sunset at Hippo Point.",https://images.unsplash.com/photo-1544551763-77aef23d0ce3?auto=format&fit=crop&w=900&q=80,Kit Mikayi Kisumu Kenya,kit-mikayi,,published,3
+hidden-rusinga-island,hidden-gems,Rusinga Island,Mbita,"From KES 3,700 day trip · KES 2,500/night","Lake island
+Fishing culture
+Homestays
+Tom Mboya mausoleum worth a stop.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Rusinga Island Kenya,rusinga-island,,published,4
+hidden-marafa-depression,hidden-gems,Marafa Depression,Malindi,"From KES 3,800 day trip · KES 3,000/night","Sandstone canyon
+Sunset colours
+Local guides
+Sunset tour most dramatic light.",https://images.unsplash.com/photo-1544551763-77aef23d0ce3?auto=format&fit=crop&w=900&q=80,Marafa Depression Hell's Kitchen Kenya,marafa-depression,,published,5
+hidden-marsabit-paradise,hidden-gems,Lake Paradise Marsabit,Marsabit,"From KES 7,850 day trip · KES 3,000/night","Crater lake
+Forest elephants
+Remote north
+Allow 3 days travel buffer from Nairobi.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Lake Paradise Marsabit National Park Kenya,marsabit-paradise,,published,6
+hidden-ol-karia-spa,hidden-gems,Ol Karia Geothermal Spa,Naivasha,"From KES 2,250 day trip · KES 2,500/night","Hot pool soak
+Geothermal steam
+Post-hike relax
+Pair with Hell's Gate same day ticket area.",https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80,Ol Karia Geothermal Spa Naivasha Kenya,ol-karia-spa,,published,7
+hidden-lukenya-gem,hidden-gems,Lukenya Hills,Athi River,"From KES 2,000 day trip","Boulder fields
+Climbing
+Near Nairobi
+Weekend groups share transport online.",https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80,Lukenya Hills Kenya,lukenya-gem,,published,8
+hidden-mfangano-island,hidden-gems,Mfangano Island,Mbita,"From KES 4,200 day trip · KES 2,500/night","Rock art sites
+Fishing villages
+Island bikes
+Community tourism office arranges rock art guide.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Mfangano Island Kenya,mfangano-island,,published,9
+hidden-lake-magadi,hidden-gems,Lake Magadi Hot Springs,Magadi,"From KES 3,000 day trip · KES 3,000/night","Pink soda lake
+Hot springs
+Maasai landscape
+Weekday trips avoid factory convoys.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Lake Magadi Kenya,lake-magadi,,published,10
+hidden-gede-ruins,hidden-gems,Gede Ruins,Gede,"From KES 3,500 day trip · KES 3,000/night","Swahili ruins
+Forest monkeys
+Museum
+Morning cool and fewer tour buses.",https://images.unsplash.com/photo-1544551763-77aef23d0ce3?auto=format&fit=crop&w=900&q=80,Gede Ruins National Monument Kenya,gede-ruins,,published,11
+hidden-ndaraca-ngai,hidden-gems,Ndaraca ya Ngai,Gichugu,"From KES 1,600 day trip · KES 2,000/night","Rock bridge
+Waterfall
+Forest walk
+Combine with Sagana day activities.",https://images.unsplash.com/photo-1432405972613-c60ab874ab1d?auto=format&fit=crop&w=900&q=80,Ndaraca ya Ngai Kirinyaga Kenya,ndaraca-ngai,,published,12
+hidden-lake-jipe,hidden-gems,Lake Jipe,Taveta,"From KES 5,100 day trip · KES 2,500/night","Canoe birding
+Papyrus channels
+Border lake
+Early morning bird activity peak.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Lake Jipe Kenya,lake-jipe,,published,13
+hidden-koromosho-falls,hidden-gems,Koromosho Falls,Iten,"From KES 2,700 day trip · KES 2,000/night","Cliff waterfall
+Valley views
+Adventure hike
+Not for casual flip-flop hikers.",https://images.unsplash.com/photo-1432405972613-c60ab874ab1d?auto=format&fit=crop&w=900&q=80,Koromosho Falls Kenya,koromosho-falls,,published,14
+hidden-tigoni-tea,hidden-gems,Tigoni Tea Walks,Limuru,"From KES 1,700 day trip · KES 3,500/night","Tea plantations
+Cool climate
+Near Nairobi
+Weekend tea factory tours need booking.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Tigoni Limuru Kenya,tigoni-tea,,published,15
+coast-diani,coast,Diani Beach,Diani,"From KES 4,100 day trip · KES 2,500/night","White sand beach
+Tuk-tuk hops
+Hostel culture
+Hostels KES 1,500–2,500 dorm; street chapati and mishkaki cheap.",https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80,Diani Beach Kenya,diani,,published,1
+coast-kilifi,coast,Kilifi Creek,Kilifi,"From KES 3,300 day trip · KES 2,000/night","Creek dhows
+Swimming holes
+Budget camps
+Mnarani ruins short tuk-tuk away.",https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80,Kilifi Creek Kenya,kilifi,,published,2
+coast-watamu,coast,Watamu Beach,Watamu,"From KES 5,100 day trip · KES 3,000/night","Snorkel trips
+Marine park
+Village beach
+Jetty snorkel KES 2,000–3,500 pp haggled.",https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80,Watamu Beach Kenya,watamu,,published,3
+coast-lamu-shela,coast,Lamu Shela Beach,Lamu,"From KES 6,000 day trip · KES 3,500/night","Shela dunes
+Dhow crossing
+Empty beach
+Sunset dhow return negotiable.",https://images.unsplash.com/photo-1544551763-77aef23d0ce3?auto=format&fit=crop&w=900&q=80,Shela Beach Lamu Kenya,lamu-shela,,published,4
+coast-tiwi,coast,Tiwi Beach,Tiwi,"From KES 3,400 day trip · KES 2,200/night","Quiet reef beach
+Rock pools
+Low-key stays
+Buy fish from beach landing mornings.",https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80,Tiwi Beach Kenya,tiwi,,published,5
+coast-nyali,coast,Nyali Beach,Mombasa,"From KES 2,600 day trip · KES 2,500/night","City beach
+Public access
+Night food
+Pirates Beach public section popular with locals.",https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80,Nyali Beach Mombasa Kenya,nyali,,published,6
+coast-malindi,coast,Malindi Beach,Malindi,"From KES 3,200 day trip · KES 2,500/night","Public beach
+Seafood markets
+Nightlife
+Sunday fish market best value.",https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80,Malindi Beach Kenya,malindi,,published,7
+coast-msambweni,coast,Msambweni Beach,Msambweni,"From KES 4,600 day trip · KES 2,000/night","Quiet reef
+Dolphin trips
+Homestays
+Fewer touts than Diani — ask homestay for boat price.",https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80,Msambweni Beach Kenya,msambweni,,published,8
+coast-shanzu,coast,Shanzu Beach,Shanzu,"From KES 3,750 day trip · KES 2,200/night","Reef snorkel
+Budget hotels
+Near Mombasa
+Cheaper beds than Nyali waterfront.",https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80,Shanzu Beach Kenya,shanzu,,published,9
+coast-funzi-island,coast,Funzi Island,Ramisi,"From KES 6,500 day trip · KES 3,500/night","Mangrove channels
+Sandbank picnic
+Dhow day trip
+Book via Diani operators or direct for cheaper.",https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80,Funzi Island Kenya,funzi-island,,published,10
+staycations-naivasha-staycation,staycations,Lake Naivasha Budget Lodge,Naivasha,"From KES 4,300 day trip · KES 4,500/night","Lake view bandas
+Hippo spotting
+Boat hire
+Book weekday for 20% lower rates at many bandas.",https://images.unsplash.com/photo-1523987355523-c7b5e0a90ace?auto=format&fit=crop&w=900&q=80,Lake Naivasha budget lodge Kenya,naivasha-staycation,,published,1
+staycations-kijabe-staycation,staycations,Kijabe Forest Cottages,Kijabe,"From KES 1,700 day trip · KES 5,000/night","Forest cottages
+Cool climate
+Hiking trails
+Self-catering units save on food costs.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Kijabe forest cottages Kenya,kijabe-staycation,,published,2
+staycations-lukenya-staycation,staycations,Lukenya Getaway Cottages,Athi River,"From KES 2,250 day trip · KES 4,000/night","Group cottages
+Climbing access
+Near Nairobi
+Split cottage among 6–8 for best value.",https://images.unsplash.com/photo-1523987355523-c7b5e0a90ace?auto=format&fit=crop&w=900&q=80,Lukenya getaway cottages Kenya,lukenya-staycation,,published,3
+staycations-elementaita-staycation,staycations,Elementaita Homestay,Elementaita,"From KES 2,700 day trip · KES 3,500/night","Homestay meals
+Flamingo lake
+Community tourism
+Meals included at many homestays.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Lake Elementaita homestay Kenya,elementaita-staycation,,published,4
+staycations-nanyuki-staycation,staycations,Nanyuki Farm Stay,Nanyuki,"From KES 3,400 day trip · KES 4,500/night","Farm stay
+Mount Kenya views
+Campfire
+Saturday market for cheap produce.",https://images.unsplash.com/photo-1523987355523-c7b5e0a90ace?auto=format&fit=crop&w=900&q=80,Nanyuki farm stay Kenya,nanyuki-staycation,,published,5
+staycations-karen-staycation,staycations,Karen Budget B&B,Karen,"From KES 1,600 day trip · KES 5,500/night","Garden B&B
+Near Karura
+City quiet
+Book mid-week for Nairobi staycation deals.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Karen budget B&B Nairobi Kenya,karen-staycation,,published,6
+staycations-kisumu-staycation,staycations,Kisumu Lakeside Guesthouse,Kisumu,"From KES 2,700 day trip · KES 3,500/night","Lake sunset
+Fish markets
+City walks
+Hippo Point sunset free.",https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80,Kisumu lakeside guesthouse Kenya,kisumu-staycation,,published,7
+staycations-ngong-staycation,staycations,Ngong Hills Eco-Camp,Ngong,"From KES 2,050 day trip · KES 4,000/night","Eco tents
+Ridge sunrise
+City views
+Sunday checkout deals common.",https://images.unsplash.com/photo-1504851149312-7a075b496cc7?auto=format&fit=crop&w=900&q=80,Ngong hills eco camp Kenya,ngong-staycation,,published,8
+staycations-mount-kenya-bandas-stay,staycations,Mount Kenya Bandas Weekend,Naro Moru,"From KES 4,300 day trip · KES 4,000/night","Mountain bandas
+Forest walks
+Cool climate
+Book bandas via KWS portal.",https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80,Mount Kenya bandas Naro Moru Kenya,mount-kenya-bandas-stay,,published,9
+staycations-tigoni-staycation,staycations,Tigoni Tea Country Cottage,Limuru,"From KES 2,150 day trip · KES 6,000/night","Tea country
+Self-catering
+Cool fog
+Split cottage among 4 for value.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Tigoni tea cottage Kenya,tigoni-staycation,,published,10
+events-lamu-cultural-festival,events,Lamu Cultural Festival,Lamu,"From KES 5,000 day trip · KES 4,000/night","Dhow races
+Swahili poetry
+Night markets
+Free street events; paid dhow races vary.",https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80,Lamu Cultural Festival Kenya,lamu-cultural-festival,,published,1
+events-nairobi-night-market,events,Nairobi Night Market,Nairobi,"From KES 1,700 day trip","Street food
+Live DJs
+Local makers
+Arrive early for shorter food lines.",https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80,Westlands Nairobi night market Kenya,nairobi-night-market,,published,2
+events-rift-acoustic,events,Rift Valley Acoustic Sessions,Naivasha,"From KES 2,100 day trip · KES 2,500/night","Lakefront music
+Campfire
+Local artists
+Bring camp chair if you have one.",https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80,Lake Naivasha acoustic sessions Kenya,rift-acoustic,,published,3
+events-mara-community-run,events,Mara Community Run,Talek,"From KES 3,800 day trip · KES 3,500/night","Conservation run
+Community guides
+School fundraiser
+Combine with budget camp safari same weekend.",https://images.unsplash.com/photo-1549366021-9f761d040a94?auto=format&fit=crop&w=900&q=80,Maasai Mara community run Kenya,mara-community-run,,published,4
+events-koroga-festival,events,Koroga Festival Nairobi,Nairobi,"From KES 4,400 day trip","Live music
+Food vendors
+City festival
+Buy early-bird online to save KES 1,000+.",https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80,Koroga Festival Nairobi Kenya,koroga-festival,,published,5
+events-lamu-yoga-festival,events,Lamu Yoga Festival,Lamu,"From KES 7,700 day trip · KES 4,000/night","Beach yoga
+Dhow sunsets
+Wellness on budget
+Day-pass classes cheaper than full festival pass.",https://images.unsplash.com/photo-1544551763-77aef23d0ce3?auto=format&fit=crop&w=900&q=80,Lamu Yoga Festival Kenya,lamu-yoga-festival,,published,6
+events-turkana-festival,events,Lake Turkana Festival,Loiyangalani,"From KES 7,500 day trip · KES 3,500/night","Northern cultures
+Lake Turkana
+Traditional dance
+Join group overland to split costs.",https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80,Lake Turkana Festival Kenya,turkana-festival,,published,7
+events-maralal-camel-derby,events,Maralal Camel Derby,Maralal,"From KES 4,000 day trip · KES 2,500/night","Camel races
+Northern festival
+Camping
+Camp early for good spots.",https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80,Maralal Camel Derby Kenya,maralal-camel-derby,,published,8
+events-diani-reggae-sundowner,events,Diani Beach Reggae Sundowner,Diani,"From KES 2,600 day trip · KES 2,500/night","Sunset reggae
+Beach vibes
+Free entry
+Starts one hour before sunset.",https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80,Diani Beach reggae sundowner Kenya,diani-reggae-sundowner,,published,9
+events-nairobi-cycling-festival,events,Nairobi Cycling Festival,Nairobi,"From KES 1,600 day trip","Forest loops
+Repair workshops
+Gear swap
+Register online for free workshop slots.",https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80,Karura Forest cycling festival Kenya,nairobi-cycling-festival,,published,10
+road-nairobi-mombasa,roadtrips,Nairobi → Mombasa via SGR,Nairobi to Coast,"From KES 1,000 SGR economy","Fast budget hop to the coast
+Book early for cheapest fares
+Matatu last mile in Mombasa",https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=900&q=80,Nairobi SGR Terminus,diani,,published,1
+road-rift-loop,roadtrips,Great Rift Valley loop,Nairobi → Naivasha → Nakuru,"From KES 2,500 shared van day","Matatu and shared van circuit through viewpoints
+Lakes and camps on one weekend
+Split van costs in travel groups",https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=900&q=80,Great Rift Valley Viewpoint Kenya,hells-gate,,published,2
+road-tsavo-coast,roadtrips,Tsavo to Diani overland,Voi → Coast,"From KES 1,800 bus + tuk-tuk","Budget wildlife stop then bus to the beach
+Classic backpacker corridor
+SGR to Voi optional",https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80,Voi Kenya,tsavo-east,,published,3
