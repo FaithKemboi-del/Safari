@@ -16,12 +16,20 @@ import {
   pickFeaturedItineraries,
   pickTrendingItems,
 } from './lib/landingContent';
-import type { CommunityUpdate, Destination } from './data';
+import type { CommunityUpdate } from './data';
+import type { Destination } from './types/destination';
 import {
-  destinationMatchesProvince,
-  destinationMatchesSearch,
-  KENYA_PROVINCE_FILTER_OPTIONS,
-} from './lib/kenyaProvinces';
+  DEFAULT_DESTINATION_FILTERS,
+  filterDestinations,
+  getDestinationCounties,
+} from './lib/destinationFilters';
+import {
+  DESTINATION_CATEGORY_OPTIONS,
+  computeBudgetEstimates,
+  formatBudgetKes,
+  getCategoryConfig,
+} from './lib/destinationCategories';
+import { DestinationDetailView } from './components/DestinationDetailView';
 import { useAuth } from './context/AuthContext';
 import { useData } from './context/DataContext';
 import { fetchCommunityUpdates, postCommunityUpdate } from './services/safariApi';
@@ -35,7 +43,6 @@ import { CommunityFeedPreview, CommunityPage } from './components/CommunityPage'
 import { CategorySpotPage } from './components/CategorySpotPage';
 import { TrailPage } from './components/TrailPage';
 import { BRAND_NAME, TRAILS_FEATURE_NAME } from './lib/config';
-import { splitHikeDifficulty, splitPricing } from './lib/destinationDetail';
 
 type Route =
   | { page: 'home' }
@@ -421,48 +428,114 @@ function HomePage({ onNavigate }: { onNavigate: (hash: string) => void }) {
 
 function DestinationsPage() {
   const { destinations } = useData();
-  const [search, setSearch] = useState('');
-  const [province, setProvince] = useState<(typeof KENYA_PROVINCE_FILTER_OPTIONS)[number]>('All');
+  const [filters, setFilters] = useState(DEFAULT_DESTINATION_FILTERS);
+  const counties = useMemo(() => getDestinationCounties(destinations), [destinations]);
 
-  const filteredDestinations = useMemo(() => {
-    return destinations.filter((destination) => {
-      return (
-        destinationMatchesProvince(destination, province) &&
-        destinationMatchesSearch(destination, search)
-      );
-    });
-  }, [destinations, province, search]);
+  const filteredDestinations = useMemo(
+    () => filterDestinations(destinations, filters),
+    [destinations, filters],
+  );
 
   return (
     <PageFrame
       eyebrow="Safiri destinations"
       title="Find affordable places to explore"
-      body="Search by destination, town, or county. Filter by Kenyan province to narrow results."
+      body="Filter by category, county, budget, distance, family-friendly options, and featured picks."
     >
-      <div className="filter-panel">
+      <div className="filter-panel destination-filter-panel">
         <label>
           Search destinations
           <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            value={filters.search}
+            onChange={(event) => setFilters((current) => ({ ...current, search: event.target.value }))}
             placeholder="Try Eldoret, Samburu, Maasai Mara, Diani..."
           />
         </label>
-        <div className="province-filter" role="group" aria-label="Filter by province">
-          <span className="province-filter-label">Filter by province</span>
-          <div className="province-filter-chips">
-            {KENYA_PROVINCE_FILTER_OPTIONS.map((provinceName) => (
-              <button
-                key={provinceName}
-                className={province === provinceName ? 'active' : ''}
-                onClick={() => setProvince(provinceName)}
-                type="button"
-              >
-                <ProvinceIcon name={provinceName} />
-                {provinceName}
-              </button>
-            ))}
-          </div>
+        <div className="destination-filter-grid">
+          <label>
+            Category
+            <select
+              value={filters.category}
+              onChange={(event) =>
+                setFilters((current) => ({
+                  ...current,
+                  category: event.target.value as Destination['category'] | 'all',
+                }))
+              }
+            >
+              <option value="all">All categories</option>
+              {DESTINATION_CATEGORY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            County
+            <select
+              value={filters.county}
+              onChange={(event) => setFilters((current) => ({ ...current, county: event.target.value }))}
+            >
+              {counties.map((county) => (
+                <option key={county} value={county}>
+                  {county}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Max day-trip budget (KES)
+            <input
+              min={0}
+              type="number"
+              value={filters.maxBudget ?? ''}
+              onChange={(event) =>
+                setFilters((current) => ({
+                  ...current,
+                  maxBudget: event.target.value ? Number(event.target.value) : null,
+                }))
+              }
+              placeholder="Any budget"
+            />
+          </label>
+          <label>
+            Max distance from Nairobi (km)
+            <input
+              min={0}
+              type="number"
+              value={filters.maxDistanceKm ?? ''}
+              onChange={(event) =>
+                setFilters((current) => ({
+                  ...current,
+                  maxDistanceKm: event.target.value ? Number(event.target.value) : null,
+                }))
+              }
+              placeholder="Any distance"
+            />
+          </label>
+        </div>
+        <div className="destination-filter-toggles">
+          <label className="checkbox-field">
+            <input
+              checked={filters.familyFriendlyOnly}
+              onChange={(event) =>
+                setFilters((current) => ({ ...current, familyFriendlyOnly: event.target.checked }))
+              }
+              type="checkbox"
+            />
+            Family friendly only
+          </label>
+          <label className="checkbox-field">
+            <input
+              checked={filters.featuredOnly}
+              onChange={(event) =>
+                setFilters((current) => ({ ...current, featuredOnly: event.target.checked }))
+              }
+              type="checkbox"
+            />
+            Featured destinations only
+          </label>
         </div>
       </div>
       <div className="destination-grid">
@@ -479,130 +552,20 @@ function DestinationDetailPage({ slug }: { slug: string }) {
   const destination = destinations.find((item) => item.slug === slug) ?? destinations[0];
   const related = destinations
     .filter((item) => item.slug !== destination.slug)
-    .filter(
-      (item) =>
-        item.region === destination.region || item.experienceType === destination.experienceType,
-    )
+    .filter((item) => item.category === destination.category || item.county === destination.county)
     .slice(0, 3);
-  const fallbackRelated = related.length ? related : destinations.filter((item) => item.slug !== destination.slug).slice(0, 3);
-  const isHike = destination.experienceType === 'hike';
-  const { badge: pricingBadge, detail: pricingDetail } = splitPricing(destination.pricing);
-  const { badge: hikeBadge, detail: hikeDifficultyDetail } = splitHikeDifficulty(
-    destination.hikeDifficulty,
-  );
-  const practicalSections = isHike
-    ? [
-        hikeDifficultyDetail ? { title: 'Hike difficulty', body: hikeDifficultyDetail } : null,
-        destination.transportAndLogistics
-          ? { title: 'Transport & logistics', body: destination.transportAndLogistics }
-          : null,
-        destination.safetyAndConditions
-          ? { title: 'Safety & conditions', body: destination.safetyAndConditions }
-          : null,
-        destination.additionalInfo
-          ? { title: 'Good to know', body: destination.additionalInfo }
-          : null,
-      ]
-    : [
-        pricingDetail ? { title: 'Pricing breakdown', body: pricingDetail } : null,
-        destination.safetyAndConditions
-          ? { title: 'Safety & conditions', body: destination.safetyAndConditions }
-          : null,
-        destination.transportAndLogistics
-          ? { title: 'Transport & logistics', body: destination.transportAndLogistics }
-          : null,
-        destination.additionalInfo
-          ? { title: 'Good to know', body: destination.additionalInfo }
-          : null,
-      ];
-  const visiblePracticalSections = practicalSections.filter(
-    (section): section is { title: string; body: string } => Boolean(section),
-  );
+  const fallbackRelated = related.length
+    ? related
+    : destinations.filter((item) => item.slug !== destination.slug).slice(0, 3);
 
   return (
-    <article className="detail-page">
-      <section className="gallery-hero section-dark">
-        <img className="gallery-main" src={destination.image} alt="" />
-        <div className="hero-overlay" />
-        <div className="gallery-copy">
-          <span className="eyebrow">{destination.location}</span>
-          <h1>{destination.title}</h1>
-          <p>{destination.description}</p>
-          <div className="detail-badges">
-            {pricingBadge ? <span className="detail-budget">{pricingBadge}</span> : null}
-            <span>{destination.region}</span>
-            <span>{isHike ? 'Hiking' : 'Budget travel'}</span>
-            {isHike && hikeBadge ? <span>{hikeBadge}</span> : null}
-          </div>
-        </div>
-      </section>
-
-      <section className="section detail-layout">
-        <div className="detail-content">
-          {destination.gallery.length > 0 ? (
-            <div className="mini-gallery">
-              {destination.gallery.map((image) => (
-                <img key={image} src={image} alt="" />
-              ))}
-            </div>
-          ) : null}
-
-          {visiblePracticalSections.length > 0 ? (
-            <div className="info-grid">
-              {visiblePracticalSections.map((section) => (
-                <InfoBlock key={section.title} title={section.title}>
-                  {section.body}
-                </InfoBlock>
-              ))}
-            </div>
-          ) : null}
-
-          {destination.highlights.length > 0 ? (
-            <InfoBlock title="Experience highlights">
-              <div className="tag-list">
-                {destination.highlights.map((highlight) => (
-                  <span key={highlight}>{highlight}</span>
-                ))}
-              </div>
-            </InfoBlock>
-          ) : null}
-
-          <CommunityFeed destinationSlug={destination.slug} destinationTitle={destination.title} />
-
-          <InfoBlock title="Map to the destination">
-            <div className="map-frame">
-              <iframe
-                title={`${destination.title} map`}
-                src={`https://www.google.com/maps?q=${encodeURIComponent(destination.mapQuery)}&output=embed`}
-                loading="lazy"
-              />
-            </div>
-          </InfoBlock>
-        </div>
-
-        <aside className="booking-panel glass-panel">
-          <span className="eyebrow">Private planning</span>
-          <h2>Plan this trip</h2>
-          <p>Pair {destination.title} with matatu routes, SGR legs, camps, and low-cost stays.</p>
-          <a className="primary-button full-width" href="#signup">
-            Start a request
-          </a>
-        </aside>
-      </section>
-
-      <section className="section related-section">
-        <SectionIntro
-          eyebrow="Related destinations"
-          title="Keep exploring Kenya"
-          body="Similar destinations and route pairings that work beautifully with this experience."
-        />
-        <div className="destination-row">
-          {fallbackRelated.map((item) => (
-            <DestinationCard key={item.slug} destination={item} compact />
-          ))}
-        </div>
-      </section>
-    </article>
+    <DestinationDetailView
+      destination={destination}
+      related={fallbackRelated}
+      communityFeed={
+        <CommunityFeed destinationSlug={destination.slug} destinationTitle={destination.title} />
+      }
+    />
   );
 }
 
@@ -802,15 +765,19 @@ function DestinationCard({
   destination: Destination;
   compact?: boolean;
 }) {
+  const category = getCategoryConfig(destination.category);
+  const dayBudget = formatBudgetKes(computeBudgetEstimates(destination.budget).dayTrip);
+
   return (
     <article className={`destination-card ${compact ? 'compact' : ''}`}>
       <img src={destination.image} alt="" />
       <div className="card-overlay" />
       <div className="destination-card-content">
-        <span>{destination.region}</span>
+        <span>{category.label}</span>
         <h3>{destination.title}</h3>
-        <p>{destination.location}</p>
-        {!compact && <small>{destination.description}</small>}
+        <p>{destination.county}</p>
+        {!compact ? <small>{destination.description}</small> : null}
+        {!compact && dayBudget !== '—' ? <small className="destination-card-budget">From {dayBudget} day trip</small> : null}
         <a href={`#destination/${destination.slug}`}>View details</a>
       </div>
     </article>

@@ -534,7 +534,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
                   <tr>
                     <th>Name</th>
                     <th>Location</th>
-                    <th>Type</th>
+                    <th>Category</th>
                     <th>Status</th>
                     <th>Landing page</th>
                     <th>Actions</th>
@@ -553,10 +553,10 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
                           <small>{item.slug}</small>
                         </td>
                         <td>
-                          {item.location}
+                          {item.county}
                           <small>{item.region}</small>
                         </td>
-                        <td>{item.experienceType}</td>
+                        <td>{item.category}</td>
                         <td>
                           <span className={`admin-status admin-status--${item.status}`}>{item.status}</span>
                         </td>

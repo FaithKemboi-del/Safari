@@ -1,6 +1,7 @@
 import { getSupabase } from '../lib/supabase';
 import type { Database } from '../lib/database.types';
 import { getAllLocalCategoryCards } from '../categoryContent';
+import { destinationToRow as buildDestinationRow, mapDestinationRow } from '../lib/destinationMapper';
 import type {
   AdminCategorySpot,
   AdminDestination,
@@ -29,32 +30,25 @@ function requireSupabase() {
 }
 
 function mapAdminDestination(row: DestinationRow): AdminDestination {
+  const destination = mapDestinationRow(row);
   return {
     id: row.id,
-    slug: row.slug,
-    title: row.title,
-    location: row.location,
-    region: row.region,
+    ...destination,
+    featuredOnHome: destination.featuredOnHome ?? false,
+    featuredSortOrder: destination.featuredSortOrder ?? 0,
+    trendingOnHome: destination.trendingOnHome ?? false,
+    trendingSortOrder: destination.trendingSortOrder ?? 0,
     experienceType: row.experience_type,
-    description: row.description,
-    pricing: row.pricing ?? undefined,
-    safetyAndConditions: row.safety_and_conditions ?? undefined,
-    transportAndLogistics: row.transport_and_logistics ?? undefined,
-    additionalInfo: row.additional_info ?? undefined,
-    hikeDifficulty: row.hike_difficulty ?? undefined,
-    image: row.image,
-    gallery: row.gallery ?? [],
-    highlights: row.highlights ?? [],
-    mapQuery: row.map_query,
     status: row.status,
-    featuredOnHome: row.featured_on_home ?? false,
-    featuredSortOrder: row.featured_sort_order ?? 0,
-    trendingOnHome: row.trending_on_home ?? false,
-    trendingTag: row.trending_tag ?? undefined,
-    trendingSearches: row.trending_searches ?? undefined,
-    trendingSortOrder: row.trending_sort_order ?? 0,
     updatedAt: row.updated_at,
   };
+}
+
+function destinationToRow(input: DestinationInput) {
+  return buildDestinationRow({
+    ...input,
+    experienceType: input.category === 'hiking' ? 'hike' : 'standard',
+  });
 }
 
 function mapAdminItinerary(row: ItineraryRow, days: ItineraryDayRow[]): AdminItinerary {
@@ -92,32 +86,6 @@ function mapAdminRoute(row: RouteRow): AdminRoute {
   };
 }
 
-function destinationToRow(input: DestinationInput) {
-  return {
-    slug: input.slug,
-    title: input.title,
-    location: input.location,
-    region: input.region,
-    experience_type: input.experienceType,
-    description: input.description,
-    pricing: input.pricing ?? null,
-    safety_and_conditions: input.safetyAndConditions ?? null,
-    transport_and_logistics: input.transportAndLogistics ?? null,
-    additional_info: input.additionalInfo ?? null,
-    hike_difficulty: input.hikeDifficulty ?? null,
-    image: input.image,
-    gallery: input.gallery,
-    highlights: input.highlights,
-    map_query: input.mapQuery,
-    status: input.status,
-    featured_on_home: input.featuredOnHome,
-    featured_sort_order: input.featuredSortOrder,
-    trending_on_home: input.trendingOnHome,
-    trending_tag: input.trendingTag ?? null,
-    trending_searches: input.trendingSearches ?? null,
-    trending_sort_order: input.trendingSortOrder,
-  };
-}
 
 function itineraryHeaderToRow(input: ItineraryInput) {
   return {

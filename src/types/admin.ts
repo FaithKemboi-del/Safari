@@ -1,5 +1,6 @@
-import type { DestinationExperienceType } from '../data';
+import type { DestinationExperienceType } from './destination';
 import type { CommunityPostKind } from '../data';
+import type { DestinationBudget, DestinationCategoryId } from './destination';
 
 export type ContentStatus = 'published' | 'draft' | 'review';
 export type ItineraryStatus = 'live' | 'draft' | 'review';
@@ -11,13 +12,23 @@ export type AdminDestination = {
   title: string;
   location: string;
   region: string;
+  category: DestinationCategoryId;
   experienceType: DestinationExperienceType;
   description: string;
-  pricing?: string;
+  county: string;
+  nearestTown?: string;
+  distanceFromNairobiKm?: number;
+  travelTimeFromNairobi?: string;
+  bestTimeToVisit?: string;
+  budget: DestinationBudget;
+  directions?: string;
+  roadConditions?: string;
+  publicTransport?: string;
   safetyAndConditions?: string;
-  transportAndLogistics?: string;
-  additionalInfo?: string;
-  hikeDifficulty?: string;
+  whatToCarry?: string;
+  travelTips?: string;
+  familyFriendly: boolean;
+  categoryFields: Record<string, string>;
   image: string;
   gallery: string[];
   highlights: string[];
@@ -29,6 +40,8 @@ export type AdminDestination = {
   trendingTag?: string;
   trendingSearches?: string;
   trendingSortOrder: number;
+  pricing?: string;
+  hikeDifficulty?: string;
   updatedAt: string;
 };
 
